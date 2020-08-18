@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentalCar - Sign Up</title>
+</head>
+<body>
+    <nav>
+        <h1 style="text-align: center;">
+            Welcome to RentalCar
+        </h1>
+    </nav>
+
+    <main>
+        <h1 style="text-align: center;">Create your acount</h1>
+        <div style="margin: auto; width: min-content;">
+            <form method="POST" action="http://localhost:5000/sign_up">
+                <label for="username">Usename</label><br/>
+                <input type="text" placeholder="Username" name="username" required/><br/>
+                <br/>
+        
+                <label for="password">New password</label><br/>
+                <input type="password" placeholder="Password" name="password" required/><br/>
+                <br/>
+
+                <label for="password-again">Enter password again</label><br/>
+                <input type="password" placeholder="Password" name="password-again" required/><br/>
+                <br/>
+
+                <button style="width: 100%;">Create account</button>
+            </form>
+            <br/>
+        </div>
+    </main>
+
+    <footer style="position: absolute; bottom: 0px; text-align: center; left: 0; right: 0; padding: 2em; background-color: gray;">
+        Copyright © 2020 - RentalCar
+    </footer>
+</body>
+</html>

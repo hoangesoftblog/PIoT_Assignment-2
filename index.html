@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+        <h1>This is navigation</h1>
+    </nav>
+
+    <main>
+        <form method="POST" onsubmit="return (search_car());">
+            <label for="search_bar">Search:</label>
+            <input type="search" id="search_bar" placeholder="Please enter" name="search_features"/>
+            <button>Submit!</button>
+        </form>
+
+        <table border="1" id="table_car">
+            <caption>Available Car</caption>
+            <tr>
+                <th>Brand</th>
+                <th>Body Type</th>
+                <th>Color</th>
+                <th>Seat</th>
+                <th>Location</th>
+                <th>Cost</th>
+            </tr>
+            <tr>
+                <td>Civic</td>
+                <td>SUV</td>
+                <td>Black</td>
+                <td>4</td>
+                <td>Thu Duc</td>
+                <td>1 Trieu/h</td>
+            </tr>
+            <tr>
+                <td>Honda CRV</td>
+                <td>Something</td>
+                <td>Black</td>
+                <td>4</td>
+                <td>Thu Duc</td>
+                <td>1 Trieu/h</td>
+            </tr>
+        </table>
+    </main>
+
+    <script>
+        "use strict"
+
+        function search_car(){
+            var features = document.getElementById("search_bar").value
+            console.log(features)
+
+            fetch("http://127.0.0.1:5000/car/find"
+            , {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "POST", 
+                body: JSON.stringify({
+                    "search_features": features
+                })
+            }
+            )
+            .then((res) => res.json())
+            .then((json) => {
+                var content = ""
+                json.forEach(element => {
+                    content += "<tr>";
+                    ["brand", "body_type", "colour", "seats", "location", "cost_per_hour"].forEach( property => {
+                        content += ("<td>" + element[property] + "</td>")
+                    })
+                    content += "</tr>"
+
+                });
+                document.getElementById("table_car").innerHTML += content
+            }) 
+            // .catch((err) => console.log(err))
+            .finally(() => {
+                return false;
+            })
+
+            return false;
+        }
+    </script>
+</body>
+</html>
