@@ -1,4 +1,9 @@
-"""REMEMBER TO DELETE CODE USED FOR SQLITE"""
+"""
+                                BIG BIG NOTE: 
+                    This code is only applied for SQLite only.
+                        Needs to change into MySQL
+"""
+"https://code.tutsplus.com/vi/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972"
 
 
 #import MySQLdb as SQLDatabase
@@ -18,12 +23,14 @@ class AccountDatabase:
     PASS = "password"
     ID = "ID"
 
+
     def __init__(self, host=host, user=user, password=password, schema=TEMPORARY_DATABASE, tb_name="Account", drop_existing_table=False):
         self.database = schema
         self.table = tb_name
         self.host = host
         self.user = user
         self.password = password
+
         
         if drop_existing_table:
             query = "DROP TABLE IF EXISTS " + self.table
@@ -71,7 +78,14 @@ class AccountDatabase:
         return records
 
     def __to_dictionary(self, data):
-        pass
+        if isinstance(data, dict):
+            return data
+        elif isinstance(data, tuple):
+            return {self.ID: data[0], self.USER: data[1], self.PASS: data[2]}
+        elif isinstance(data, list):
+            return [self.__to_dictionary(child_data) for child_data in data]
+        else:
+            return None
 
 
     def add_user(self, username, password):
@@ -188,6 +202,44 @@ class CarDatabase:
 
         return self.__to_dictionary(records)
 
+
+def HistoryDatabase():
+    def __execute_no_return(self, query, data=None):
+        # self.connector = SQLDatabase.connect(self.host, self.user, self.password, self.database)
+        self.connector = SQLDatabase.connect(self.database)
+        self.cursor = self.connector.cursor()
+
+        if data:
+            self.cursor.execute(query, data)
+        else:
+            self.cursor.execute(query)
+
+        self.connector.commit()
+        self.connector.close()
+
+
+    def __execute_return(self, query, data=None, amount="many"):
+        # self.connector = SQLDatabase.connect(self.host, self.user, self.password, self.database)
+        self.connector = SQLDatabase.connect(self.database)
+        self.cursor = self.connector.cursor()
+
+        # Get the correct operation for database
+        if amount == "many":
+            fetch = self.cursor.fetchall
+        elif amount == "one":
+            fetch = self.cursor.fetchone
+        else:
+            fetch = self.cursor.fetchall
+
+        if data is None:
+            self.cursor.execute(query)
+        else:
+            self.cursor.execute(query, data)
+        records = fetch()
+
+        self.connector.close()
+        
+        return records
 
 
 

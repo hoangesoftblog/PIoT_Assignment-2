@@ -55,6 +55,10 @@ def find_cars():
     records = car_db.find_car(search_features)
     return flask.jsonify(records)
 
+@app.route('/forget_password', methods = ["GET", "POST"])
+def forget_password():
+    if flask.request.method == "GET":
+        flask.render_template("forget_password.html")
         
 
 if __name__ == "__main__":

@@ -19,30 +19,36 @@
 
         <table border="1" id="table_car">
             <caption>Available Car</caption>
-            <tr>
+            <thead>
                 <th>Brand</th>
                 <th>Body Type</th>
                 <th>Color</th>
                 <th>Seat</th>
                 <th>Location</th>
                 <th>Cost</th>
-            </tr>
-            <tr>
-                <td>Civic</td>
-                <td>SUV</td>
-                <td>Black</td>
-                <td>4</td>
-                <td>Thu Duc</td>
-                <td>1 Trieu/h</td>
-            </tr>
-            <tr>
-                <td>Honda CRV</td>
-                <td>Something</td>
-                <td>Black</td>
-                <td>4</td>
-                <td>Thu Duc</td>
-                <td>1 Trieu/h</td>
-            </tr>
+                <th>Book Now!</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Civic</td>
+                    <td>SUV</td>
+                    <td>Black</td>
+                    <td>4</td>
+                    <td>Thu Duc</td>
+                    <td>1 Trieu/h</td>
+                </tr>
+                <tr>
+                    <td>Honda CRV</td>
+                    <td>Something</td>
+                    <td>Black</td>
+                    <td>4</td>
+                    <td>Thu Duc</td>
+                    <td>1 Trieu/h</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                Foot of the table
+            </tfoot>
         </table>
     </main>
 
@@ -50,11 +56,10 @@
         "use strict"
 
         function search_car(){
-            var features = document.getElementById("search_bar").value
-            console.log(features)
+            var features = document.getElementById("search_bar").value;
+            console.log(features);
 
-            fetch("http://127.0.0.1:5000/car/find"
-            , {
+            fetch("http://127.0.0.1:5000/car/find", {
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -62,10 +67,16 @@
                 body: JSON.stringify({
                     "search_features": features
                 })
-            }
-            )
+            })
             .then((res) => res.json())
             .then((json) => {
+                //Remove old nodes
+                var parent_node = document.getElementById("table_car").lastChild;
+                while (parent_node.childNodes.length > 0){
+                    parent_node.removeChild(parent_node.lastChild)
+                }
+
+                // Add new nodes
                 var content = ""
                 json.forEach(element => {
                     content += "<tr>";
@@ -75,15 +86,13 @@
                     content += "</tr>"
 
                 });
-                document.getElementById("table_car").innerHTML += content
+                parent_node.innerHTML += content
             }) 
             // .catch((err) => console.log(err))
-            .finally(() => {
-                return false;
-            })
 
             return false;
         }
+
     </script>
 </body>
 </html>
