@@ -24,15 +24,18 @@
     <main>
         <h1 style="text-align: center;">Login</h1>
         <div style="margin: auto; width: 16em;">
-            <b style="display: none; color: red; text-align: center; margin-bottom: 0.5em;" id="incorrect_login">Incorrect username or password</b>
+            <b style="display: none; color: red; text-align: center; margin-bottom: 0.5em;"
+                id="incorrect_login">Incorrect username or password</b>
             <form method="POST" onsubmit="return(login())">
                 <label for="username">Username</label><br />
-                <input type="text" placeholder="Username" name="username" required style="width: 100%; box-sizing: border-box;" id="username"/><br />
+                <input type="text" placeholder="Username" name="username" required
+                    style="width: 100%; box-sizing: border-box;" id="username" /><br />
                 <br />
 
                 <label for="password">Password</label>
                 <a href="/forget_password.html" style="float: right;">Forget password?</a><br />
-                <input type="password" placeholder="Password" name="password" required style="width: 100%; box-sizing: border-box;" id="password"/><br />
+                <input type="password" placeholder="Password" name="password" required
+                    style="width: 100%; box-sizing: border-box;" id="password" /><br />
                 <br />
 
                 <button type="submit" style="width: 100%;">Login</button>
@@ -49,6 +52,9 @@
             <button onclick="save()" id="capture_bt">
                 Capture screen!
             </button>
+
+            <img src="/Users/khanhdang/Desktop/RMIT/2020B/IoT/PIoT_Assignment-2/C0225T01.jpg" width="100%" />
+
         </div>
 
     </main>
@@ -61,17 +67,17 @@
     <script>
         "use strict"
 
-        function save(){
+        function save() {
             html2canvas($('body'), {
                 onrendered: function (canvas) {
-                    canvas.toBlob(function(blob){
+                    canvas.toBlob(function (blob) {
                         saveAs(blob, "new.png")
                     })
                 }
             })
-        }     
+        }
 
-        function login(){
+        function login() {
             base_url = "http://localhost:5000/"
             username = document.getElementById("username").value
             password = document.getElementById("password").value
@@ -84,26 +90,26 @@
                     'Content-Type': 'application/json',
                 },
                 method: 'post',
-                body: JSON.stringify({'username': username, 'password': password})
+                body: JSON.stringify({ 'username': username, 'password': password })
             })
-            .then(res => res.text())
-            .then((text) => {
-                console.log(text)
-                if (text === "Correct"){
-                    // https://www.w3schools.com/jsref/met_win_open.asp
-                    window.open("http://localhost:5500/index.html", "_self")
-                }
-                else {
-                    warning = document.getElementById("incorrect_login")
-                    warning.style.display = "block"
-                }
-                return false
-            })
-            .catch(err => console.log(err))
-            .finally(() => {
-                return false
-            })
-        }  
+                .then(res => res.text())
+                .then((text) => {
+                    console.log(text)
+                    if (text === "Correct") {
+                        // https://www.w3schools.com/jsref/met_win_open.asp
+                        window.open("http://localhost:5500/index.html", "_self")
+                    }
+                    else {
+                        warning = document.getElementById("incorrect_login")
+                        warning.style.display = "block"
+                    }
+                    return false
+                })
+                .catch(err => console.log(err))
+                .finally(() => {
+                    return false
+                })
+        }
 
     </script>
 </body>
