@@ -10,7 +10,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
 
-    <script src="FileSaver.js">
+    <!-- <script src="FileSaver.js"> -->
     </script>
 </head>
 
@@ -23,10 +23,12 @@
 
     <main>
         <h1 style="text-align: center;">Login</h1>
+
         <div style="margin: auto; width: 16em;">
-            <b style="display: none; color: red; text-align: center; margin-bottom: 0.5em;"
-                id="incorrect_login">Incorrect username or password</b>
-            <form method="POST" onsubmit="return(login())">
+            {% if error %}
+            <b style="color: red; text-align: center; margin-bottom: 0.5em;" id="incorrect_login">Incorrect username or password</b>
+            {% endif %}
+            <form method="POST" action="http://localhost:5000/login">
                 <label for="username">Username</label><br />
                 <input type="text" placeholder="Username" name="username" required
                     style="width: 100%; box-sizing: border-box;" id="username" /><br />
@@ -38,23 +40,20 @@
                     style="width: 100%; box-sizing: border-box;" id="password" /><br />
                 <br />
 
-                <button type="submit" style="width: 100%;">Login</button>
+                <input type="submit" style="width: 100%;" value="Login"/>
             </form>
             <br />
 
 
             <p style="text-align: center;">No account?
-                <a href="/sign_up.html">
+                <a href="http://localhost:5000/sign_up">
                     Sign Up
                 </a>
             </p>
-
-            <button onclick="save()" id="capture_bt">
+<!-- 
+            <button id="capture_bt">
                 Capture screen!
-            </button>
-
-            <img src="/Users/khanhdang/Desktop/RMIT/2020B/IoT/PIoT_Assignment-2/C0225T01.jpg" width="100%" />
-
+            </button> -->
         </div>
 
     </main>
@@ -64,7 +63,7 @@
         Copyright © 2020 - RentalCar
     </footer>
 
-    <script>
+    <!-- <script>
         "use strict"
 
         function save() {
@@ -111,7 +110,7 @@
                 })
         }
 
-    </script>
+    </script> -->
 </body>
 
 </html>

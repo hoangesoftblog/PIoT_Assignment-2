@@ -4,14 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
     <nav>
         <h1>This is navigation</h1>
+        <ul>
+            <li>
+                <a href="http://localhost:5000/logout">Logout</a>
+            </li>
+        </ul>
     </nav>
 
-    <main>
-        <form method="POST" onsubmit="return (search_car());">
+    <main class="container">
+        <form method="POST" action="http://localhost:5000/car/find" style="box-sizing: border-box;">
             <label for="search_bar">Search:</label>
             <input type="search" id="search_bar" placeholder="Please enter" name="search_features"/>
             <button>Submit!</button>
@@ -29,7 +40,7 @@
                 <th>Book Now!</th>
             </thead>
             <tbody>
-                <tr>
+                <!-- <tr>
                     <td>Civic</td>
                     <td>SUV</td>
                     <td>Black</td>
@@ -44,15 +55,22 @@
                     <td>4</td>
                     <td>Thu Duc</td>
                     <td>1 Trieu/h</td>
-                </tr>
+                </tr> -->
+                {% for car in cars %}
+                    <tr>
+                        {% for key, value in car.items() %}
+                            {% if key != 'ID' %}
+                            <td> {{ value }} </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
             </tbody>
-            <tfoot>
-                Foot of the table
-            </tfoot>
+            <tfoot></tfoot>
         </table>
     </main>
 
-    <script>
+    <!-- <script>
         "use strict"
 
         function search_car(){
@@ -93,6 +111,6 @@
             return false;
         }
 
-    </script>
+    </script> -->
 </body>
 </html>
