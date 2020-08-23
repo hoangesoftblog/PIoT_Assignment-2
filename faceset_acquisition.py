@@ -121,6 +121,7 @@ def train_faceset(id):
 
 
 # show_video_capture()
+<<<<<<< HEAD:faceset_acquisition.py
 <<<<<<< HEAD:face_recognition.py
 # faceset_capture('0002')
 train_faceset('0001')
@@ -129,3 +130,7 @@ face_recognition_start('0001')
 # faceset_capture('0001')
 train_faceset('0001')
 >>>>>>> parent of 8be03f3... Facial recognition function added:faceset_acquisition.py
+=======
+# faceset_capture('0001')
+train_faceset('0001')
+>>>>>>> parent of 8be03f3... Facial recognition function added:face_recognition.py
