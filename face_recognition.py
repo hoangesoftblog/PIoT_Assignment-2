@@ -7,7 +7,7 @@ from PIL import Image
 """
 
 def show_video_capture():
-    video = cv2.VideoCapture(0)
+    video = cv2.VideoCapture(1)
     video.set(3, 480)
     video.set(4, 480)
     
@@ -38,15 +38,14 @@ Naming scheme is based on id
 """
 def faceset_capture(id):
     # Start camera
-    camera = cv2.VideoCapture(0)
+    camera = cv2.VideoCapture(1)
 
     # Use casecade identifier to detect frontal faces
     face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-    # Keep track of number of faces
+    # Keep track of number of images captured
     count = 0
 
-    # Start looping
     while True:
         # Capture camera frame
         _,frame = camera.read()
@@ -55,30 +54,21 @@ def faceset_capture(id):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         faces = face_detector.detectMultiScale(gray, 1.3, 5)
-
         for (x,y,w,h) in faces:
             cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0 ,0) , 2)
+            # count += 1
+            # cv2.imwrite("user_dataset/User."+str(id)+"."+str(count)+".jpg", gray[y:y+h,x:x+w])
 
-            count += 1
+        # Display the  frame, with bounded rectangle on the person's face
+        cv2.imshow('frame', frame)
 
-            cv2.imwrite("user_dataset/User."+str(id)+"."+str(count)+".jpg", gray[y:y+h,x:x+w])
-
-            # Display the  frame, with bounded rectangle on the person's face
-            cv2.imshow('frame', frame)
-
-        
-        # To stop taking video, press 'q' for at least 100ms
-        if cv2.waitKey(100) & 0xFF == ord('q'):
-            break
-
-        # If image taken reach 50, stop taking video
-        elif count>50:
+        # To stop, press 'q' for at least 100ms or 50 images are taken reach 50
+        if (cv2.waitKey(100) & 0xFF == ord('q')) or count > 50:
             break
 
     # Ends camera
     camera.release()
-
-    cv2.destroyAllWindows
+    cv2.destroyAllWindows()
 
 
 # Train the faceset so it can be recognize
