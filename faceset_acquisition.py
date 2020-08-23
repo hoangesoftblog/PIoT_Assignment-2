@@ -1,4 +1,10 @@
-import cv2, time
+import cv2, time, os
+import numpy as np
+from PIL import Image
+
+# For demonstration purpose
+"""For demonstration purpose 
+"""
 
 def show_video_capture():
     video = cv2.VideoCapture(0)
@@ -26,7 +32,11 @@ def show_video_capture():
 
     cv2.destroyAllWindows
 
-def capture_faceset(id):
+
+"""When run will start capturing images of faces on the camera, save in the /user_dataset folder
+Naming scheme is based on id
+"""
+def faceset_capture(id):
     # Start camera
     camera = cv2.VideoCapture(0)
 
@@ -71,6 +81,55 @@ def capture_faceset(id):
     cv2.destroyAllWindows
 
 
-# show_video_capture()
-# capture_faceset('0001')
+# Train the faceset so it can be recognize
+def train_faceset(id):
+    # Create Local Binary Patterns Histograms for face recognization
+    recognizer = cv2.face.LBPHFaceRecognizer_create()
 
+    # Using prebuilt frontal face training model, for face detection
+    detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
+    # Get all file path
+    imagePaths = [os.path.join('user_dataset',f) for f in os.listdir('user_dataset')] 
+    
+    # Initialize empty face sample
+    faceSamples=[]
+    
+    # Initialize empty id
+    ids = []
+
+        # Loop all the file path
+    for imagePath in imagePaths:
+
+        # Get the image and convert it to grayscale
+        PIL_img = Image.open(imagePath).convert('L')
+
+        # PIL image to numpy array
+        img_numpy = np.array(PIL_img,'uint8')
+
+        id = int(os.path.split(imagePath)[-1].split(".")[1])
+        print(id)
+
+        # Get the face from the training images
+        faces = detector.detectMultiScale(img_numpy)
+
+        # Loop for each face, append to their respective ID
+        for (x,y,w,h) in faces:
+
+            # Add the image to face samples
+            faceSamples.append(img_numpy[y:y+h,x:x+w])
+
+            # Add the ID to IDs
+            ids.append(id)
+
+    # Train the model using the faces and IDs
+    recognizer.train(faceSamples, np.array(ids))
+
+    # Save the model into trainer.yml
+    recognizer.save('trainer/trainer.yml')
+
+
+
+# show_video_capture()
+# faceset_capture('0001')
+train_faceset('0001')
