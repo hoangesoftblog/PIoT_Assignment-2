@@ -5,6 +5,11 @@ import json
 
 list_of_users = {}
 
+def get_usable_camera_id():
+    for i in range(4):
+        if cv2.VideoCapture(i) is not None and cv2.VideoCapture(i).isOpened():
+            return i
+
 
 """Add a new user and write list of user dictionary to user_data.json
     
@@ -32,9 +37,8 @@ def read_user_dataset():
 # For demonstration purpose
 """For demonstration purpose, show camera, press Q to stop operation
 """
-
 def show_video_capture():
-    video = cv2.VideoCapture(0)
+    video = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
     video.set(3, 480)
     video.set(4, 480)
     
@@ -68,7 +72,7 @@ Naming scheme is based on id
 def faceset_capture(id, name):
 
     # Start camera
-    camera = cv2.VideoCapture(0)
+    camera = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
 
     # Use casecade identifier to detect frontal faces
     face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -185,7 +189,7 @@ def face_recognition_start(id):
     font = cv2.FONT_HERSHEY_SIMPLEX
 
     # Initialize and start the video frame capture
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
 
     # Loop
     while True:
