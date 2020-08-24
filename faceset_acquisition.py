@@ -5,6 +5,15 @@ import json
 
 list_of_users = {}
 
+
+"""Add a new user and write list of user dictionary to user_data.json
+    
+:param id: id of the new user
+:param name: name of the new user
+:type id: string
+:type name: string
+:return: void
+"""
 def write_user_dataset(id, name):
     list_of_users.update({str(id):name})
     js = json.dumps(list_of_users)
@@ -12,12 +21,16 @@ def write_user_dataset(id, name):
     user_file.write(js)
     user_file.close
 
+"""Read user_data.json and return the dictionary data list of users
+
+:return: void
+"""
 def read_user_dataset():
     with open("user_data.json") as user_file:
         return json.load(user_file)
 
 # For demonstration purpose
-"""For demonstration purpose 
+"""For demonstration purpose, show camera, press Q to stop operation
 """
 
 def show_video_capture():
@@ -29,10 +42,6 @@ def show_video_capture():
     while True:
         # Create a frame object
         check, frame = video.read()
-
-        # print(check)
-        # print(frame) #Represent image with matrices
-
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         cv2.imshow("Capturing" , gray)
 
@@ -49,6 +58,12 @@ def show_video_capture():
 
 """When run will start capturing images of faces on the camera, save in the /user_dataset folder
 Naming scheme is based on id
+
+:param id: id of the new user to capture face
+:param name: name of the new user to capture face
+:type id: string
+:type name: string
+:return: void
 """
 def faceset_capture(id, name):
 
@@ -90,7 +105,11 @@ def faceset_capture(id, name):
 
 
 # Train the faceset so it can be recognize
-def train_faceset(id):
+"""Will train all the face models and store it in trainer.yml
+
+:return: void
+"""
+def train_faceset():
     # Create Local Binary Patterns Histograms for face recognization
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
@@ -106,7 +125,7 @@ def train_faceset(id):
     # Initialize empty id
     ids = []
 
-        # Loop all the file path
+    # Loop all the file path
     for imagePath in imagePaths:
 
         # Get the image and convert it to grayscale
@@ -115,8 +134,10 @@ def train_faceset(id):
         # PIL image to numpy array
         img_numpy = np.array(PIL_img,'uint8')
 
+        print("Training user of id "+ str(os.path.split(imagePath)[-1].split(".")[1]))
+
         id = int(os.path.split(imagePath)[-1].split(".")[1])
-        print(id)
+        
 
         # Get the face from the training images
         faces = detector.detectMultiScale(img_numpy)
@@ -136,6 +157,12 @@ def train_faceset(id):
     # Save the model into trainer.yml
     recognizer.save('trainer/trainer.yml')
 
+"""Start monitoring camera to find the the face of the user with the same ID, press Q to stop
+    
+:param id: id of the user to be recognize
+:type id: string
+:return: True or False
+"""
 def face_recognition_start(id):
     # Load users
     list_of_users = read_user_dataset()
@@ -184,6 +211,11 @@ def face_recognition_start(id):
             # Check the ID if exist 
             if(str(Id[0]) == str(int(id))):
                 print("USER "+ list_of_users[str(id)]   +  " WITH MATCHING ID FOUND")
+                # Stop the camera
+                cam.release()
+                # Close all windows
+                cv2.destroyAllWindows()
+                #Face found
                 return True
             else:
                 print(Id)
@@ -206,9 +238,11 @@ def face_recognition_start(id):
     # Close all windows
     cv2.destroyAllWindows()
 
+    return False
+
 
 
 # show_video_capture()
 faceset_capture('0001', 'Hieu')
-train_faceset('0001')
-face_recognition_start('0002')
+train_faceset()
+face_recognition_start('0001')
