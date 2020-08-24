@@ -5,6 +5,10 @@ import json
 
 list_of_users = {}
 
+"""Find the first camera that is usable by the device
+
+:return: int
+"""
 def get_usable_camera_id():
     for i in range(4):
         if cv2.VideoCapture(i) is not None and cv2.VideoCapture(i).isOpened():
@@ -70,6 +74,7 @@ Naming scheme is based on id
 :return: void
 """
 def faceset_capture(id, name):
+    list_of_users = read_user_dataset()
 
     # Start camera
     camera = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
@@ -248,5 +253,6 @@ def face_recognition_start(id):
 
 # show_video_capture()
 faceset_capture('0001', 'Hieu')
+faceset_capture('0002', 'Khanh')
 train_faceset()
-face_recognition_start('0001')
+face_recognition_start('0002')
