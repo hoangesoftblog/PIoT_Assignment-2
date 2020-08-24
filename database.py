@@ -13,7 +13,7 @@ import flask
 from abc import *
 from google_calendar import GoogleCalendar
 
-mode = "On"
+mode = "Off"
 
 if mode == "Off":
     host = "localhost"

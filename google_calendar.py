@@ -1,5 +1,4 @@
 from __future__ import print_function
-import requests
 import datetime
 import pickle
 import os.path
@@ -22,8 +21,8 @@ class GoogleCalendar():
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
-        if os.path.exists('token.pickle'):
-            with open('token.pickle', 'rb') as token:
+        if os.path.exists('token_calendar.pickle'):
+            with open('token_calendar.pickle', 'rb') as token:
                 creds = pickle.load(token)
 
         # If not successful, collecting new Token to access Calendar
@@ -32,10 +31,10 @@ class GoogleCalendar():
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'credentials_calendar.json', AUTHORIZATION_SCOPES)
+                    'credentials_google.json', AUTHORIZATION_SCOPES)
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open('token.pickle', 'wb') as token:
+            with open('token_calendar.pickle', 'wb') as token:
                 pickle.dump(creds, token)
 
         self.service = build('calendar', 'v3', credentials=creds)
@@ -115,7 +114,4 @@ if __name__ == "__main__":
     calendar.get_all_events()
     # calendar.add_event(1, 2, datetime.datetime.now(), datetime.datetime.now() + datetime.timedelta(1), "birthday today")
     print()
-
-    event = "0p41f3fof4up1o83mc46mphtsc"
-    pprint.pprint(calendar.cancel_event(event))
 
