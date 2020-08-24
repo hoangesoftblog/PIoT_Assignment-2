@@ -6,32 +6,46 @@ import json
 app = flask.Flask(__name__)
 app.secret_key = "jose"
 
+
 # flask_cors.CORS(app=app)
-account_db = UserDatabase()
+login_db = LoginDatabase()
+user_db = UserDatabase()
 car_db = CarDatabase()
 booking_db = BookingDatabase()
+employee_db = EmployeesDatabase()
+issues_db = IssuesDatabase()
 
 
 # https://blog.tecladocode.com/how-to-add-user-logins-to-your-flask-website/
 @app.route('/login', methods = ["POST", "GET"])
 def login(error=False):
     if flask.request.method == "GET":
-        if flask.session.get(account_db.USERNAME, None) is None:
+        if flask.session.get(login_db.USERNAME, None) is None:
             return flask.render_template("login.html", error=error)
         else:
             return flask.redirect(flask.url_for("home"))
     else:
         username, password = flask.request.form.get("username"), flask.request.form.get("password")
-        records = account_db.find_user(username, password)
+        records = login_db.find_login(username, password)
         print(records)
         if len(records) != 1:
             # return flask.redirect(flask.url_for("login", error=True))
             return flask.render_template("login.html", error=True)
         else:
-            flask.session[account_db.USERNAME] = username
-            flask.session[account_db.ID] = records[0][account_db.ID]
-
-            return flask.redirect(flask.url_for("home"))
+            flask.session[login_db.USERNAME] = username
+            flask.session[login_db.ID] = records[0][login_db.ID]
+            role = records[0][login_db.ROLES]
+            if role == 0:
+                return flask.redirect(flask.url_for("home"))
+            elif role == 1:
+                # Redirect for Engineer
+                pass
+            elif role == 2:
+                # Redirect for Manager
+                pass
+            elif role == 3:
+                # Redirect for Admin
+                pass
 
 
 @app.route('/sign_up', methods = ["POST", "GET"])
@@ -41,12 +55,10 @@ def sign_up():
     else:
         data = flask.request.form
         username, password, name, address, phone_number = data.get("username"), data.get("password"), data.get("name"), data.get("address"), data.get("phone_number")
-        account_db.add_user(username, password, name, address, phone_number)
+        user_id = login_db.add_user(username, password)
 
-        record = account_db.get_latest()
-
-        flask.session[account_db.USERNAME] = username
-        flask.session[account_db.ID] = record[0][account_db.ID]
+        flask.session[login_db.USERNAME] = username
+        flask.session[login_db.ID] = user_id
 
         return flask.redirect(flask.url_for("home"))
 

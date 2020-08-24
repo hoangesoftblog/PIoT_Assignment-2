@@ -50,10 +50,13 @@
                     Sign Up
                 </a>
             </p>
-<!-- 
-            <button id="capture_bt">
-                Capture screen!
-            </button> -->
+
+            <button id="capture_bt" style="width: 100%;">
+                Capture faces!
+            </button>
+            <video id="video" width="640" height="480" autoplay></video>
+            <button id="snap">Snap Photo</button>
+            <canvas id="canvas" width="640" height="480"></canvas>
         </div>
 
     </main>
@@ -63,8 +66,33 @@
         Copyright © 2020 - RentalCar
     </footer>
 
-    <!-- <script>
+    <script>
         "use strict"
+        // Grab elements, create settings, etc.
+        var video = document.getElementById('video');
+
+        // Get access to the camera!
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Not adding `{ audio: true }` since we only want video now
+            navigator.mediaDevices.getUserMedia({ 
+                video: true 
+            })
+            .then(function(stream) {
+                //video.src = window.URL.createObjectURL(stream);
+                video.srcObject = stream;
+                video.play();
+            });
+        }
+
+        // Elements for taking the snapshot
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var video = document.getElementById('video');
+
+        // Trigger photo take
+        document.getElementById("capture_bt").addEventListener("click", function() {
+            context.drawImage(video, 0, 0, 640, 480);
+        });
 
         function save() {
             html2canvas($('body'), {
@@ -109,8 +137,8 @@
                     return false
                 })
         }
+    </script>
 
-    </script> -->
 </body>
 
 </html>
