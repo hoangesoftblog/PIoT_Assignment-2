@@ -13,7 +13,7 @@ import flask
 from abc import *
 from google_calendar import GoogleCalendar
 
-mode = "Off"
+mode = "On"
 
 if mode == "Off":
     host = "localhost"
@@ -493,7 +493,7 @@ if __name__ == "__main__":
     # Role 2 is Manager
     # Role 3 is Admin
     login_db = LoginDatabase()
-    print(login_db.add_login("hoangafublog", "112358", 0))
+    print(login_db.add_login("hoangafublog@email.com", "112358", 0))
     print(login_db.add_login("hoang", "159753", 1))
     print(login_db.add_login("hoangesoftblog", "1", 2))
     print(login_db.add_login("hello", "123456", 3))

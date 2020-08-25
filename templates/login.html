@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE HTML>
 <!--
 	Projection by TEMPLATED
@@ -10,7 +12,7 @@
     <title>CAR RENTAL SYSTEM</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
 </head>
 
 <body>
@@ -75,7 +77,7 @@
 
             <h3>USER LOGIN</h3>
 
-            <form action="#" method="post">
+            <form action="localhost:5000/login" method="post">
                 <div class="field half first">
                     <!-- <label for="email">Email</label> -->
                     <input name="email" id="email" type="email" placeholder="Email">

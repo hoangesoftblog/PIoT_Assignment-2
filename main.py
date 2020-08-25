@@ -25,7 +25,7 @@ def login(error=False):
         else:
             return flask.redirect(flask.url_for("home"))
     else:
-        username, password = flask.request.form.get("username"), flask.request.form.get("password")
+        username, password = flask.request.form.get("email"), flask.request.form.get("passWord")
         records = login_db.find_login(username, password)
         print(records)
         if len(records) != 1:
