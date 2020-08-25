@@ -1,143 +1,141 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<!--
+	Projection by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentalCar - Login</title>
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
-
-    <!-- <script src="FileSaver.js"> -->
-    </script>
+    <title>CAR RENTAL SYSTEM</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 
 <body>
-    <nav>
-        <h1 style="text-align: center;">
-            Welcome to RentalCar
-        </h1>
-    </nav>
 
-    <main>
-        <h1 style="text-align: center;">Login</h1>
-
-        <div style="margin: auto; width: 16em;">
-            {% if error %}
-            <b style="color: red; text-align: center; margin-bottom: 0.5em;" id="incorrect_login">Incorrect username or password</b>
-            {% endif %}
-            <form method="POST" action="http://localhost:5000/login">
-                <label for="username">Username</label><br />
-                <input type="text" placeholder="Username" name="username" required
-                    style="width: 100%; box-sizing: border-box;" id="username" /><br />
-                <br />
-
-                <label for="password">Password</label>
-                <a href="/forget_password.html" style="float: right;">Forget password?</a><br />
-                <input type="password" placeholder="Password" name="password" required
-                    style="width: 100%; box-sizing: border-box;" id="password" /><br />
-                <br />
-
-                <input type="submit" style="width: 100%;" value="Login"/>
-            </form>
-            <br />
-
-
-            <p style="text-align: center;">No account?
-                <a href="http://localhost:5000/sign_up">
-                    Sign Up
-                </a>
-            </p>
-
-            <button id="capture_bt" style="width: 100%;">
-                Capture faces!
-            </button>
-            <video id="video" width="640" height="480" autoplay></video>
-            <button id="snap">Snap Photo</button>
-            <canvas id="canvas" width="640" height="480"></canvas>
+    <!-- Header -->
+    <header id="header">
+        <div class="inner">
+            <a href="login.html" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
+            <nav id="nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="index.html">Home</a>
+                <a href="login.html">Login</a>
+                <a href="Register.html">Register</a>
+                <a href="carlist.html">Car list</a>
+                <a href="bookinginfo.html">Booking info</a>
+                <a href="rental_history.html">Rental history</a>
+                <a href="reported_car.html">Reported car</a>
+                <a href="generic.html">Generic</a>
+                <a href="elements.html">Elements</a>
+            </nav>
+            <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
         </div>
+    </header>
 
-    </main>
+    <!-- Banner -->
+    <section id="banner" style="background-image: url(images/banner3.jpg);">
+        <div class="inner">
+            <header>
+                <h1>BIG CITY CAR RENTAL</h1>
+            </header>
 
-    <footer
-        style="position: absolute; bottom: 0px; text-align: center; left: 0; right: 0; padding: 2em; background-color: gray;">
-        Copyright © 2020 - RentalCar
+            <div class="flex ">
+
+                <div>
+                    <span class="icon fa-car"></span>
+                    <h3>Car rental</h3>
+                    <!-- <p>Suspendisse amet ullamco</p> -->
+                </div>
+
+                <div>
+                    <span class="icon fa-camera"></span>
+                    <h3>Smart connection</h3>
+                    <!-- <p>Class aptent taciti ad litora</p> -->
+                </div>
+
+                <div>
+                    <span class="icon fa-bug"></span>
+                    <h3>Little bugs</h3>
+                    <!-- <p>Nulla vitae mauris non felis</p> -->
+                </div>
+
+            </div>
+            <!-- 
+			<footer>
+				<a href="#" class="button">Get Started</a>
+			</footer> -->
+        </div>
+    </section>
+
+    <section id="register" class="wrapper align-left">
+        <div class="inner">
+
+            <h3>USER LOGIN</h3>
+
+            <form action="#" method="post">
+                <div class="field half first">
+                    <!-- <label for="email">Email</label> -->
+                    <input name="email" id="email" type="email" placeholder="Email">
+                </div>
+                <div class="field half first">
+                    <!-- <label for="userName">User name</label> -->
+                    <input name="passWord" id="passWord" type="password" placeholder="Password">
+                </div>
+                <br>
+                <br>
+                <br>
+
+
+                <ul class="actions align-left">
+                    <li><input value="Login" class="button alt" type="submit"></li>
+                </ul>
+            </form>
+
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+
+            <h3>Get in touch</h3>
+
+            <!-- <form action="#" method="post">
+
+				<div class="field half first">
+					<label for="name">Name</label>
+					<input name="name" id="name" type="text" placeholder="Name">
+				</div>
+				<div class="field half">
+					<label for="email">Email</label>
+					<input name="email" id="email" type="email" placeholder="Email">
+				</div>
+				<div class="field">
+					<label for="message">Message</label>
+					<textarea name="message" id="message" rows="6" placeholder="Message"></textarea>
+				</div>
+				<ul class="actions">
+					<li><input value="Send Message" class="button alt" type="submit"></li>
+				</ul>
+			</form> -->
+
+            <div class="copyright">
+                &copy; Untitled. Design: <a href="https://templated.co">TEMPLATED</a>. Images: <a
+                    href="https://unsplash.com">Unsplash</a>.
+            </div>
+
+        </div>
     </footer>
 
-    <script>
-        "use strict"
-        // Grab elements, create settings, etc.
-        var video = document.getElementById('video');
-
-        // Get access to the camera!
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            // Not adding `{ audio: true }` since we only want video now
-            navigator.mediaDevices.getUserMedia({ 
-                video: true 
-            })
-            .then(function(stream) {
-                //video.src = window.URL.createObjectURL(stream);
-                video.srcObject = stream;
-                video.play();
-            });
-        }
-
-        // Elements for taking the snapshot
-        var canvas = document.getElementById('canvas');
-        var context = canvas.getContext('2d');
-        var video = document.getElementById('video');
-
-        // Trigger photo take
-        document.getElementById("capture_bt").addEventListener("click", function() {
-            context.drawImage(video, 0, 0, 640, 480);
-        });
-
-        function save() {
-            html2canvas($('body'), {
-                onrendered: function (canvas) {
-                    canvas.toBlob(function (blob) {
-                        saveAs(blob, "new.png")
-                    })
-                }
-            })
-        }
-
-        function login() {
-            base_url = "http://localhost:5000/"
-            username = document.getElementById("username").value
-            password = document.getElementById("password").value
-
-            console.log(username)
-            console.log(password)
-
-            fetch(base_url + "login", {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                method: 'post',
-                body: JSON.stringify({ 'username': username, 'password': password })
-            })
-                .then(res => res.text())
-                .then((text) => {
-                    console.log(text)
-                    if (text === "Correct") {
-                        // https://www.w3schools.com/jsref/met_win_open.asp
-                        window.open("http://localhost:5500/index.html", "_self")
-                    }
-                    else {
-                        warning = document.getElementById("incorrect_login")
-                        warning.style.display = "block"
-                    }
-                    return false
-                })
-                .catch(err => console.log(err))
-                .finally(() => {
-                    return false
-                })
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
 
 </body>
 
