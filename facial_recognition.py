@@ -38,6 +38,14 @@ def read_user_dataset():
     with open("user_data.json") as user_file:
         return json.load(user_file)
 
+def read_user_list():
+    imagePaths = [os.path.join('user_dataset',f) for f in os.listdir('user_dataset')] 
+    for imagePath in imagePaths:
+        id = int(os.path.split(imagePath)[-1].split(".")[1])
+        name = str(os.path.split(imagePath)[-1].split(".")[2])
+        list_of_users[id] = name
+
+
 # For demonstration purpose
 """For demonstration purpose, show camera, press Q to stop operation
 """
@@ -74,7 +82,7 @@ Naming scheme is based on id
 :return: void
 """
 def faceset_capture(id, name):
-    list_of_users = read_user_dataset()
+    # list_of_users = read_user_dataset()
 
     # Start camera
     camera = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
@@ -96,7 +104,7 @@ def faceset_capture(id, name):
         for (x,y,w,h) in faces:
             cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0 ,0) , 2)
             count += 1
-            cv2.imwrite("user_dataset/User."+str(id)+"."+str(count)+".jpg", gray[y:y+h,x:x+w])
+            cv2.imwrite("user_dataset/User."+str(id)+"."+str(name)+'.'+str(count)+".jpg", gray[y:y+h,x:x+w])
 
         # Display the  frame, with bounded rectangle on the person's face
         cv2.imshow('frame', frame)
@@ -146,7 +154,6 @@ def train_faceset():
         print("Training user of id "+ str(os.path.split(imagePath)[-1].split(".")[1]))
 
         id = int(os.path.split(imagePath)[-1].split(".")[1])
-        
 
         # Get the face from the training images
         faces = detector.detectMultiScale(img_numpy)
@@ -159,7 +166,7 @@ def train_faceset():
 
             # Add the ID to IDs
             ids.append(id)
-
+    print(np.array(ids))
     # Train the model using the faces and IDs
     recognizer.train(faceSamples, np.array(ids))
 
@@ -174,8 +181,12 @@ def train_faceset():
 """
 def face_recognition_start(id):
     # Load users
-    list_of_users = read_user_dataset()
-    if str(id) not in list_of_users:
+    # list_of_users = read_user_dataset()
+    # if str(id) not in list_of_users:
+    #     print("USER ID NOT FOUND! CANNOT FIND FACE")
+    #     return False
+    read_user_list()
+    if int(id) not in list_of_users:
         print("USER ID NOT FOUND! CANNOT FIND FACE")
         return False
 
@@ -216,18 +227,19 @@ def face_recognition_start(id):
             print(recognizer.predict(gray[y:y+h,x:x+w]))
             # Recognize the face belongs to which ID
             Id = recognizer.predict(gray[y:y+h,x:x+w])
-
             # Check the ID if exist 
             if(str(Id[0]) == str(int(id))):
-                print("USER "+ list_of_users[str(id)]   +  " WITH MATCHING ID FOUND")
+                print("USER "+ list_of_users[int(id)]   +  " WITH MATCHING ID FOUND")
                 # Stop the camera
                 cam.release()
                 # Close all windows
                 cv2.destroyAllWindows()
                 #Face found
                 return True
-            else:
+            elif(str(Id[0] in list_of_users)):
                 print(Id)
+                Id = list_of_users[(Id[0])] 
+            else:
                 Id = "Unknown"
 
             # Put text describe who is in the picture
@@ -250,9 +262,7 @@ def face_recognition_start(id):
     return False
 
 
-
 # show_video_capture()
-faceset_capture('0001', 'Hieu')
-faceset_capture('0002', 'Khanh')
-train_faceset()
+# faceset_capture('0002', 'Duy Anh')
+# train_faceset()
 face_recognition_start('0002')
