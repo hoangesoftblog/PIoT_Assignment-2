@@ -2,39 +2,43 @@ import cv2, time, os
 import numpy as np
 from PIL import Image
 import json
+import google_cloud_storage
 
 list_of_users = {}
+gcs = google_cloud_storage.GoogleCloudStorage()
 
-"""Find the first camera that is usable by the device
 
-:return: int
-"""
 def get_usable_camera_id():
+    """Find the first camera that is usable by the device
+
+    :return: int
+    """
     for i in range(4):
         if cv2.VideoCapture(i) is not None and cv2.VideoCapture(i).isOpened():
             return i
 
 
-"""Add a new user and write list of user dictionary to user_data.json
-    
-:param id: id of the new user
-:param name: name of the new user
-:type id: string
-:type name: string
-:return: void
-"""
 def write_user_dataset(id, name):
+    """Add a new user and write list of user dictionary to user_data.json
+        
+    :param id: id of the new user
+    :param name: name of the new user
+    :type id: string
+    :type name: string
+    :return: void
+    """
     list_of_users.update({str(id):name})
     js = json.dumps(list_of_users)
     user_file = open("user_data.json","w")
     user_file.write(js)
     user_file.close
 
-"""Read user_data.json and return the dictionary data list of users
 
-:return: void
-"""
 def read_user_dataset():
+    """Read user_data.json and return the dictionary data list of users
+
+    :return: void
+    """
     with open("user_data.json") as user_file:
         return json.load(user_file)
 
@@ -46,10 +50,9 @@ def read_user_list():
         list_of_users[id] = name
 
 
-# For demonstration purpose
-"""For demonstration purpose, show camera, press Q to stop operation
-"""
 def show_video_capture():
+    """For demonstration purpose, show camera, press Q to stop operation
+    """
     video = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
     video.set(3, 480)
     video.set(4, 480)
@@ -72,16 +75,17 @@ def show_video_capture():
     cv2.destroyAllWindows
 
 
-"""When run will start capturing images of faces on the camera, save in the /user_dataset folder
-Naming scheme is based on id
 
-:param id: id of the new user to capture face
-:param name: name of the new user to capture face
-:type id: string
-:type name: string
-:return: void
-"""
 def faceset_capture(id, name):
+    """When run will start capturing images of faces on the camera, save in the /user_dataset folder
+    Naming scheme is based on id
+
+    :param id: id of the new user to capture face
+    :param name: name of the new user to capture face
+    :type id: string
+    :type name: string
+    :return: void
+    """
     # list_of_users = read_user_dataset()
 
     # Start camera
@@ -116,17 +120,21 @@ def faceset_capture(id, name):
     # list_of_users[str(id)] = name
     write_user_dataset(str(id), name)
 
+    # upload images to cloud
+    gcs.upload_user_faces()
+
     # Ends camera
     camera.release()
     cv2.destroyAllWindows()
 
 
 # Train the faceset so it can be recognize
-"""Will train all the face models and store it in trainer.yml
 
-:return: void
-"""
 def train_faceset():
+    """Will train all the face models and store it in trainer.yml
+
+    :return: void
+    """
     # Create Local Binary Patterns Histograms for face recognization
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
@@ -173,13 +181,14 @@ def train_faceset():
     # Save the model into trainer.yml
     recognizer.save('trainer/trainer.yml')
 
-"""Start monitoring camera to find the the face of the user with the same ID, press Q to stop
-    
-:param id: id of the user to be recognize
-:type id: string
-:return: True or False
-"""
+
 def face_recognition_start(id):
+    """Start monitoring camera to find the the face of the user with the same ID, press Q to stop
+        
+    :param id: id of the user to be recognize
+    :type id: string
+    :return: True or False
+    """
     # Load users
     # list_of_users = read_user_dataset()
     # if str(id) not in list_of_users:
@@ -260,9 +269,3 @@ def face_recognition_start(id):
     cv2.destroyAllWindows()
 
     return False
-
-
-# show_video_capture()
-# faceset_capture('0002', 'Duy Anh')
-# train_faceset()
-face_recognition_start('0002')

@@ -1,4 +1,5 @@
 import cv2
+import qrcode
 
 def start_reading_qr():
     # initialize the camera
@@ -27,12 +28,10 @@ def start_reading_qr():
     cap.release()
     cv2.destroyAllWindows()
 
-def generate_qr_code(content):
-    # example data
-    data = content
+def generate_qr_code(content,file_name):
     # output file name
-    filename = str(content) + "_qr.png"
+    filename = str(file_name) + "_qr.png"
     # generate qr code
-    img = qrcode.make(data)
+    img = qrcode.make(content)
     # save img to a file
     img.save(filename)
