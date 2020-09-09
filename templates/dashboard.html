@@ -10,7 +10,7 @@
 	<title>CAR RENTAL SYSTEM</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
 </head>
 
 <body>
@@ -18,25 +18,16 @@
 	<!-- Header -->
 	<header id="header">
 		<div class="inner">
-			<a href="dashboard.html" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
+			<a href="/home" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
 			<nav id="nav">
-				<a href="dashboard.html">Dashboard</a>
-				<a href="index.html">Home</a>
-				<a href="login.html">Login</a>
-				<a href="Register.html">Register</a>
-				<a href="carlist.html">Car list</a>
-				<a href="bookinginfo.html">Booking info</a>
-				<a href="rental_history.html">Rental history</a>
-				<a href="reported_car.html">Reported car</a>
-				<a href="generic.html">Generic</a>
-				<a href="elements.html">Elements</a>
+				<a href="/logout">Logout</a>
 			</nav>
 			<a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
 		</div>
 	</header>
 
 	<!-- Banner -->
-	<section id="banner" style="background-image: url(images/dashboard.jpg);">
+	<section id="banner" style="background-image: url( {{ url_for('static', filename='images/dashboard.jpg') }} )">
 		<div class="inner">
 			<header>
 				<h1>DASHBOARD</h1>

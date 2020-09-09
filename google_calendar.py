@@ -11,6 +11,7 @@ import pprint
 https://karenapp.io/articles/how-to-automate-google-calendar-with-python-using-the-calendar-api/
 """
 
+
 class GoogleCalendar():
     calendarList_id = "b6omo64aca40geo3fa6svitkg4@group.calendar.google.com"
 
@@ -39,43 +40,46 @@ class GoogleCalendar():
 
         self.service = build('calendar', 'v3', credentials=creds)
 
-
     def add_event(self, user_id, car_id, start_time: datetime, end_time: datetime, details):
         start, end = start_time.isoformat(), end_time.isoformat()
         print(start)
 
-        response = self.service.events().insert(calendarId=self.calendarList_id, body = {
+        response = self.service.events().insert(calendarId=self.calendarList_id, body={
             "summary": f"Booking: User {user_id} - Car {car_id}",
             "description": f"""Booking for User {user_id} - Car {car_id}. {details}""",
             "start": {"dateTime": start, "timeZone": "Asia/Ho_Chi_Minh"},
             "end": {"dateTime": end, "timeZone": "Asia/Ho_Chi_Minh"}
         }).execute()
 
-        print("Created event")
-        print("ID: ", response['id'])
-        print("Summary: ", response['summary'])
-        print("Starts at: ", response['start']['dateTime'])
-        print("Ends at: ", response['end']['dateTime'])
+        # print("Created event")
+        # print("ID: ", response['id'])
+        # print("Summary: ", response['summary'])
+        # print("Starts at: ", response['start']['dateTime'])
+        # print("Ends at: ", response['end']['dateTime'])
 
         return response
 
+    def get_all_events(self, **additional_params):
+        """The API can be seen at:
+        https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
+        """
+        next_page_token = None
+        events = []
+        while True:
+            events_result = self.service.events().list(pageToken=next_page_token,
+                                                       calendarId=self.calendarList_id, **additional_params).execute()
+            new_events = events_result.get('items', [])
+            print()
+            if not new_events:
+                print('No upcoming events found.')
+            else:
+                events.extend(new_events)
 
-    def get_all_events(self):
-        now = datetime.datetime.utcnow().isoformat() + 'Z'
-        print('Getting the upcoming 10 events')
-        events_result = self.service.events().list(calendarId=self.calendarList_id, timeMin=now,
-                                            maxResults=10, singleEvents=True,
-                                            orderBy='startTime').execute()
-        events = events_result.get('items', [])
-
-        if not events:
-            print('No upcoming events found.')
-        for event in events:
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            print(start, event['summary'])
+            next_page_token = events_result.get("nextPageToken")
+            if not next_page_token:
+                break
 
         return events
-
 
     def get_all_calendarsList(self):
         # Next page-token is a token used to see next list of calendars
@@ -83,7 +87,7 @@ class GoogleCalendar():
 
         while True:
             # Each person can have many calendars (Really???????)
-            calendars_list = self.service.calendarList().list(pageToken = None).execute()
+            calendars_list = self.service.calendarList().list(pageToken=None).execute()
             calendars = calendars_list.get("items", [])
 
             # This is just fail-safe case
@@ -99,19 +103,40 @@ class GoogleCalendar():
             next_page_token = calendars_list.get("nextPageToken")
             if not next_page_token:
                 break
-                
 
     def cancel_event(self, event_id):
-        response = self.service.events().delete(calendarId=self.calendarList_id, eventId=event_id).execute()
+        response = self.service.events().delete(
+            calendarId=self.calendarList_id, eventId=event_id).execute()
+        return response
+
+    def update_event(self, event_id, UID, CID, from_time, to_time, booking_details):
+        if from_time is str:
+            from_time = datetime.datetime.strptime(
+                from_time, "%Y-%m-%d %H:%M:%S")
+        if to_time is str:
+            to_time = datetime.datetime.strptime(to_time, "%Y-%m-%d %H:%M:%S")
+
+        start, end = from_time.isoformat(), to_time.isoformat()
+
+        response = self.service.events().update(calendarId=self.calendarList_id, eventId=event_id, body={
+            "summary": f"Booking: User {UID} - Car {CID}",
+            "description": f"""Booking for User {UID} - Car {CID}. {booking_details}""",
+            "start": {"dateTime": start, "timeZone": "Asia/Ho_Chi_Minh"},
+            "end": {"dateTime": end, "timeZone": "Asia/Ho_Chi_Minh"}
+        }).execute()
 
         return response
 
+    def cancel_all_events(self):
+        events = self.get_all_events()
+        for event in events:
+            self.cancel_event(event["id"])
 
 
 if __name__ == "__main__":
     calendar = GoogleCalendar()
-    calendar.get_all_calendarsList()
-    calendar.get_all_events()
+    # calendar.get_all_calendarsList()
+    # print(len(calendar.get_all_events()))
     # calendar.add_event(1, 2, datetime.datetime.now(), datetime.datetime.now() + datetime.timedelta(1), "birthday today")
-    print()
-
+    # calendar.cancel_all_events()
+    # print(len(calendar.get_all_events()))
