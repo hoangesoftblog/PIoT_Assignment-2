@@ -1,5 +1,3 @@
-{% load static %}
-
 <!DOCTYPE HTML>
 <!--
 	Projection by TEMPLATED
@@ -12,7 +10,7 @@
     <title>CAR RENTAL SYSTEM</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
 </head>
 
 <body>
@@ -20,9 +18,9 @@
     <!-- Header -->
     <header id="header">
         <div class="inner">
-            <a href="login.html" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
+            <a href="/login" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
             <nav id="nav">
-                <a href="dashboard.html">Dashboard</a>
+                <!-- <a href="dashboard.html">Dashboard</a>
                 <a href="index.html">Home</a>
                 <a href="login.html">Login</a>
                 <a href="Register.html">Register</a>
@@ -31,14 +29,16 @@
                 <a href="rental_history.html">Rental history</a>
                 <a href="reported_car.html">Reported car</a>
                 <a href="generic.html">Generic</a>
-                <a href="elements.html">Elements</a>
+                <a href="elements.html">Elements</a> -->
+                <a href="/register">Register</a>
+
             </nav>
             <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
         </div>
     </header>
 
     <!-- Banner -->
-    <section id="banner" style="background-image: url(images/banner3.jpg);">
+    <section id="banner" style="background-image: url( {{ url_for('static', filename='images/banner3.jpg') }} )">
         <div class="inner">
             <header>
                 <h1>BIG CITY CAR RENTAL</h1>
@@ -76,15 +76,14 @@
         <div class="inner">
 
             <h3>USER LOGIN</h3>
-
-            <form action="localhost:5000/login" method="post">
+            <form method="POST" action="/login">
                 <div class="field half first">
                     <!-- <label for="email">Email</label> -->
-                    <input name="email" id="email" type="email" placeholder="Email">
+                    <input name="email" id="email" type="text" placeholder="Email">
                 </div>
                 <div class="field half first">
                     <!-- <label for="userName">User name</label> -->
-                    <input name="passWord" id="passWord" type="password" placeholder="Password">
+                    <input name="password" id="passWord" type="password" placeholder="Password">
                 </div>
                 <br>
                 <br>

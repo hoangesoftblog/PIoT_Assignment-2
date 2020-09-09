@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>Booking details</title>
+{% endblock %}
+{% block main %}
+<div>
+    {% with message = get_flashed_messages() %}
+    {%if messages %}
+    <h1>{{ messages }}</h1>
+    {% endif %}
+    {% endwith %}
+    <h1>Enter booking details</h1>
+    <form method="POST" action="/booking/{{ car_id }}">
+        <div>
+            <label for="from">From</label><br/>
+            <div id="from">
+                <input type="date" name="from_date" id="from_date" 
+                row="1" required>
+                <input type="time" name="from_time" id="from_time" 
+                row="1" required>
+            </div>
+        </div>
+        <br/>
+        <div>
+            <label for="to">To</label><br/>
+            <div id="to">
+                <input type="date" name="to_date" id="to_date" 
+                row="1" required>
+                <input type="time" name="to_time" id="to_time" 
+                row="1" required>
+            </div>
+        </div>
+        <br/>
+        <div>
+            <label for="message">Details</label>
+            <div id = "message">
+                <textarea rows="10" cols="32" placeholder="Message" name="booking_details"></textarea>
+            </div>
+        </div>
+        <button>Book car!</button>
+    </form>
+</div>
+{% endblock %}

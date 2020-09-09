@@ -7,110 +7,138 @@
 <html>
 
 <head>
-	<title>CAR RENTAL SYSTEM</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="stylesheet" href="assets/css/main.css" />
+    <title>CAR RENTAL SYSTEM</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
 </head>
 
 <body>
 
-	<!-- Header -->
-	<header id="header">
-		<div class="inner">
-			<a href="rental_history.html" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
-			<nav id="nav">
-				<a href="dashboard.html">Dashboard</a>
-				<a href="index.html">Home</a>
-				<a href="login.html">Login</a>
-				<a href="Register.html">Register</a>
-				<a href="carlist.html">Car list</a>
-				<a href="bookinginfo.html">Booking info</a>
-				<a href="rental_history.html">Rental history</a>
-				<a href="reported_car.html">Reported car</a>
-				<a href="generic.html">Generic</a>
-				<a href="elements.html">Elements</a>
-			</nav>
-			<a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
-		</div>
-	</header>
 
-	<!-- Banner -->
-	<section id="banner" style="background-image: url(images/banner4.jpg);">
-		<div class="inner">
-			<header>
-				<h1>ADMINISTRATION</h1>
-			</header>
+    <!-- Header -->
+    <header id="header">
+        <div class="inner">
+            <a href="/home" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
+            <nav id="nav">
+                <!-- <a href="dashboard.html">Dashboard</a>
+                <a href="index.html">Home</a>
+                <a href="login.html">Login</a>
+                <a href="Register.html">Register</a>
+                <a href="carlist.html">Car list</a>
+                <a href="bookinginfo.html">Booking info</a> -->
 
-			<div class="flex ">
+                <a href="/cars">Cars</a>
+                <a href="/users">Users</a>
+                <a href="/booking_history">Booking History</a>
+                <a href="/issues">Car Issues</a>
+                <a href="/logout">Logout</a>
 
-				<div>
-					<span class="icon fa-car"></span>
-					<h3>Car rental</h3>
-					<!-- <p>Suspendisse amet ullamco</p> -->
-				</div>
 
-				<div>
-					<span class="icon fa-camera"></span>
-					<h3>Smart connection</h3>
-					<!-- <p>Class aptent taciti ad litora</p> -->
-				</div>
+            </nav>
+            <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+        </div>
+    </header>
 
-				<div>
-					<span class="icon fa-bug"></span>
-					<h3>Little bugs</h3>
-					<!-- <p>Nulla vitae mauris non felis</p> -->
-				</div>
+    <!-- Banner -->
+    <section id="banner" style="background-image: url( {{ url_for('static', filename='images/banner8.jpg') }} )">
+        <div class="inner">
+            <header>
+                <h1>ADMINISTRATION</h1>
+            </header>
 
-			</div>
+            <div class="flex ">
 
-			<!-- <footer>
+                <div>
+                    <span class="icon fa-car"></span>
+                    <h3>Car rental</h3>
+                    <!-- <p>Suspendisse amet ullamco</p> -->
+                </div>
+
+                <div>
+                    <span class="icon fa-camera"></span>
+                    <h3>Smart connection</h3>
+                    <!-- <p>Class aptent taciti ad litora</p> -->
+                </div>
+
+                <div>
+                    <span class="icon fa-bug"></span>
+                    <h3>Little bugs</h3>
+                    <!-- <p>Nulla vitae mauris non felis</p> -->
+                </div>
+
+            </div>
+
+            <!-- <footer>
 				<a href="#" class="button">Get Started</a>
 			</footer> -->
-		</div>
-	</section>
+        </div>
+    </section>
 
-	<section id="register" class="wrapper align-left">
-		<div class="inner">
+    <section id="register" class="wrapper align-left">
+        <div class="inner">
 
-			<h3>CAR - USER SEARCH</h3>
+            <h3>SEARCH CUSTOMER'S BOOKING</h3>
 
-			<div class="table-wrapper">
+            <div class="table-wrapper">
 
-				<form method="post" action="#">
-					<div class="row uniform">
-						<div class="6u 12u$(xsmall)">
-							<input type="text" name="car-name" id="car-name" value="" placeholder="Car name" />
-						</div>
-						<div class="6u$ 12u$(xsmall)">
-							<input type="text" name="seat" id="seat" value="" placeholder="Seat" />
-						</div>
-						<!-- Break -->
-						<div class="6u 12u$(xsmall)">
-							<div class="select-wrapper">
-								<select name="demo-category" id="demo-category">
-									<option value="">- Color -</option>
-									<option value="1">Red</option>
-									<option value="1">Blue</option>
-									<option value="1">Black</option>
-									<option value="1">White</option>
-								</select>
-							</div>
-						</div>
+                <form method="POST" action="/booking_history">
+                    <div class="row uniform">
+                        <!-- <div class="6u 12u$(xsmall)">
+							<input type="text" name="brand" id="car-name" value="" placeholder="Brand" />
+						</div> -->
+                        <!-- <div class="6u$ 12u$(xsmall)" important!>
+							<input type="number" name="seats" id="seats" value="" placeholder="Seats" />
+						</div> -->
 
-						<div class="6u 12u$(xsmall)">
-							<div class="select-wrapper">
-								<select name="demo-category" id="demo-category">
-									<option value="">- Brand -</option>
-									<option value="1">BMW</option>
-									<option value="1">Audi</option>
-									<option value="1">Toyota</option>
-									<option value="1">Mercedes</option>
-								</select>
-							</div>
-						</div>
-						<!-- Break -->
-						<div class="4u 12u$(small)">
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <select name="brand" id="demo-category">
+                                    <option value="">- Brand -</option>
+                                    {% for value in brands %}
+                                    <option value="{{value}}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <select name="seats" id="demo-category">
+                                    <option value="">- Seats -</option>
+                                    {% for value in seats %}
+                                    <option value="{{value}}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Break -->
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <select name="colour" id="demo-category">
+                                    <option value="">- Color -</option>
+                                    {% for value in colours %}
+                                    <option value="{{value}}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <select name="body_type" id="demo-category">
+                                    <option value="">- Type -</option>
+                                    {% for value in type %}
+                                    <option value="{{value}}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <!-- <div class="4u 12u$(small)">
 							<input type="radio" id="demo-priority-low" name="demo-priority" checked>
 							<label for="demo-priority-low">Low Priority</label>
 						</div>
@@ -122,7 +150,7 @@
 							<input type="radio" id="demo-priority-high" name="demo-priority">
 							<label for="demo-priority-high">High Priority</label>
 						</div>
-						<!-- Break -->
+		
 						<div class="6u 12u$(small)">
 							<input type="checkbox" id="demo-copy" name="demo-copy">
 							<label for="demo-copy">Email me a copy of this message</label>
@@ -130,125 +158,65 @@
 						<div class="6u$ 12u$(small)">
 							<input type="checkbox" id="demo-human" name="demo-human" checked>
 							<label for="demo-human">I am a human and not a robot</label>
-						</div>
-						<!-- Break -->
-						<div class="12u$">
-							<ul class="actions">
-								<li><input type="submit" value="Search" /></li>
-							</ul>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</section>
+						</div> -->
+                        <!-- Break -->
+                        <div class="12u$">
+                            <ul class="actions">
+                                <li><input type="submit" value="Search" /></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
 
-	<section id="register" class="wrapper align-left">
-		<div class="inner">
+    <section id="register" class="wrapper align-left">
+        <div class="inner">
 
-			<h3>CAR RENTAL HISTORY</h3>
+            <h3>CUSTOMER'S BOOKING HISTORY</h3>
 
-			<div class="table-wrapper">
-				<table>
-					<thead>
-						<tr>
-							<th>Car name</th>
-							<th>Brand</th>
-							<th>Type</th>
-							<th>No. seat</th>
-							<th>Color</th>
-							<th>Location</th>
-							<th>Cost per hour</th>
-							<th>Current Status</th>
-							<th>Departure</th>
-							<th>Arrival</th>
-							<th>Report this car</th>
-							<th>Modify this car</th>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Brand</th>
+                            <th>Type</th>
+                            <th>No. seat</th>
+                            <th>Color</th>
+                            <th>Location</th>
+                            <th>Cost per hour</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>Details</th>
+                            <th>Cancel the booking</th>
+                            <th>Modify booking</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in history %}
+                        <tr>
+                            {% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour', 'from_time', 'to_time', 'booking_details'] %}
+                            <td>{{ booking.get(property) }}</td>
+                            {% endfor %}
+                            <!-- {% if property != 'ID' %}
+                            {% else %} 
+                            {% endif %}-->
+                            <td><button>
+                                    <a href="/booking/cancel/{{ booking.get('ID') }}">Cancel booking</a>
+                                </button></td>
+                            <td><button>
+                                    <a href="/booking/modify/{{ booking.get('ID') }}">Modify booking</a>
+                                </button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
 
+                </table>
+            </div>
 
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>R8</td>
-							<td>Audi</td>
-							<td>Supper car</td>
-							<td>1</td>
-							<td>Black</td>
-							<td>Sai Gon</td>
-							<td>$84</td>
-							<td>Available</td>
-							<td>Dist. 1</td>
-							<td>Dist. 7</td>
-							<td><input type="submit" value="Report" /></td>
-							<td><input type="submit" value="Modify" /></td>
-
-						</tr>
-						<tr>
-							<td>325i</td>
-							<td>BMW</td>
-							<td>Sedan</td>
-							<td>3</td>
-							<td>Blue</td>
-							<td>Sai Gon</td>
-							<td>$84</td>
-							<td>Booked</td>
-							<td>Dist. 2</td>
-							<td>Dist. 8</td>
-							<td><input type="submit" value="Report" /></td>
-							<td><input type="submit" value="Modify" /></td>
-
-
-						</tr>
-
-					</tbody>
-
-				</table>
-			</div>
-
-		</div>
-	</section>
-
-
-	<section id="register" class="wrapper align-left">
-		<div class="inner">
-
-			<h3>USER HISTORY</h3>
-
-			<div class="table-wrapper">
-				<table>
-					<thead>
-						<tr>
-							<th>User name</th>
-							<th>Email</th>
-							<th>Departure</th>
-							<th>Arrival</th>
-							<th>Cost</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>James Corden</td>
-							<td>Corden.ja@gmail.com</td>
-							<td>Dist. 1</td>
-							<td>Dist. 7</td>
-							<td>$36</td>
-						</tr>
-						<tr>
-							<td>Tim Iyv</td>
-							<td>Tim.iy@gmail.com</td>
-							<td>Dist. 4</td>
-							<td>Dist. 8</td>
-							<td>$82</td>
-						</tr>
-
-					</tbody>
-
-				</table>
-			</div>
-
-		</div>
-	</section>
+        </div>
+    </section>
 
 
 
@@ -256,14 +224,13 @@
 
 
 
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
 
-	<!-- Footer -->
-	<footer id="footer">
-		<div class="inner">
+            <h3>About us</h3>
 
-			<h3>About us</h3>
-
-			<!-- <form action="#" method="post">
+            <!-- <form action="#" method="post">
 
 				<div class="field half first">
 					<label for="name">Name</label>
@@ -282,19 +249,19 @@
 				</ul>
 			</form> -->
 
-			<div class="copyright">
-				&copy; Untitled. Design: <a href="https://templated.co">TEMPLATED</a>. Images: <a
-					href="https://unsplash.com">Unsplash</a>.
-			</div>
+            <div class="copyright">
+                &copy; Untitled. Design: <a href="https://templated.co">TEMPLATED</a>. Images: <a
+                    href="https://unsplash.com">Unsplash</a>.
+            </div>
 
-		</div>
-	</footer>
+        </div>
+    </footer>
 
-	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/skel.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<script src="assets/js/main.js"></script>
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
 
 </body>
 

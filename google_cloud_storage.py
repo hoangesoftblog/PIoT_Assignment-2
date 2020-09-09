@@ -11,10 +11,13 @@ TUTORIAL:
 https://cloud.google.com/storage/docs/reference/libraries
 """
 
+
 class GoogleCloudStorage:
     """Google calls files on Cloud Storage as blobs"""
+
     def __init__(self):
-        AUTHORIZATION_SCOPES = ['https://www.googleapis.com/auth/devstorage.full_control']
+        AUTHORIZATION_SCOPES = [
+            'https://www.googleapis.com/auth/devstorage.full_control']
 
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
@@ -38,11 +41,11 @@ class GoogleCloudStorage:
                 pickle.dump(creds, token)
 
         # Instantiates a client
-        self.storage_client = storage.Client(project="piot-assignment2-287110", credentials=creds)
+        self.storage_client = storage.Client(
+            project="piot-assignment2-287110", credentials=creds)
 
         # Connect to bucket on Cloud Storage
         self.bucket = self.storage_client.get_bucket("facial_img")
-
 
     def upload_from_filename(self, file_name, name_on_storage, **keyword_args):
         """
@@ -53,7 +56,6 @@ class GoogleCloudStorage:
         blob = self.bucket.blob(name_on_storage)
         blob.upload_from_filename(file_name, **keyword_args)
         print(f"Upload file {file_name} and name as {name_on_storage}")
-
 
     def upload_from_file(self, file_obj, name_on_storage, **keyword_args):
         """
@@ -66,7 +68,6 @@ class GoogleCloudStorage:
         blob.upload_from_file(file_obj, **keyword_args)
         print(f"Upload object {name_on_storage}")
 
-
     def download_file(self, source_file_name, destination_file_name, **keyword_args):
         """
         Keywords-arguments keyword_args will store whatever
@@ -74,17 +75,17 @@ class GoogleCloudStorage:
         """
         blob = self.bucket.blob(source_file_name)
         blob.download_to_filename(destination_file_name, **keyword_args)
-        print(f"Download file {source_file_name} and save as {destination_file_name}")
-
+        print(
+            f"Download file {source_file_name} and save as {destination_file_name}")
 
     def get_all_files(self, **keyword_args):
         """
         Keywords-arguments keyword_args will store whatever
         params needed for Client.list_blobs
         """
-        blobs = self.storage_client.list_blobs(self.bucket.name, **keyword_args)
+        blobs = self.storage_client.list_blobs(
+            self.bucket.name, **keyword_args)
         return blobs
-        
 
 
 if __name__ == "__main__":
