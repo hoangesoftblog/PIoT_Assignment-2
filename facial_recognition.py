@@ -3,6 +3,8 @@ import numpy as np
 from PIL import Image
 import json
 import google_cloud_storage
+from database import UserDatabase
+
 
 list_of_users = {}
 gcs = google_cloud_storage.GoogleCloudStorage()
@@ -16,39 +18,6 @@ def get_usable_camera_id():
     for i in range(4):
         if cv2.VideoCapture(i) is not None and cv2.VideoCapture(i).isOpened():
             return i
-
-
-def write_user_dataset(id, name):
-    """Add a new user and write list of user dictionary to user_data.json
-        
-    :param id: id of the new user
-    :param name: name of the new user
-    :type id: string
-    :type name: string
-    :return: void
-    """
-    list_of_users.update({str(id):name})
-    js = json.dumps(list_of_users)
-    user_file = open("user_data.json","w")
-    user_file.write(js)
-    user_file.close
-
-
-def read_user_dataset():
-    """Read user_data.json and return the dictionary data list of users
-
-    :return: void
-    """
-    with open("user_data.json") as user_file:
-        return json.load(user_file)
-
-def read_user_list():
-    imagePaths = [os.path.join('user_dataset',f) for f in os.listdir('user_dataset')] 
-    for imagePath in imagePaths:
-        id = int(os.path.split(imagePath)[-1].split(".")[1])
-        name = str(os.path.split(imagePath)[-1].split(".")[2])
-        list_of_users[id] = name
-
 
 def show_video_capture():
     """For demonstration purpose, show camera, press Q to stop operation
@@ -86,7 +55,6 @@ def faceset_capture(id, name):
     :type name: string
     :return: void
     """
-    # list_of_users = read_user_dataset()
 
     # Start camera
     camera = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
@@ -189,21 +157,19 @@ def face_recognition_start(id):
     :type id: string
     :return: True or False
     """
-    # Load users
-    # list_of_users = read_user_dataset()
-    # if str(id) not in list_of_users:
-    #     print("USER ID NOT FOUND! CANNOT FIND FACE")
-    #     return False
-    read_user_list()
-    if int(id) not in list_of_users:
-        print("USER ID NOT FOUND! CANNOT FIND FACE")
-        return False
+    
+    # Download trainer file
+    gcs.download_trainer()
+    
+    # Get all users from MySQL Database
+    users = UserDatabase()
+    user_dict = users.get_all()
 
     # Create Local Binary Patterns Histograms for face recognization
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
     # Load the trained mode
-    recognizer.read('trainer/trainer.yml')
+    recognizer.read('trainer.yml')
 
     # Load prebuilt model for Frontal Face
     cascadePath = "haarcascade_frontalface_default.xml"
@@ -237,19 +203,12 @@ def face_recognition_start(id):
             # Recognize the face belongs to which ID
             Id = recognizer.predict(gray[y:y+h,x:x+w])
             # Check the ID if exist 
-            if(str(Id[0]) == str(int(id))):
-                print("USER "+ list_of_users[int(id)]   +  " WITH MATCHING ID FOUND")
-                # Stop the camera
-                cam.release()
-                # Close all windows
-                cv2.destroyAllWindows()
-                #Face found
-                return True
-            elif(str(Id[0] in list_of_users)):
-                print(Id)
-                Id = list_of_users[(Id[0])] 
-            else:
-                Id = "Unknown"
+            
+            for user in user_dict:
+                if(str(Id[0]) == user['ID']):
+                    Id = user['name']
+                else:
+                    Id = "Unknown"
 
             # Put text describe who is in the picture
             cv2.rectangle(im, (x-22,y-90), (x+w+22, y-22), (0,255,0), -1)
@@ -269,3 +228,5 @@ def face_recognition_start(id):
     cv2.destroyAllWindows()
 
     return False
+
+face_recognition_start(1)
