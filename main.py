@@ -3,9 +3,12 @@ from database import *
 import json
 import time
 import flask_mail
+import qr_code
+import socket_communication
 
 app = flask.Flask(__name__)
 app.secret_key = "jose"
+# socket_communication.tcp_start_server()
 
 # Config the mail config
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -540,6 +543,11 @@ def login_agent_pi_normal():
 @app.route('/login_agentPi/facial', methods = ["GET"])
 def login_agent_pi_facial():
     return "Waiting to implement"
+
+
+@app.route('/login_agentPi/QR', methods = ["GET", "POST"])
+def QR_detect():
+    return flask.render_template("QR_detect.html")
 
 if __name__ == "__main__":
     app.run(debug = True)
