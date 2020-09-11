@@ -219,9 +219,9 @@ class UserDatabase (AbstractDatabase):
         self.execute_no_return(query)
 
 
-    def add_user(self, **info):
-        query = f"insert into {self.table} ({', '.join(info.keys())}) values ({', '.join([' %s ' for i in range(len(info.keys()))])})".format(*self.property_list)
-        return self.execute_no_return(query=query, data=info.values())
+    def add_user(self, **property_list):
+        query = f"insert into {self.table} ({', '.join(property_list.keys())}) values ({', '.join([' %s ' for i in range(len(property_list.keys()))])})"
+        return self.execute_no_return(query=query, data=property_list.values())
 
 
     def get_all(self):
@@ -297,11 +297,9 @@ class CarDatabase (AbstractDatabase):
         self.execute_no_return(query)
 
 
-    def insert_car(self, brand, body, color, seats, location, cost, lat=None, lng=None):
-        query = f"""insert into {self.table} ({self.BRAND}, {self.BODY_TYPE}, {self.COLOUR}, {self.SEATS}, {self.LOCATION}, {self.COST_PER_HOUR}, {self.LAT}, {self.LNG}) 
-        values({', '.join([' %s ' for i in range(len(self.property_list[1:]))])})"""
-
-        return self.execute_no_return(query, (brand, body, color, seats, location, cost, lat, lng))
+    def insert_car(self, **property_list):
+        query = f"insert into {self.table} ({', '.join(property_list.keys())}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} )"
+        self.execute_no_return(query, list(property_list.values()))
 
     def get_all_car(self):
         query = f"select * from {self.table}"
@@ -385,21 +383,29 @@ class BookingDatabase(AbstractDatabase):
         self.execute_no_return(query)
 
 
-    def add_booking(self, car_id, user_id, booking_detail, from_time: str, to_time: str):
+    def add_booking(self, **property_list):
         # Check for anyone who rent at the moment first
         query = f"""select * from (select * from {self.table} where {self.CAR_ID} = %s) as b where not (b.{self.FROM} >= %s or b.{self.TO} <= %s)"""
-        records = self.execute_return(query, (car_id, to_time, from_time))
+        records = self.execute_return(query, (property_list.get(self.CAR_ID), property_list.get(self.TO), property_list.get(self.FROM)))
+
+        # Now check if the car is currently reported
+        query_2 = f"""select * from (select * from {ISSUES_TABLE} where {IssuesDatabase.CAR_ID} = %s) as b where b.{IssuesDatabase.FROM} < %s and (b.{IssuesDatabase.TO} <= %s or b.{IssuesDatabase.TO} is null)"""
+        records_2 = self.execute_return(query_2, (property_list.get(self.CAR_ID), property_list.get(self.TO), property_list.get(self.FROM)))
+
+        print("Record:", records)
+        print("Record 2:", records_2)
 
         # If there is no one booking, then add booking
-        if len(records) > 0:
-            raise Exception("This car has been booked at this time.")
+        if len(records) > 0 or len(records_2) > 0:
+            raise Exception("This car has been booked or being fixed at this time.")
         else:
             # Add to Google Calendar first
-            response = self.calendar.add_event(user_id, car_id, datetime.datetime.strptime(from_time, "%Y-%m-%d %H:%M:%S"), datetime.datetime.strptime(to_time, "%Y-%m-%d %H:%M:%S"), booking_detail, **{"colorId": str(int(car_id) % 11)})
+            response = self.calendar.add_event(property_list.get(self.USER_ID), property_list.get(self.CAR_ID), datetime.datetime.strptime(property_list.get(self.FROM), "%Y-%m-%d %H:%M:%S"), datetime.datetime.strptime(property_list.get(self.TO), "%Y-%m-%d %H:%M:%S"), property_list.get(self.BOOKING_DETAIL), **{"colorId": str(int(property_list.get(self.CAR_ID)) % 11)})
             event_id = response["id"]
 
-            query = f"insert into {self.table} " + " ({}, {}, {}, {}, {}, {}) values(%s, %s, %s, %s, %s, %s)".format(*self.property_list[1:])
-            return self.execute_no_return(query, (car_id, user_id, booking_detail, from_time, to_time, event_id))
+            query = f"insert into {self.table} ({', '.join(property_list.keys())}, {self.EVENT_ID_CALENDAR}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} , %s)"
+            print(query)
+            self.execute_no_return(query, list(property_list.values()) + [event_id])
 
 
     def get_all_booking(self):
@@ -489,9 +495,9 @@ class EmployeesDatabase(AbstractDatabase):
         self.execute_no_return(query)
 
 
-    def add_employee(self, id, name):
-        query = f"insert into {self.table} " + " ({}, {}) values (%s, %s)".format(*self.property_list)
-        return self.execute_no_return(query, (id, name))
+    def add_employee(self, **property_list):
+        query = f"insert into {self.table} ({', '.join(property_list.keys())}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} )"
+        self.execute_no_return(query, list(property_list.values()))
 
 
     def get_all(self):
@@ -514,7 +520,7 @@ class IssuesDatabase(AbstractDatabase):
     CAR_ID = "CID2"
     ID = "Issues_ID"
     ENGINEER_ID = "Engineer_ID"
-    FROM = "from_time"
+    FROM = "start_time"
     TO = "end_time"
     STATUS = "completed"
     property_list = [ID, CAR_ID, ENGINEER_ID, FROM, TO, STATUS]
@@ -541,7 +547,7 @@ class IssuesDatabase(AbstractDatabase):
 
 
     def add_issues(self, **property_list):
-        query = f"insert into {self.table} " + f" ({', '.join(property_list.keys())} , {self.FROM}, {self.STATUS}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} , now(), %s)".format(*self.property_list[1:-1])
+        query = f"insert into {self.table} " + f" ({', '.join(property_list.keys())} , {self.FROM}, {self.STATUS}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} , now(), %s)"
         self.execute_no_return(query, list(property_list.values()) + [False])
 
 
@@ -669,12 +675,10 @@ if __name__ == "__main__":
 
 
     # #### Car database
-
     car_db = CarDatabase()
-    car_db.insert_car("Honda Civic", "Sedan", "Black", "4", "Thu Duc", "1000000", 10.730104, 106.691745)
-    car_db.insert_car("Toyota Camry", "Sedan", "Brown", "5", "Q1", "1500000", 10.857306, 106.769463)
-    car_db.insert_car("Fortuner", "Something", "Green", "7", "Q1", "2000000", 10.856727, 106.766620)
-    car_db.insert_car("Random", "Random", "Random", "10", "Vietnam", "500000", 10.801016, 106.669408)
+    car_db.insert_car(**{car_db.BRAND: "Honda Civic", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Black", car_db.SEATS: "4", car_db.LOCATION: "Thu Duc", car_db.COST_PER_HOUR: "1000000", car_db.LAT: 10.730104, car_db.LNG: 106.691745})
+    car_db.insert_car(**{car_db.BRAND: "Toyota Camry", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Brown", car_db.SEATS: "5", car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "1500000", car_db.LAT: 10.857306, car_db.LNG: 106.769463})
+    car_db.insert_car(**{car_db.BRAND: "Fortuner", car_db.BODY_TYPE: "Something", car_db.COLOUR: "Green", car_db.SEATS: "7", car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "2000000", car_db.LAT: 10.856727, car_db.LNG: 106.766620})
     
     # print(car_db.find_car(**{car_db.BRAND: "Toyota"}))
     # print(car_db.update_car(4, **{car_db.BRAND: "Zoros", car_db.BODY_TYPE: "Unicycle"}))
@@ -683,11 +687,10 @@ if __name__ == "__main__":
 
 
     # # #### Employees database
-    
     employee_db = EmployeesDatabase()
-    employee_db.add_employee(2, "Dang Dinh Khanh")
-    employee_db.add_employee(3, "Tui la tui chu la ai")
-    employee_db.add_employee(4, "Duc la tui")
+    employee_db.add_employee(**{employee_db.ID: 2, employee_db.NAME: "Dang Dinh Khanh"})
+    employee_db.add_employee(**{employee_db.ID: 3, employee_db.NAME: "Someone 1"})
+    employee_db.add_employee(**{employee_db.ID: 4, employee_db.NAME: "Someone 2"})
     
     # employee_db.update_employee(4, **{employee_db.NAME: "??????"})
     # print(employee_db.get_all())

@@ -136,16 +136,21 @@ def booking_info(car_id):
 
         # Process attributes
         from_time, to_time = data["from_date"] + " " + data["from_time"] + ":00", data["to_date"] + " " + data["to_time"] + ":00"
+        del data["from_date"], data["to_time"], data["from_time"], data["to_date"]
         if (datetime.datetime.strptime(from_time, '%Y-%m-%d %H:%M:%S') >= datetime.datetime.strptime(to_time, '%Y-%m-%d %H:%M:%S')):
             attributes["error"] = True
             return flask.render_template("booking_infos.html", **attributes)
         
         try:
             # Perform action
-            booking_db.add_booking(car_id, flask.session.get(login_db.ID), data.get(booking_db.BOOKING_DETAIL), from_time, to_time)
+            data[booking_db.CAR_ID] = car_id
+            data[booking_db.USER_ID] = flask.session.get(login_db.ID)
+            data[booking_db.FROM] = from_time
+            data[booking_db.TO] = to_time
+            booking_db.add_booking(**data)
         except Exception as e:
             print(e)
-            print(flask.session.get(login_db.ID))
+            # print(flask.session.get(login_db.ID))
             attributes["booked_before"] = True
             return flask.render_template("booking_infos.html", **attributes)
 
@@ -408,6 +413,23 @@ def cars_delete(id):
     return flask.redirect(flask.url_for("cars"))
 
 
+@app.route('/cars/add', methods = ["GET", "POST"])
+def add_car():
+    if flask.request.method == "POST":
+        form_data = flask.request.form.to_dict()
+        data = {key: val for key, val in form_data.items() if val}
+        data = {k: (v if v != "None" else None) for k, v in data.items()}
+        print(data)
+
+        records = car_db.insert_car(**data)
+        return flask.redirect(flask.url_for("cars"))
+    else:
+        if flask.session.get(login_db.USERNAME, None) is None:
+            return flask.redirect(flask.url_for("login"))
+        else:
+            return flask.render_template("cars_add.html")
+
+
 @app.route('/cars/modify/<int:id>', methods = ["POST", "GET"])
 def cars_modify(id):
     if flask.request.method == "POST":
@@ -505,13 +527,13 @@ def login_agent_pi():
 @app.route('/login_agentPi/normal', methods = ["GET", "POST"])
 def login_agent_pi_normal():
     return "Waiting to implement"
-    # if flask.request.method == "POST":
-    #     return "Waiting for implementation. Must have socket connection here."
-    # else:
-    #     if flask.session.get(login_db.USERNAME, None) is None:
-    #         return flask.render_template("login_agentPi_normal.html", error=False)
-    #     else:
-    #         return flask.redirect(flask.url_for("home"))
+    if flask.request.method == "POST":
+        return "Waiting for implementation"
+    else:
+        if flask.session.get(login_db.USERNAME, None) is None:
+            return flask.render_template("login_agentPi_normal.html", error=False)
+        else:
+            return flask.redirect(flask.url_for("home"))
 
 
 

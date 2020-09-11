@@ -83,7 +83,7 @@
                     <tbody>
                         {% for issue in all_issues %}
                         <tr>
-                            {% for property in ['CID2', 'Engineer_ID', 'from_time', 'end_time', 'location'] %}
+                            {% for property in ['CID2', 'Engineer_ID', 'start_time', 'end_time', 'location'] %}
                             <td>{{ issue.get(property) if issue.get(property) else 'N/A' }}</td>
                             {% endfor %}
                             {% if issue.get('Engineer_ID') is none %}
