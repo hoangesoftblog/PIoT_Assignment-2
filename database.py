@@ -120,7 +120,7 @@ class AbstractDatabase():
 
 
 class LoginDatabase (AbstractDatabase):
-    USERNAME = "username"
+    USERNAME = "email"
     PASSWORD = "password"
     ID = "ID"
     ROLES = "roles"

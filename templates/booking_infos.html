@@ -68,39 +68,44 @@
 
 			<h3>BOOKING INFORMATION</h3>
 
-			<div class="table-wrapper">
+			<!-- <div class="table-wrapper"> -->
 
-				<form method="post" action="#">
-					<div class="row uniform">
+			<form method="post" action="#">
+				<div class="row uniform">
 
-						<div class="6u$ 12u$(xsmall)">
-							<label for="from">From</label><br />
-							<div id="from">
-								<input type="date" name="from_date" id="from_date" row="1" required>
-								<input type="time" name="from_time" id="from_time" row="1" required>
-							</div>
-						</div>
-
-						<div class="6u$ 12u$(xsmall)">
-							<label for="to">To</label><br />
-							<div id="to">
-								<input type="date" name="to_date" id="to_date" row="1" required>
-								<input type="time" name="to_time" id="to_time" row="1" required>
-							</div>
-						</div>
-						<div class="field">
-							<label for="message">Message</label>
-							<textarea name="booking_details" id="message" rows="6" placeholder="Message"></textarea>
-						</div>
-						<!-- Break -->
-						<div class="12u$">
-							<ul class="actions">
-								<li><input type="submit" value="Book" /></li>
-							</ul>
+					<div style="margin-right: 65px;">
+						<label for="from" style="color: grey;">From</label>
+						<div id="from">
+							<input style="border-color: #fcba03; border-style: solid; text-align: center;" type="date"
+								name="from_date" id="from_date" row="1" required>
+							<input style="border-color: #fcba03; border-style: solid; text-align: center;" type="time"
+								name="from_time" id="from_time" row="1" required>
 						</div>
 					</div>
-				</form>
-			</div>
+
+					<div class="6u$ 12u$(xsmall)">
+						<label for="to" style="color: grey;">To</label>
+						<div id="to">
+							<input style="border-color: #fcba03; border-style: solid; text-align: center;" type="date"
+								name="to_date" id="to_date" row="1" required>
+							<input style="border-color: #fcba03; border-style: solid; text-align: center;" type="time"
+								name="to_time" id="to_time" row="1" required>
+						</div>
+					</div>
+
+					<br><br>
+					<div class="field 6u$ 12u$(xsmall)">
+						<textarea name="booking_details" id="message" rows="6" placeholder="Message"></textarea>
+					</div>
+					<!-- Break -->
+					<div class="12u$">
+						<ul class="actions">
+							<li><input type="submit" value="Book" /></li>
+						</ul>
+					</div>
+				</div>
+			</form>
+			<!-- </div> -->
 		</div>
 	</section>
 
