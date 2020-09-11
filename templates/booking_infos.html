@@ -34,7 +34,6 @@
 			<header>
 				<h1>BIG CITY CAR RENTAL</h1>
 			</header>
-
 			<div class="flex ">
 
 				<div>
@@ -67,11 +66,22 @@
 		<div class="inner">
 
 			<h3>BOOKING INFORMATION</h3>
-
+			{% if error %}
+			<h3 style="color: red;">Departure should be lower than Arrival</h3>
+			{% elif booked_before %}
+			<h3 style="color: red;">This car has been booked or being fixed at this time</h3>
+			{% endif %}
 			<!-- <div class="table-wrapper"> -->
-
+			<iframe
+				src="https://calendar.google.com/calendar/embed?&amp;wkst=1&amp;bgcolor=%23ffffff&amp;ctz=Asia%2FHo_Chi_Minh&amp;src=YjZvbW82NGFjYTQwZ2VvM2ZhNnN2aXRrZzRAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&amp;color=%23F4511E&amp;showTz=1"
+				style="border:solid 0px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+			<div>
+				<img alt="google-map"
+					src="https://maps.googleapis.com/maps/api/staticmap?markers={{lat}},{{lng}}&size=640x360&zoom=18&key=AIzaSyANGfoaQpqDhLUzCV_LLp1e5E4tleqEdFg" />
+			</div>
 			<form method="post" action="#">
 				<div class="row uniform">
+
 
 					<div style="margin-right: 65px;">
 						<label for="from" style="color: grey;">From</label>
