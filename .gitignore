@@ -170,6 +170,6 @@ database.db
 
 
 #### Ignore pickle file
-*.pickle
+
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,web
