@@ -198,7 +198,7 @@
 						<tr>
 							{% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour', 'CAR_ID'] %}
 							{% if property != 'CAR_ID' %}
-							<td>{{ car.get(property) }}</td>
+							<td>{{ car.get(property) if car.get(property) else 'N/A' }}</td>
 							{% else %}
 							<td><button>
 									<a href="/booking/{{ car.get('CAR_ID') }}">Book car</a>
