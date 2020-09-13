@@ -113,29 +113,6 @@
                                 </select>
                             </div>
                         </div>
-
-                        <div class="6u 12u$(xsmall)">
-                            <div class="select-wrapper">
-                                <select name="location" id="location">
-                                    <option value="">- Location -</option>
-                                    {% for val in location_list %}
-                                    <option value={{val}}>{{val}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="6u 12u$(xsmall)">
-                            <div class="select-wrapper">
-                                <select name="completed" id="completed">
-                                    <option value="">- Completed -</option>
-                                    {% for val in status %}
-                                    <option value={{val}}>{{val}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="12u$">
                             <ul class="actions">
                                 <li><input type="submit" value="Search" /></li>
@@ -170,8 +147,8 @@
                     <tbody>
                         {% for issue in all_issues %}
                         <tr>
-                            {% for property in ['CID2', 'Engineer_ID', 'start_time', 'end_time', 'location'] %}
-                            <td>{{ issue.get(property) if issue.get(property) else 'N/A'}}</td>
+                            {% for property in ['CID2', 'Engineer_ID', 'from_time', 'end_time', 'location'] %}
+                            <td>{{ issue.get(property) }}</td>
                             {% endfor %}
                             <td>
                                 <button>

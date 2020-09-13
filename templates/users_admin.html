@@ -141,7 +141,7 @@
                         {% for user in users %}
                         <tr>
                             {% for property in ['name', 'address', 'phone_number'] %}
-                            <td>{{ user.get(property) if user.get(property) else 'N/A' }}</td>
+                            <td>{{ user.get(property) }}</td>
                             {% endfor %}
                             <!-- {% if property != 'ID' %}
                             {% else %} 

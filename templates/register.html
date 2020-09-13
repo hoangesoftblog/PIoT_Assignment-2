@@ -64,25 +64,22 @@
 
 	<section id="register" class="wrapper align-left">
 		<div class="inner">
+
 			<h3>USER REGISTER</h3>
-			{% if error %}
-			<h3 style="color: red;">Password don't match</h3>
-			{% elif email_existed %}
-			<h3 style="color: red;">Email existed</h3>
-			{% endif %}
+
 			<form action="#" method="post">
 
 				<div class="field half first">
 					<!-- <label for="email">Email</label> -->
-					<input name="email" id="email" type="email" placeholder="Email" required>
+					<input name="email" id="email" type="email" placeholder="Email">
 				</div>
 				<div class="field half first">
 					<!-- <label for="userName">User name</label> -->
-					<input name="password" id="passWord" type="password" placeholder="Password" required>
+					<input name="passWord" id="passWord" type="password" placeholder="Password">
 				</div>
 				<div class="field half first">
 					<!-- <label for="userName">User name</label> -->
-					<input name="password2" id="passWord2" type="password" placeholder="Confirm Password" required>
+					<input name="passWord2" id="passWord2" type="password" placeholder="Confirm Password">
 				</div>
 				<br>
 				<br>

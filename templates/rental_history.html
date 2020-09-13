@@ -197,7 +197,7 @@
                         {% for booking in history %}
                         <tr>
                             {% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour', 'from_time', 'to_time', 'booking_details'] %}
-                            <td>{{ booking.get(property) if booking.get(property) else 'N/A'}}</td>
+                            <td>{{ booking.get(property) }}</td>
                             {% endfor %}
                             <!-- {% if property != 'ID' %}
                             {% else %} 
