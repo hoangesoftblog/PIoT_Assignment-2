@@ -76,67 +76,67 @@
 	<section id="register" class="wrapper align-left">
 		<div class="inner">
 
-			<h3>CAR SEARCH</h3>
+			<h3>CAR SEARCH doing</h3>
 
-			<div class="table-wrapper">
+			<!-- <div class="table-wrapper"> -->
 
-				<form method="post" action="#">
-					<div class="row uniform">
-						<!-- <div class="6u 12u$(xsmall)">
+			<form method="post" action="#">
+				<div class="row uniform">
+					<!-- <div class="6u 12u$(xsmall)">
 							<input type="text" name="brand" id="car-name" value="" placeholder="Brand" />
 						</div> -->
-						<!-- <div class="6u$ 12u$(xsmall)" important!>
+					<!-- <div class="6u$ 12u$(xsmall)" important!>
 							<input type="number" name="seats" id="seats" value="" placeholder="Seats" />
 						</div> -->
 
-						<div class="6u 12u$(xsmall)">
-							<div class="select-wrapper">
-								<select name="brand" id="demo-category">
-									<option value="">- Brand -</option>
-									{% for value in brands %}
-									<option value="{{value}}">{{ value }}</option>
-									{% endfor %}
-								</select>
-							</div>
+					<div class="6u 12u$(xsmall)">
+						<div class="select-wrapper">
+							<select name="brand" id="demo-category">
+								<option value="">- Brand -</option>
+								{% for value in brands %}
+								<option value="{{value}}">{{ value }}</option>
+								{% endfor %}
+							</select>
 						</div>
+					</div>
 
-						<div class="6u 12u$(xsmall)">
-							<div class="select-wrapper">
-								<select name="seats" id="demo-category">
-									<option value="">- Seats -</option>
-									{% for value in seats %}
-									<option value="{{value}}">{{ value }}</option>
-									{% endfor %}
-								</select>
-							</div>
+					<div class="6u 12u$(xsmall)">
+						<div class="select-wrapper">
+							<select name="seats" id="demo-category">
+								<option value="">- Seats -</option>
+								{% for value in seats %}
+								<option value="{{value}}">{{ value }}</option>
+								{% endfor %}
+							</select>
 						</div>
+					</div>
 
-						<!-- Break -->
-						<div class="6u 12u$(xsmall)">
-							<div class="select-wrapper">
-								<select name="colour" id="demo-category">
-									<option value="">- Color -</option>
-									{% for value in colours %}
-									<option value="{{value}}">{{ value }}</option>
-									{% endfor %}
-								</select>
-							</div>
+					<!-- Break -->
+					<div class="6u 12u$(xsmall)">
+						<div class="select-wrapper">
+							<select name="colour" id="demo-category">
+								<option value="">- Color -</option>
+								{% for value in colours %}
+								<option value="{{value}}">{{ value }}</option>
+								{% endfor %}
+							</select>
 						</div>
+					</div>
 
-						<div class="6u 12u$(xsmall)">
-							<div class="select-wrapper">
-								<select name="body_type" id="demo-category">
-									<option value="">- Type -</option>
-									{% for value in type %}
-									<option value="{{value}}">{{ value }}</option>
-									{% endfor %}
-								</select>
-							</div>
+					<div class="6u 12u$(xsmall)">
+						<div class="select-wrapper">
+							<select name="body_type" id="demo-category">
+								<option value="">- Type -</option>
+								{% for value in type %}
+								<option value="{{value}}">{{ value }}</option>
+								{% endfor %}
+							</select>
 						</div>
+					</div>
 
 
 
-						<!-- <div class="4u 12u$(small)">
+					<!-- <div class="4u 12u$(small)">
 							<input type="radio" id="demo-priority-low" name="demo-priority" checked>
 							<label for="demo-priority-low">Low Priority</label>
 						</div>
@@ -157,14 +157,154 @@
 							<input type="checkbox" id="demo-human" name="demo-human" checked>
 							<label for="demo-human">I am a human and not a robot</label>
 						</div> -->
-						<!-- Break -->
-						<div class="12u$">
-							<ul class="actions">
-								<li><input type="submit" value="Search" /></li>
-							</ul>
-						</div>
+					<!-- Break -->
+					<div class="12u$">
+						<ul class="actions">
+							<li><input type="submit" value="Search" /></li>
+						</ul>
 					</div>
-				</form>
+				</div>
+			</form>
+			<!-- </div> -->
+		</div>
+	</section>
+
+
+	<section id="three" class="wrapper align-center">
+		<div class="inner">
+			<div class="flex flex-3">
+				<article>
+					<div class="image">
+						<img src="{{ url_for('static', filename='images/porsche.jpg') }} " alt="Pic 01"
+							style="height: 200px; width: 380px;" />
+						<img src="{{ url_for('static', filename='images/map.jpg') }} " alt="Pic 01"
+							style="height: 180px; width: 380px;" />
+					</div>
+					<header>
+						<!-- <div class="image">
+							<img src="{{ url_for('static', filename='images/banner3.jpg') }} " alt="Pic 01"
+								style="height: 200px; width: 380px;" />
+						</div> -->
+						<h3>Lorem ipsum<br /> dolor amet nullam</h3>
+					</header>
+					<p>Morbi in sem quis dui placerat ornare. Pellentesquenisi<br />euismod in, pharetra a, ultricies in
+						diam sed arcu. Cras<br />consequat egestas augue vulputate.</p>
+					<footer>
+						<a href="#" class="button">Learn More</a>
+						<br><br><br>
+					</footer>
+				</article>
+
+				<article>
+					<div class="image">
+						<img src="{{ url_for('static', filename='images/banner8.jpg') }} " alt="Pic 01"
+							style="height: 200px; width: 380px;" />
+						<img src="{{ url_for('static', filename='images/map.jpg') }} " alt="Pic 01"
+							style="height: 180px; width: 380px;" />
+					</div>
+					<header>
+						<!-- <div class="image">
+							<img src="{{ url_for('static', filename='images/banner3.jpg') }} " alt="Pic 01"
+								style="height: 200px; width: 380px;" />
+						</div> -->
+						<h3>Lorem ipsum<br /> dolor amet nullam</h3>
+					</header>
+					<p>Morbi in sem quis dui placerat ornare. Pellentesquenisi<br />euismod in, pharetra a, ultricies in
+						diam sed arcu. Cras<br />consequat egestas augue vulputate.</p>
+					<footer>
+						<a href="#" class="button">Learn More</a>
+						<br><br><br>
+					</footer>
+				</article>
+				<article>
+					<div class="image">
+						<img src="{{ url_for('static', filename='images/banner8.jpg') }} " alt="Pic 01"
+							style="height: 200px; width: 380px;" />
+						<img src="{{ url_for('static', filename='images/map.jpg') }} " alt="Pic 01"
+							style="height: 180px; width: 380px;" />
+					</div>
+					<header>
+						<!-- <div class="image">
+							<img src="{{ url_for('static', filename='images/banner3.jpg') }} " alt="Pic 01"
+								style="height: 200px; width: 380px;" />
+						</div> -->
+						<h3>Lorem ipsum<br /> dolor amet nullam</h3>
+					</header>
+					<p>Morbi in sem quis dui placerat ornare. Pellentesquenisi<br />euismod in, pharetra a, ultricies in
+						diam sed arcu. Cras<br />consequat egestas augue vulputate.</p>
+					<footer>
+						<a href="#" class="button">Learn More</a>
+						<br><br><br>
+					</footer>
+				</article>
+
+				<article>
+					<div class="image">
+						<img src="{{ url_for('static', filename='images/banner8.jpg') }} " alt="Pic 01"
+							style="height: 200px; width: 380px;" />
+						<img src="{{ url_for('static', filename='images/map.jpg') }} " alt="Pic 01"
+							style="height: 180px; width: 380px;" />
+					</div>
+					<header>
+						<!-- <div class="image">
+							<img src="{{ url_for('static', filename='images/banner3.jpg') }} " alt="Pic 01"
+								style="height: 200px; width: 380px;" />
+						</div> -->
+						<h3>Lorem ipsum<br /> dolor amet nullam</h3>
+					</header>
+					<p>Morbi in sem quis dui placerat ornare. Pellentesquenisi<br />euismod in, pharetra a, ultricies in
+						diam sed arcu. Cras<br />consequat egestas augue vulputate.</p>
+					<footer>
+						<a href="#" class="button">Learn More</a>
+						<br><br><br>
+					</footer>
+				</article>
+
+				<article>
+					<div class="image">
+						<img src="{{ url_for('static', filename='images/banner8.jpg') }} " alt="Pic 01"
+							style="height: 200px; width: 380px;" />
+						<img src="{{ url_for('static', filename='images/map.jpg') }} " alt="Pic 01"
+							style="height: 180px; width: 380px;" />
+					</div>
+					<header>
+						<!-- <div class="image">
+							<img src="{{ url_for('static', filename='images/banner3.jpg') }} " alt="Pic 01"
+								style="height: 200px; width: 380px;" />
+						</div> -->
+						<h3>Lorem ipsum<br /> dolor amet nullam</h3>
+					</header>
+					<p>Morbi in sem quis dui placerat ornare. Pellentesquenisi<br />euismod in, pharetra a, ultricies in
+						diam sed arcu. Cras<br />consequat egestas augue vulputate.</p>
+					<footer>
+						<a href="#" class="button">Learn More</a>
+						<br><br><br>
+					</footer>
+				</article>
+
+				<article>
+					<div class="image">
+						<img src="{{ url_for('static', filename='images/banner8.jpg') }} " alt="Pic 01"
+							style="height: 200px; width: 380px;" />
+						<img src="{{ url_for('static', filename='images/map.jpg') }} " alt="Pic 01"
+							style="height: 180px; width: 380px;" />
+					</div>
+					<header>
+						<!-- <div class="image">
+							<img src="{{ url_for('static', filename='images/banner3.jpg') }} " alt="Pic 01"
+								style="height: 200px; width: 380px;" />
+						</div> -->
+						<h3>Lorem ipsum<br /> dolor amet nullam</h3>
+					</header>
+					<p>Morbi in sem quis dui placerat ornare. Pellentesquenisi<br />euismod in, pharetra a, ultricies in
+						diam sed arcu. Cras<br />consequat egestas augue vulputate.</p>
+					<footer>
+						<a href="#" class="button">Learn More</a>
+						<br><br><br>
+					</footer>
+				</article>
+
+
 			</div>
 		</div>
 	</section>
@@ -178,19 +318,13 @@
 				<table>
 					<thead>
 						<tr>
-
 							<th>Brand</th>
 							<th>Type</th>
 							<th>No. seat</th>
 							<th>Color</th>
 							<th>Location</th>
 							<th>Cost per hour</th>
-
 							<th>Book this car</th>
-
-
-
-
 						</tr>
 					</thead>
 					<tbody>
@@ -198,7 +332,7 @@
 						<tr>
 							{% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour', 'CAR_ID'] %}
 							{% if property != 'CAR_ID' %}
-							<td>{{ car.get(property) }}</td>
+							<td>{{ car.get(property) if car.get(property) else 'N/A' }}</td>
 							{% else %}
 							<td><button>
 									<a href="/booking/{{ car.get('CAR_ID') }}">Book car</a>

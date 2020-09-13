@@ -40,7 +40,12 @@ class GoogleCalendar():
 
         self.service = build('calendar', 'v3', credentials=creds)
 
-    def add_event(self, user_id, car_id, start_time: datetime, end_time: datetime, details):
+    def add_event(self, user_id, car_id, start_time: datetime, end_time: datetime, details, **additional_params):
+        """
+        additional_params is implemented to be put into the body of the request from the API
+        The API can be seen at:
+        https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
+        """
         start, end = start_time.isoformat(), end_time.isoformat()
         print(start)
 
@@ -48,7 +53,8 @@ class GoogleCalendar():
             "summary": f"Booking: User {user_id} - Car {car_id}",
             "description": f"""Booking for User {user_id} - Car {car_id}. {details}""",
             "start": {"dateTime": start, "timeZone": "Asia/Ho_Chi_Minh"},
-            "end": {"dateTime": end, "timeZone": "Asia/Ho_Chi_Minh"}
+            "end": {"dateTime": end, "timeZone": "Asia/Ho_Chi_Minh"},
+            **additional_params
         }).execute()
 
         # print("Created event")
@@ -109,7 +115,12 @@ class GoogleCalendar():
             calendarId=self.calendarList_id, eventId=event_id).execute()
         return response
 
-    def update_event(self, event_id, UID, CID, from_time, to_time, booking_details):
+    def update_event(self, event_id, UID, CID, from_time, to_time, booking_details, **additional_params):
+        """
+        additional_params is implemented to be put into the body of the Request from the API
+        The API can be seen at:
+        https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
+        """
         if from_time is str:
             from_time = datetime.datetime.strptime(
                 from_time, "%Y-%m-%d %H:%M:%S")
@@ -122,7 +133,9 @@ class GoogleCalendar():
             "summary": f"Booking: User {UID} - Car {CID}",
             "description": f"""Booking for User {UID} - Car {CID}. {booking_details}""",
             "start": {"dateTime": start, "timeZone": "Asia/Ho_Chi_Minh"},
-            "end": {"dateTime": end, "timeZone": "Asia/Ho_Chi_Minh"}
+            "end": {"dateTime": end, "timeZone": "Asia/Ho_Chi_Minh",
+            **additional_params
+            }
         }).execute()
 
         return response

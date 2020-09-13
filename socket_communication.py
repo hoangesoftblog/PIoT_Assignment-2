@@ -1,7 +1,7 @@
 import socket
 
 def tcp_start_server():
-    ADDRESS = ("localhost", 65000)  
+    ADDRESS = ("localhost", 65433)  
     # Standard loopback interface address (localhost)
     # Port to listen on (non-privileged ports are > 1023)
     
@@ -30,9 +30,9 @@ def tcp_start_server():
 def tcp_client_send_message(message):
     # HOST = input("Enter IP address of server: ")
 
-    # HOST = "127.0.0.1" # The server's hostname or IP address.
+    #HOST = "127.0.0.1" # The server's hostname or IP address.
     HOST = "localhost" # The server's hostname or IP address.
-    PORT = 65000         # The port used by the server.
+    PORT = 65433        # The port used by the server.
     ADDRESS = (HOST, PORT)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -53,4 +53,6 @@ def tcp_client_send_message(message):
         print("Disconnecting from server.")
     print("Done.")
 
-tcp_client_send_message("Hey")
+if __name__ == "__main__":
+    # tcp_start_server()
+    tcp_client_send_message("Hey")
