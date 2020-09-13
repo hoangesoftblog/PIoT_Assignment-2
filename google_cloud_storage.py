@@ -77,12 +77,6 @@ class GoogleCloudStorage:
         blob.download_to_filename(destination_file_name, **keyword_args)
         print(f"Download file {source_file_name} and save as {destination_file_name}")
 
-    def download_trainer(self):
-        # Connect to bucket on Cloud Storage
-        trainer_bucket = self.storage_client.get_bucket("trainer")
-        blob = trainer_bucket.blob("trainer.yml")
-        blob.download_to_filename("trainer/trainer.yml")
-        print("Trainer.yml downloaded")
 
     def get_all_files(self, **keyword_args):
         """
