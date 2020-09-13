@@ -232,5 +232,3 @@ def face_recognition_start(id):
     cv2.destroyAllWindows()
 
     return False
-
-face_recognition_start(1)
