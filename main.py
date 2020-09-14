@@ -16,6 +16,7 @@ employee_db = EmployeesDatabase()
 issues_db = IssuesDatabase()
 
 
+
 # https://blog.tecladocode.com/how-to-add-user-logins-to-your-flask-website/
 
 
@@ -365,21 +366,99 @@ def dashboard():
         return flask.render_template("dashboard.html")
 
 
-# AGENT PI
-@app.route('/login_agentPi', methods=["GET"])
-def login_agent_pi():
-    return flask.render_template("login_agentPi.html")
+######## AGENT PI
+@app.route('/agentPi/<int:car_id>', methods = ["GET"])
+def agent_pi(car_id):
+    return flask.render_template("agentPi/agentPi.html", car_id = car_id)
 
 
-@app.route('/login_agentPi/normal', methods=["GET"])
-def login_agent_pi_normal():
-    return "Waiting to implement"
+@app.route('/agentPi/<int:car_id>/users', methods = ["GET"])
+def agent_pi_users(car_id):
+    return flask.render_template("/agentPi/agentPi_users.html", car_id = car_id)
 
 
-@app.route('/login_agentPi/facial', methods=["GET"])
-def login_agent_pi_facial():
-    return "Waiting to implement"
+@app.route('/agentPi/<int:car_id>/users/normal', methods = ["GET", "POST"])
+def agent_pi_users_normal(car_id):
+    if flask.request.method == "POST":
+        client_socket = socket_communication.Socket_Client()
 
+        form_data = flask.request.form.to_dict()
+        data = form_data
+        data[booking_db.CAR_ID] = car_id
+
+        print(data)
+
+        client_socket.send_message("Users".encode())
+        client_socket.receive_message()
+        client_socket.send_message("Normal".encode())
+        client_socket.receive_message()
+        client_socket.send_message(json.dumps(data).encode())
+        client_socket.receive_message()
+        return_message = client_socket.receive_message()
+
+        print("Return message:", return_message)
+
+        if return_message == "Correct":
+            return flask.redirect(flask.url_for("welcome", car_id= car_id))
+        else:
+            return flask.render_template("agentPi/agentPi_users_normal.html", car_id = car_id, message=return_message)
+
+    else:
+        return flask.render_template("agentPi/agentPi_users_normal.html", car_id = car_id, message="")
+        
+
+
+@app.route('/agentPi/<int:car_id>/users/facial', methods = ["GET", "POST"])
+def agent_pi_users_facial(car_id):
+    return "Facial Implementation"
+    
+
+@app.route('/agentPi/<int:car_id>/engineers', methods = ["GET"])
+def agent_pi_engineers(car_id):
+    return flask.render_template("/agentPi/agentPi_engineers.html", car_id = car_id)
+
+
+@app.route('/agentPi/<int:car_id>/engineers/normal', methods = ["GET", "POST"])
+def agent_pi_engineers_normal(car_id):
+    if flask.request.method == "POST":
+        client_socket = socket_communication.Socket_Client()
+
+        form_data = flask.request.form.to_dict()
+        data = form_data
+        data[issues_db.CAR_ID] = car_id
+
+        print(data)
+
+        # Send and receive data back and forth
+        client_socket.send_message("Engineers".encode())
+        client_socket.receive_message()
+        client_socket.send_message("Normal".encode())
+        client_socket.receive_message()
+        client_socket.send_message(json.dumps(data).encode())
+        client_socket.receive_message()
+        return_message = client_socket.receive_message()
+
+        print("Return message:", return_message)
+
+        if return_message == "Correct":
+            return flask.redirect(flask.url_for("welcome", car_id= car_id))
+        else:
+            return flask.render_template("agentPi/agentPi_engineers_normal.html", car_id = car_id, message=return_message)
+
+    else:
+        return flask.render_template("agentPi/agentPi_engineers_normal.html", car_id = car_id, message="")
+        
+
+
+@app.route('/agentPi/<int:car_id>/engineers/QR', methods = ["GET", "POST"])
+def agent_pi_engineers_facial(car_id):
+    return "QR Implementation"
+
+
+@app.route('/welcome/<int:car_id>', methods = ["GET"])
+def welcome(car_id):
+    return flask.render_template("agentPi/welcome.html", car_id = car_id)
+ 
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -186,7 +186,7 @@
                         <tr>
                             {% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour', 'from_time', 'to_time', 'booking_details', 'ID'] %}
                             {% if property != 'ID' %}
-                            <td>{{ booking.get(property) }}</td>
+                            <td>{{ booking.get(property) if booking.get(property) else 'N/A' }}</td>
                             {% else %}
                             <td><button>
                                     <a href="/booking/cancel/{{ booking.get('ID') }}">Cancel booking</a>

@@ -197,7 +197,7 @@
                         {% for car in cars %}
                         <tr>
                             {% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour'] %}
-                            <td>{{ car.get(property) }}</td>
+                            <td>{{ car.get(property) if car.get(property) else 'N/A' }}</td>
                             {% endfor %}
                             <td>
                                 <button>
