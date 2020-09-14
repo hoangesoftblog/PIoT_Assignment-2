@@ -1,12 +1,9 @@
 import cv2, time, os
 import numpy as np
 from PIL import Image
-import json
 import google_cloud_storage
 from database import UserDatabase
 
-
-list_of_users = {}
 gcs = google_cloud_storage.GoogleCloudStorage()
 
 
@@ -18,6 +15,7 @@ def get_usable_camera_id():
     for i in range(4):
         if cv2.VideoCapture(i) is not None and cv2.VideoCapture(i).isOpened():
             return i
+
 
 def show_video_capture():
     """For demonstration purpose, show camera, press Q to stop operation
@@ -55,6 +53,7 @@ def faceset_capture(id, name):
     :type name: string
     :return: void
     """
+    # list_of_users = read_user_dataset()
 
     # Start camera
     camera = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
@@ -76,20 +75,23 @@ def faceset_capture(id, name):
         for (x,y,w,h) in faces:
             cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0 ,0) , 2)
             count += 1
-            cv2.imwrite("user_dataset/User."+str(id)+"."+str(name)+'.'+str(count)+".jpg", gray[y:y+h,x:x+w])
+            file_name = "User."+str(id)+"."+str(name)+'.'+str(count)+".jpg"
+            # cv2.imwrite("user_dataset/User."+str(id)+"."+str(name)+'.'+str(count)+".jpg", gray[y:y+h,x:x+w])
+            cv2.imwrite("user_dataset/" + file_name, gray[y:y+h,x:x+w])
+            gcs.upload_from_filename("user_dataset/" + file_name, file_name)
 
         # Display the  frame, with bounded rectangle on the person's face
         cv2.imshow('frame', frame)
 
         # To stop, press 'q' for at least 100ms or 50 images are taken reach 50
-        if (cv2.waitKey(100) & 0xFF == ord('q')) or count > 50:
+        if (cv2.waitKey(100) & 0xFF == ord('q')) or count > 20:
             break
 
     # list_of_users[str(id)] = name
     write_user_dataset(str(id), name)
 
     # upload images to cloud
-    gcs.upload_user_faces()
+    
 
     # Ends camera
     camera.release()
@@ -157,13 +159,12 @@ def face_recognition_start(id):
     :type id: string
     :return: True or False
     """
-    
-    # Download trainer file
     gcs.download_trainer()
-    
+
     # Get all users from MySQL Database
     users = UserDatabase()
     user_dict = users.get_all()
+    print(user_dict)
 
     # Create Local Binary Patterns Histograms for face recognization
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -202,11 +203,13 @@ def face_recognition_start(id):
             print(recognizer.predict(gray[y:y+h,x:x+w]))
             # Recognize the face belongs to which ID
             Id = recognizer.predict(gray[y:y+h,x:x+w])
-            # Check the ID if exist 
-            
+
             for user in user_dict:
-                if(str(Id[0]) == user['ID']):
+                print(user['USER_ID'])
+                print(Id)
+                if(Id[0] == user['USER_ID']):
                     Id = user['name']
+                    break
                 else:
                     Id = "Unknown"
 
@@ -228,5 +231,3 @@ def face_recognition_start(id):
     cv2.destroyAllWindows()
 
     return False
-
-face_recognition_start(1)
