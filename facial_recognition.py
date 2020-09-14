@@ -1,7 +1,6 @@
 import cv2, time, os
 import numpy as np
 from PIL import Image
-import json
 import google_cloud_storage
 from database import UserDatabase
 
