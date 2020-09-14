@@ -10,6 +10,10 @@ gcs = google_cloud_storage.GoogleCloudStorage()
 
 
 class AgentPiApp(tk.Tk):
+    """Agent PI GUI built with tkinter, is a subclass of the Tk class, a window, used for customers to login with their credentials
+    or face to access the car, for engineer to show their QR code to access the car
+
+    """
     def __init__(self):
         tk.Tk.__init__(self)
         self.attributes('-fullscreen', True)  
@@ -25,6 +29,14 @@ class AgentPiApp(tk.Tk):
         self.switch_frame(LoginPage)
 
     def switch_frame(self, frame_class):
+        """To switch the main window frame to another
+
+        :param frame_class: The frame subclass to switch to
+        :type tk.Frame
+
+        :return: void
+        :rtype: void
+        """
         new_frame = frame_class(self)
         if self._frame is not None:
             self._frame.destroy()
@@ -32,7 +44,18 @@ class AgentPiApp(tk.Tk):
         self._frame.pack()
 
 class LoginPage(tk.Frame):
+    """Login Page frame, to show the options available to the users
+
+    """
     def __init__(self, master):
+        """Initializing the login page frame
+
+        :param master: the window class of the tkinter GUI
+        :type tk.Frame
+
+        :return: void
+        :rtype: void
+        """
         tk.Frame.__init__(self, master)
 
         self.welcome = tk.Label(self, text = "Welcome!", font=("Arial Bold", 50)).grid(row = 0, ipady = 80)
@@ -50,7 +73,18 @@ class LoginPage(tk.Frame):
         self.bt_login_qr = tk.Button(self, width = 30 , text = "Engineer QR", command=lambda: master.switch_frame(QrPage), font=("Arial Bold", 30), fg = "red").grid(row = 4)
 
 class FacePage(tk.Frame):
+    """ The Class to manage the facial recognition frame
+    
+    """
     def __init__(self,master):
+        """Initializing the facial recognition frame
+
+        :param master: the window class of the tkinter GUI
+        :type: tkinter.Frame
+
+        :return: void
+        :rtype: void
+        """
         tk.Frame.__init__(self, master)
         
         gcs.download_trainer()
@@ -85,6 +119,11 @@ class FacePage(tk.Frame):
 
 
     def update(self):
+        """Update the canvas showing the camera feed on the frame
+
+        :return: void
+        :rtype: void
+        """
         # Get frame from video source:
         ret, frame = self.vid.get_frame()
 
@@ -125,7 +164,18 @@ class FacePage(tk.Frame):
 
 
 class QrPage(tk.Frame):
+    """ The Class to manage the QR recognition frame
+    
+    """
     def __init__(self,master):
+        """Initializing the qr recognition frame
+
+        :param master: the window class of the tkinter GUI
+        :type: tkinter.Frame
+
+        :return: void
+        :rtype: void
+        """
         tk.Frame.__init__(self, master)
 
         self.vid = ApVideoCapture()
@@ -142,6 +192,11 @@ class QrPage(tk.Frame):
 
 
     def update(self):
+        """Update the canvas showing the camera feed on the frame
+        
+        :return: void
+        :rtype: void
+        """
         # Get frame from video source:
         ret, frame = self.vid.get_frame()
 
@@ -168,7 +223,18 @@ class QrPage(tk.Frame):
 
 
 class ApVideoCapture:
+    """ Provide video capture to the other frames
+    
+    """
     def __init__(self, video_source = 0):
+        """ Turn on the camera
+
+        param video_source: the index of the camera to use, defaults to 0
+        type video_source: int
+
+        return: void
+        rtype: void
+        """
         self.vid = cv2.VideoCapture(video_source)
         if not self.vid.isOpened():
             raise ValueError("Unable to open video source", video_source)
@@ -180,9 +246,19 @@ class ApVideoCapture:
 
 
     def __del__(self):
+        """ Turn off the camera
+
+        return: void
+        rtype: void
+        """
         self.vid.release()
 
     def get_frame(self):
+        """ Get the frame that the camera captured
+
+        return: retval, image of the captured sequence
+        rtype: retval, image
+        """
         if self.vid.isOpened():
             ret, frame = self.vid.read()
             if ret:
