@@ -1,7 +1,7 @@
 # """https://code.tutsplus.com/vi/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972"""
 
 import MySQLdb as SQLDatabase
-#import sqlite3 as SQLDatabase
+# import sqlite3 as SQLDatabase
 import datetime
 # from abc import *
 from google_calendar import GoogleCalendar
@@ -308,6 +308,27 @@ class CarDatabase (AbstractDatabase):
         records = self.execute_return(query)
         return self.to_dictionary(records)
 
+    # Number of all car
+    def get_all_car(self):
+        query = f"select count(*) from {self.table}"
+        records = self.execute_return(query)
+        return self.to_dictionary(records)
+
+    # Get current booked car in current date
+    def get_booked_car(self):
+        query = f"select COUNT(b.{BookingDatabase.CAR_ID}) from {BOOKING_TABLE} as b WHERE b.{BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day)"
+        # query = f"select DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)"
+        records = self.execute_return(query)
+        print("booked car", records)
+        return self.to_dictionary(records)
+
+    # Get current free car in current date
+    def get_free_car(self):
+        query = f"select COUNT(c.{self.ID}) from {self.table} as c where c.{self.ID} not in (select i.{IssuesDatabase.CAR_ID} as ID from {ISSUES_TABLE} as i WHERE {IssuesDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day) union select b.{BookingDatabase.CAR_ID} as ID from {BOOKING_TABLE} as b WHERE {BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day))"
+        records = self.execute_return(query)
+        print("free car", records)
+        return self.to_dictionary(records)
+
     def find_car(self, **search_params):
         null_keys = [key for key in search_params.keys(
         ) if search_params.get(key) is None]
@@ -488,6 +509,15 @@ class BookingDatabase(AbstractDatabase):
             f" where {self.ID} = %s"
         return self.execute_no_return(query, list(update_values.values()) + [booking_id])
 
+    # For statistic report, monthly revenue for the last 12 months
+    def get_monthly_revenue(self):
+        query = f"""SELECT month({self.FROM})as month_number, sum(round((unix_timestamp({self.TO}) - unix_timestamp({self.FROM})) / (60 * 60)) * {CarDatabase.COST_PER_HOUR}) as monthly_revenue
+FROM {self.table}, {CAR_TABLE}
+where {self.CAR_ID} = {CarDatabase.ID}
+group by month({self.FROM}) """
+        records = self.execute_return(query)
+        return self.to_dictionary(records)
+
 
 class EmployeesDatabase(AbstractDatabase):
     ID = "ID"
@@ -589,6 +619,12 @@ class IssuesDatabase(AbstractDatabase):
         records += self.to_dictionary(self.execute_return(query, (None, None)))
 
         return records
+
+    # Get current reported car in current date
+    def get_today_issues(self):
+        query = f"SELECT count(*) FROM (select * from {self.table} WHERE {self.FROM} between current_date() and date_add(current_date(), interval 1 day)) as e"
+        records = self.execute_return(query)
+        return self.to_dictionary(records)
 
     def find_issues(self, **search_params):
         # Specify on which keys are null, numeric or the remaining ones
@@ -748,3 +784,5 @@ if __name__ == "__main__":
 
     # hashed_password = flask_bcrypt.bcrypt.hashpw(password.encode('utf-8'), flask_bcrypt.bcrypt.gensalt()).decode('utf-8')
     # print(len(hashed_password))
+
+    car_db.get_booked_car()
