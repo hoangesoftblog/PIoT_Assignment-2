@@ -7,7 +7,7 @@ import datetime
 from google_calendar import GoogleCalendar
 import flask_bcrypt
 
-mode = "On"
+mode = "Off"
 
 if mode != "On":
     host = "localhost"
