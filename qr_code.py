@@ -35,3 +35,4 @@ def generate_qr_code(content,file_name):
     img = qrcode.make(content)
     # save img to a file
     img.save(filename)
+
