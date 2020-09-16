@@ -6,7 +6,7 @@ import datetime
 # from abc import *
 from google_calendar import GoogleCalendar
 
-mode = "Off"
+mode = "On"
 
 if mode != "On":
     host = "localhost"
@@ -28,6 +28,10 @@ LOGIN_TABLE = "Login_Info"
 
 
 class AbstractDatabase():
+    """An Abstract Database, served as a standard for other databases
+
+    """
+
     # Abstract Class Implementation
     # @abstractproperty
     # def database(self):
@@ -48,9 +52,24 @@ class AbstractDatabase():
     # __metaclass__ = ABCMeta
 
     def __init__(self):
+        """Abstract database variables initialization
+
+        """
         self.database = self.host = self.user = self.password = self.property_list = self.table = None
 
-    def execute_no_return(self, query, data=None, connector_setting=None):
+    def execute_no_return(self, query, data=None, connector_setting: tuple = None):
+        """Execute query on the database, return the row id, but does not return the records
+        ...
+        :param query: the query command to be executed
+        :type query: string
+        :param data: the data to put into the query
+        :type data: string
+        :param connector_setting: the setting for the connector to initialize
+        :type connector: string
+        ...
+        :return: the id of the last row of the database
+        :rtype: int
+        """
         # Prepare config settings to perform SQL
         # As some special operations required to have special configs
         if connector_setting is None:
@@ -74,6 +93,20 @@ class AbstractDatabase():
         return self.cursor.lastrowid
 
     def execute_return(self, query, data=None, amount="many", connector_setting=None):
+        """Execute query on the MySQL database, and return the records
+        ...
+        :param query: the query command to be executed
+        :type query: string
+        :param data: the data to put into the query
+        :type data: string
+        :param amount: choose to either fetch one of the query or fetch all of the found query
+        :type amount: "many" or "one" string
+        :param connector_setting: the setting for the connector to initialize
+        :type connector: string
+        ...
+        :return: the record(s) found by the query
+        :rtype: a dict of resulted query
+        """
         # Prepare config settings to perform SQL
         # As some special operations required to have special configs
         if connector_setting is None:
@@ -103,6 +136,16 @@ class AbstractDatabase():
         return records
 
     def to_dictionary(self, data, attribute_list=None):
+        """Return the dict data type of input data and attributee
+        ...
+        :param data: the data of attribute
+        :type data: string
+        :param attribute_list: the list of attribute that you want to add to the data
+        :type attribute_list: string
+        ...
+        :return: the dict type of attributes and its data
+        :rtype: tuple
+        """
         attribute_list = attribute_list if attribute_list else self.property_list
         # print("The list is:", attribute_list)
 
