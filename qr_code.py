@@ -36,5 +36,4 @@ def generate_qr_code(content,file_name):
     # save img to a file
     img.save(filename)
 
-start_reading_qr()
 
