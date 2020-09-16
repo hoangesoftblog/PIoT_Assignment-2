@@ -555,7 +555,7 @@ def dashboard():
         return flask.redirect(flask.url_for("forbidden"))
     else:
         print("car_db.get_booked_car()", car_db.get_booked_car())
-        return flask.render_template("dashboard.html", allCar=car_db.get_number_of_car()[0]['CAR_ID'], bookedCar=car_db.get_booked_car()[0]['CAR_ID'], freeCar=car_db.get_free_car()[0]['CAR_ID'], issues=issues_db.get_today_issues()[0]['Issues_ID'], monthlyRevenues=booking_db.get_monthly_revenue())
+        return flask.render_template("dashboard.html", allCar=car_db.get_number_of_car()[0]['CAR_ID'], bookedCar=car_db.get_booked_car()[0]['CAR_ID'], freeCar=car_db.get_free_car()[0]['CAR_ID'], issues=issues_db.get_today_issues()[0]['Issues_ID'], monthlyRevenues=booking_db.get_monthly_revenue(), numberOfNewUsers=user_db.get_number_of_new_users())
 
 
 # AGENT PI

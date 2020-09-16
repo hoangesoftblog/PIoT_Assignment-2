@@ -7,7 +7,7 @@ import datetime
 from google_calendar import GoogleCalendar
 import flask_bcrypt
 
-mode = "Off"
+mode = "On"
 
 if mode != "On":
     host = "localhost"
@@ -212,16 +212,18 @@ class UserDatabase (AbstractDatabase):
         if drop_existing_table:
             query = "DROP TABLE IF EXISTS " + self.table
             self.cursor.execute_no_return(query)
-        
+
         table_property = f"{self.ID} INTEGER primary key, {self.NAME} varchar(100), {self.ADDRESS} varchar(200), {self.PHONE_NUMBER} varchar(20), foreign key ({self.ID}) references {LOGIN_TABLE} ({LoginDatabase.ID}) on update cascade on delete cascade " + f", {self.CREATED_DATE} datetime"
-        query = f"CREATE TABLE IF NOT EXISTS {self.table} " + "(" + table_property + ")"
+        query = f"CREATE TABLE IF NOT EXISTS {self.table} " + \
+            "(" + table_property + ")"
         self.execute_no_return(query)
 
     def add_user(self, **property_list):
         if not property_list.get(self.CREATED_DATE):
-            property_list[self.CREATED_DATE] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            property_list[self.CREATED_DATE] = datetime.datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S")
         query = f"insert into {self.table} ({', '.join(property_list.keys())}) values ({', '.join([' %s ' for i in range(len(property_list.keys()))])})"
-        
+
         return self.execute_no_return(query=query, data=property_list.values())
 
     def get_all(self):
@@ -266,6 +268,23 @@ class UserDatabase (AbstractDatabase):
         params = list(new_values)
         params.append(str(user_id))
         return self.execute_no_return(query, params)
+
+    def get_number_of_new_users(self):
+        query = f"SELECT month({self.CREATED_DATE}) as month_number, count(*) as new_users FROM {self.table} group by month({self.CREATED_DATE})"
+        records = self.execute_return(query)
+
+        records = dict(records)
+
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        records = list(records.items())
+        records = [list(item) for item in records]
+        # print(records)
+        records = [[months[item[0] - 1]] +
+                   [int(item[1])] + item[2:] for item in records]
+        print(type(records), records)
+
+        return records
 
 
 class CarDatabase (AbstractDatabase):
@@ -459,21 +478,26 @@ class BookingDatabase(AbstractDatabase):
         return records
 
     def find_booking(self, **search_params):
-        #### from-time and end-time are treated separatedly
+        # from-time and end-time are treated separatedly
         from_time, to_time = None, None
         if self.FROM in search_params.keys():
-            from_time = search_params.get(self.FROM) if isinstance(search_params.get(self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
+            from_time = search_params.get(self.FROM) if isinstance(search_params.get(
+                self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
             del search_params[self.FROM]
 
         if self.TO in search_params.keys():
-            to_time = search_params.get(self.TO) if isinstance(search_params.get(self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
+            to_time = search_params.get(self.TO) if isinstance(search_params.get(
+                self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
             del search_params[self.TO]
 
-        #### Specify on which keys are null, numeric or the remaining ones
-        #### Since for each type, they will have different SQL syntaxes
-        null_keys = [key for key in search_params.keys() if search_params.get(key) is None]
-        numeric_keys = [key for key in search_params.keys() if key not in null_keys and str(search_params.get(key)).isnumeric()]
-        remaining_keys = [key for key in search_params.keys() if key not in null_keys + numeric_keys]
+        # Specify on which keys are null, numeric or the remaining ones
+        # Since for each type, they will have different SQL syntaxes
+        null_keys = [key for key in search_params.keys(
+        ) if search_params.get(key) is None]
+        numeric_keys = [key for key in search_params.keys(
+        ) if key not in null_keys and str(search_params.get(key)).isnumeric()]
+        remaining_keys = [key for key in search_params.keys(
+        ) if key not in null_keys + numeric_keys]
 
         if len(search_params.keys()) > 0:
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
@@ -491,11 +515,13 @@ class BookingDatabase(AbstractDatabase):
             if to_time:
                 additional_where_clause += f" and {self.FROM} < %s "
                 parameters += [to_time]
-            
-            print("The combine query:", query + where_clause + additional_where_clause)
+
+            print("The combine query:", query +
+                  where_clause + additional_where_clause)
             print("Params:", parameters)
 
-            records = self.execute_return(query + where_clause + additional_where_clause, parameters)
+            records = self.execute_return(
+                query + where_clause + additional_where_clause, parameters)
             return self.to_dictionary(records, self.join_property_list)
         else:
             return self.get_all_booking()
@@ -657,23 +683,28 @@ class IssuesDatabase(AbstractDatabase):
         return self.to_dictionary(records)
 
     def find_issues(self, **search_params):
-        #### from-time and end-time are treated separatedly
+        # from-time and end-time are treated separatedly
         from_time, to_time = None, None
         if self.FROM in search_params.keys():
-            from_time = search_params.get(self.FROM) if isinstance(search_params.get(self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
+            from_time = search_params.get(self.FROM) if isinstance(search_params.get(
+                self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
             del search_params[self.FROM]
 
         if self.TO in search_params.keys():
-            to_time = search_params.get(self.TO) if isinstance(search_params.get(self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
+            to_time = search_params.get(self.TO) if isinstance(search_params.get(
+                self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
             del search_params[self.TO]
 
-        #### Specify on which keys are null, numeric or the remaining ones
-        #### Since for each type, they will have different SQL syntaxes
-        null_keys = [key for key in search_params.keys() if search_params.get(key) is None]
-        numeric_keys = [key for key in search_params.keys() if key not in null_keys and str(search_params.get(key)).isnumeric()]
-        remaining_keys = [key for key in search_params.keys() if key not in null_keys + numeric_keys]
+        # Specify on which keys are null, numeric or the remaining ones
+        # Since for each type, they will have different SQL syntaxes
+        null_keys = [key for key in search_params.keys(
+        ) if search_params.get(key) is None]
+        numeric_keys = [key for key in search_params.keys(
+        ) if key not in null_keys and str(search_params.get(key)).isnumeric()]
+        remaining_keys = [key for key in search_params.keys(
+        ) if key not in null_keys + numeric_keys]
 
-        #### Now combine everything into 1 SQL command
+        # Now combine everything into 1 SQL command
         if len(search_params.keys()) > 0:
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
                 [search_params[key]
@@ -686,12 +717,13 @@ class IssuesDatabase(AbstractDatabase):
             if from_time:
                 additional_where_clause += f" and ({self.TO} > %s or {self.TO} is null)"
                 parameters += [from_time]
-            
+
             if to_time:
                 additional_where_clause += f" and {self.FROM} < %s "
                 parameters += [to_time]
-            
-            records = self.execute_return(query + where_clause + additional_where_clause, tuple(parameters))
+
+            records = self.execute_return(
+                query + where_clause + additional_where_clause, tuple(parameters))
             print(records)
             return self.to_dictionary(records, self.join_property_list)
         else:

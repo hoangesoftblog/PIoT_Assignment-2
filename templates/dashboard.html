@@ -93,6 +93,10 @@
 	<div>this is the result of free car {{freeCar}}</div>
 	<div>this is the result of issues {{issues}}</div>
 	<div>this is the result of monthlyRevenues {{monthlyRevenues}}</div>
+	<div>this is the result of numberOfNewUsers {{numberOfNewUsers}}</div>
+
+
+
 
 
 
@@ -138,6 +142,8 @@
 		// var monthlyRevenues = JSON.parse(document.getElementById('monthlyRevenues_id').textContent);
 		// var monthlyRevenues1 = '{{ monthlyRevenues1| safe }}'
 		var monthlyRevenues = {{ monthlyRevenues | tojson }};
+		var numberOfNewUsers = {{ numberOfNewUsers | tojson }};
+
 
 
 	</script>
@@ -182,13 +188,7 @@
 		anychart.onDocumentReady(function () {
 
 			// create a data set
-			var data = anychart.data.set([
-				["John", 10000],
-				["Jake", 12000],
-				["Peter", 13000],
-				["James", 10000],
-				["Mary", 9000]
-			]);
+			var data = anychart.data.set(numberOfNewUsers);
 
 			// create a chart
 			var chart = anychart.bar();
@@ -197,11 +197,11 @@
 			var series = chart.bar(data);
 
 			// set the chart title
-			chart.title("Bar Chart: Basic Sample");
+			chart.title("New user per month");
 
 			// set the titles of the axes
-			chart.xAxis().title("Manager");
-			chart.yAxis().title("Sales, $");
+			chart.xAxis().title("Month");
+			chart.yAxis().title("New registers");
 
 			// set the container id
 			chart.container("containerBarChart");
