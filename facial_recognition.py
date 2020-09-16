@@ -1,47 +1,25 @@
 import cv2, time, os
 import numpy as np
 from PIL import Image
-import json
+import google_cloud_storage
+from database import UserDatabase
 
-list_of_users = {}
+gcs = google_cloud_storage.GoogleCloudStorage()
 
-"""Find the first camera that is usable by the device
 
-:return: int
-"""
 def get_usable_camera_id():
+    """Find the first camera that is usable by the device
+
+    :return: int
+    """
     for i in range(4):
         if cv2.VideoCapture(i) is not None and cv2.VideoCapture(i).isOpened():
             return i
 
 
-"""Add a new user and write list of user dictionary to user_data.json
-    
-:param id: id of the new user
-:param name: name of the new user
-:type id: string
-:type name: string
-:return: void
-"""
-def write_user_dataset(id, name):
-    list_of_users.update({str(id):name})
-    js = json.dumps(list_of_users)
-    user_file = open("user_data.json","w")
-    user_file.write(js)
-    user_file.close
-
-"""Read user_data.json and return the dictionary data list of users
-
-:return: void
-"""
-def read_user_dataset():
-    with open("user_data.json") as user_file:
-        return json.load(user_file)
-
-# For demonstration purpose
-"""For demonstration purpose, show camera, press Q to stop operation
-"""
 def show_video_capture():
+    """For demonstration purpose, show camera, press Q to stop operation
+    """
     video = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
     video.set(3, 480)
     video.set(4, 480)
@@ -64,17 +42,18 @@ def show_video_capture():
     cv2.destroyAllWindows
 
 
-"""When run will start capturing images of faces on the camera, save in the /user_dataset folder
-Naming scheme is based on id
 
-:param id: id of the new user to capture face
-:param name: name of the new user to capture face
-:type id: string
-:type name: string
-:return: void
-"""
 def faceset_capture(id, name):
-    list_of_users = read_user_dataset()
+    """When run will start capturing images of faces on the camera, save in the /user_dataset folder
+    Naming scheme is based on id
+
+    :param id: id of the new user to capture face
+    :param name: name of the new user to capture face
+    :type id: string
+    :type name: string
+    :return: void
+    """
+    # list_of_users = read_user_dataset()
 
     # Start camera
     camera = cv2.VideoCapture(get_usable_camera_id(), cv2.CAP_DSHOW)
@@ -96,17 +75,23 @@ def faceset_capture(id, name):
         for (x,y,w,h) in faces:
             cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0 ,0) , 2)
             count += 1
-            cv2.imwrite("user_dataset/User."+str(id)+"."+str(count)+".jpg", gray[y:y+h,x:x+w])
+            file_name = "User."+str(id)+"."+str(name)+'.'+str(count)+".jpg"
+            # cv2.imwrite("user_dataset/User."+str(id)+"."+str(name)+'.'+str(count)+".jpg", gray[y:y+h,x:x+w])
+            cv2.imwrite("user_dataset/" + file_name, gray[y:y+h,x:x+w])
+            gcs.upload_from_filename("user_dataset/" + file_name, file_name)
 
         # Display the  frame, with bounded rectangle on the person's face
         cv2.imshow('frame', frame)
 
         # To stop, press 'q' for at least 100ms or 50 images are taken reach 50
-        if (cv2.waitKey(100) & 0xFF == ord('q')) or count > 50:
+        if (cv2.waitKey(100) & 0xFF == ord('q')) or count > 20:
             break
 
     # list_of_users[str(id)] = name
     write_user_dataset(str(id), name)
+
+    # upload images to cloud
+    
 
     # Ends camera
     camera.release()
@@ -114,11 +99,12 @@ def faceset_capture(id, name):
 
 
 # Train the faceset so it can be recognize
-"""Will train all the face models and store it in trainer.yml
 
-:return: void
-"""
 def train_faceset():
+    """Will train all the face models and store it in trainer.yml
+
+    :return: void
+    """
     # Create Local Binary Patterns Histograms for face recognization
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
@@ -146,7 +132,6 @@ def train_faceset():
         print("Training user of id "+ str(os.path.split(imagePath)[-1].split(".")[1]))
 
         id = int(os.path.split(imagePath)[-1].split(".")[1])
-        
 
         # Get the face from the training images
         faces = detector.detectMultiScale(img_numpy)
@@ -159,31 +144,33 @@ def train_faceset():
 
             # Add the ID to IDs
             ids.append(id)
-
+    print(np.array(ids))
     # Train the model using the faces and IDs
     recognizer.train(faceSamples, np.array(ids))
 
     # Save the model into trainer.yml
     recognizer.save('trainer/trainer.yml')
 
-"""Start monitoring camera to find the the face of the user with the same ID, press Q to stop
-    
-:param id: id of the user to be recognize
-:type id: string
-:return: True or False
-"""
+
 def face_recognition_start(id):
-    # Load users
-    list_of_users = read_user_dataset()
-    if str(id) not in list_of_users:
-        print("USER ID NOT FOUND! CANNOT FIND FACE")
-        return False
+    """Start monitoring camera to find the the face of the user with the same ID, press Q to stop
+        
+    :param id: id of the user to be recognize
+    :type id: string
+    :return: True or False
+    """
+    gcs.download_trainer()
+
+    # Get all users from MySQL Database
+    users = UserDatabase()
+    user_dict = users.get_all()
+    print(user_dict)
 
     # Create Local Binary Patterns Histograms for face recognization
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
     # Load the trained mode
-    recognizer.read('trainer/trainer.yml')
+    recognizer.read('trainer.yml')
 
     # Load prebuilt model for Frontal Face
     cascadePath = "haarcascade_frontalface_default.xml"
@@ -217,18 +204,14 @@ def face_recognition_start(id):
             # Recognize the face belongs to which ID
             Id = recognizer.predict(gray[y:y+h,x:x+w])
 
-            # Check the ID if exist 
-            if(str(Id[0]) == str(int(id))):
-                print("USER "+ list_of_users[str(id)]   +  " WITH MATCHING ID FOUND")
-                # Stop the camera
-                cam.release()
-                # Close all windows
-                cv2.destroyAllWindows()
-                #Face found
-                return True
-            else:
+            for user in user_dict:
+                print(user['USER_ID'])
                 print(Id)
-                Id = "Unknown"
+                if(Id[0] == user['USER_ID']):
+                    Id = user['name']
+                    break
+                else:
+                    Id = "Unknown"
 
             # Put text describe who is in the picture
             cv2.rectangle(im, (x-22,y-90), (x+w+22, y-22), (0,255,0), -1)
@@ -248,11 +231,3 @@ def face_recognition_start(id):
     cv2.destroyAllWindows()
 
     return False
-
-
-
-# show_video_capture()
-faceset_capture('0001', 'Hieu')
-faceset_capture('0002', 'Khanh')
-train_faceset()
-face_recognition_start('0002')
