@@ -10,6 +10,10 @@ gcs = google_cloud_storage.GoogleCloudStorage()
 
 
 class AgentPiApp(tk.Tk):
+    """Agent PI GUI built with tkinter, is a subclass of the Tk class, a window, used for customers to login with their credentials
+    or face to access the car, for engineer to show their QR code to access the car
+
+    """
     def __init__(self):
         tk.Tk.__init__(self)
         self.attributes('-fullscreen', True)  
@@ -25,6 +29,14 @@ class AgentPiApp(tk.Tk):
         self.switch_frame(LoginPage)
 
     def switch_frame(self, frame_class):
+        """To switch the main window frame to another
+        ...
+        :param frame_class: The frame subclass to switch to
+        :type frame_class: tk.Frame
+        ...
+        :return: void
+        :rtype: void
+        """
         new_frame = frame_class(self)
         if self._frame is not None:
             self._frame.destroy()
@@ -32,7 +44,18 @@ class AgentPiApp(tk.Tk):
         self._frame.pack()
 
 class LoginPage(tk.Frame):
+    """Login Page frame, to show the options available to the users
+
+    """
     def __init__(self, master):
+        """Initializing the login page frame
+
+        :param master: the window class of the tkinter GUI
+        :type master: tk.Frame
+
+        :return: void
+        :rtype: void
+        """
         tk.Frame.__init__(self, master)
 
         self.welcome = tk.Label(self, text = "Welcome!", font=("Arial Bold", 50)).grid(row = 0, ipady = 80)
@@ -41,16 +64,37 @@ class LoginPage(tk.Frame):
         self.login_frame.grid(row = 1)
 
         label_username = tk.Label(self.login_frame, text = "Username: \t", font=("Arial Bold", 30)).grid(row = 1, column = 0, pady = 5)
-        entry_username = tk.Entry(self.login_frame, width = 20, font=("Arial Bold", 30)).grid(row = 1, column = 1, pady = 5)
+        self.entry_username = tk.Entry(self.login_frame, width = 20, font=("Arial Bold", 30))
+        self.entry_username.grid(row = 1, column = 1, pady = 5)
         label_password = tk.Label(self.login_frame, text = "Password: \t", font=("Arial Bold", 30)).grid(row = 2, column = 0, pady = 5)
-        entry_password = tk.Entry(self.login_frame, width = 20, font=("Arial Bold", 30), show="*").grid(row = 2, column = 1, pady = 5)
-        self.bt_login = tk.Button(self.login_frame, text = "Login", font=("Arial Bold", 30), fg = "red").grid(row = 3, columnspan = 2, pady = 15)
+        self.entry_password = tk.Entry(self.login_frame, width = 20, font=("Arial Bold", 30), show="*")
+        self.entry_password.grid(row = 2, column = 1, pady = 5)
+        self.bt_login = tk.Button(self.login_frame, text = "Login", font=("Arial Bold", 30), fg = "red", command = self.get_username_password_entry)
+        self.bt_login.grid(row = 3, columnspan = 2, pady = 15)
 
-        self.bt_login_face = tk.Button(self,width = 30,  text = "Login with facial recognition", font=("Arial Bold", 30), fg = "red", command=lambda: master.switch_frame(FacePage)).grid(row = 3, pady = 60)
-        self.bt_login_qr = tk.Button(self, width = 30 , text = "Engineer QR", command=lambda: master.switch_frame(QrPage), font=("Arial Bold", 30), fg = "red").grid(row = 4)
+        self.bt_login_face = tk.Button(self,width = 30,  text = "Login with facial recognition", font=("Arial Bold", 30), fg = "red", command=lambda: master.switch_frame(FacePage))
+        self.bt_login_face.grid(row = 3, pady = 60)
+        self.bt_login_qr = tk.Button(self, width = 30 , text = "Engineer QR", command=lambda: master.switch_frame(QrPage), font=("Arial Bold", 30), fg = "red")
+        self.bt_login_qr.grid(row = 4)
+
+    def get_username_password_entry(self):
+        print("Username: " + self.entry_username.get())
+        print("Password: " + self.entry_password.get())
+        return (self.entry_username.get(),self.entry_password.get())
 
 class FacePage(tk.Frame):
+    """ The Class to manage the facial recognition frame
+    
+    """
     def __init__(self,master):
+        """Initializing the facial recognition frame
+        ...
+        :param master: the window class of the tkinter GUI
+        :param type: tkinter.Frame
+        ...
+        :return: void
+        :rtype: void
+        """
         tk.Frame.__init__(self, master)
         
         gcs.download_trainer()
@@ -65,7 +109,7 @@ class FacePage(tk.Frame):
         self.recognizer = cv2.face.LBPHFaceRecognizer_create()
 
         # Load the trained mode
-        self.recognizer.read('trainer.yml')
+        self.recognizer.read('trainer/trainer.yml')
 
         # Load prebuilt model for Frontal Face
         self.cascadePath = "haarcascade_frontalface_default.xml"
@@ -85,6 +129,11 @@ class FacePage(tk.Frame):
 
 
     def update(self):
+        """Update the canvas showing the camera feed on the frame
+        ...
+        :return: void
+        :rtype: void
+        """
         # Get frame from video source:
         ret, frame = self.vid.get_frame()
 
@@ -125,7 +174,18 @@ class FacePage(tk.Frame):
 
 
 class QrPage(tk.Frame):
+    """ The Class to manage the QR recognition frame
+    ...
+    """
     def __init__(self,master):
+        """Initializing the qr recognition frame
+        ...
+        :param master: the window class of the tkinter GUI
+        :type: tkinter.Frame
+        ...
+        :return: void
+        :rtype: void
+        """
         tk.Frame.__init__(self, master)
 
         self.vid = ApVideoCapture()
@@ -142,6 +202,11 @@ class QrPage(tk.Frame):
 
 
     def update(self):
+        """Update the canvas showing the camera feed on the frame
+        ...
+        :return: void
+        :rtype: void
+        """
         # Get frame from video source:
         ret, frame = self.vid.get_frame()
 
@@ -168,7 +233,18 @@ class QrPage(tk.Frame):
 
 
 class ApVideoCapture:
+    """ Provide video capture to the other frames
+    
+    """
     def __init__(self, video_source = 0):
+        """ Turn on the camera
+        ...
+        param video_source: the index of the camera to use, defaults to 0
+        type video_source: int
+        ...
+        return: void
+        rtype: void
+        """
         self.vid = cv2.VideoCapture(video_source)
         if not self.vid.isOpened():
             raise ValueError("Unable to open video source", video_source)
@@ -180,9 +256,19 @@ class ApVideoCapture:
 
 
     def __del__(self):
+        """ Turn off the camera
+        ...
+        return: void
+        rtype: void
+        """
         self.vid.release()
 
     def get_frame(self):
+        """ Get the frame that the camera captured
+        ...
+        return: retval, image of the captured sequence
+        rtype: retval, image
+        """
         if self.vid.isOpened():
             ret, frame = self.vid.read()
             if ret:
