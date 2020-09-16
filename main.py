@@ -248,13 +248,39 @@ def delete_booking(id):
 
 @app.route('/booking/modify/<int:id>', methods=["POST", "GET"])
 def modify_booking(id):
+    attributes = {"error": False, "booked_before": False}
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
-        data = {k: v for k, v in form_data.items() if v}
+        data = {key: val for key, val in form_data.items() if val}
         data = {k: (v if v != "None" else None) for k, v in data.items()}
 
-        result_id = booking_db.update_booking(id, **data)
-        return flask.redirect(flask.url_for("booking"))
+        # records = car_db.to_dictionary(car_db.execute_return(
+        #     f"select * from {car_db.table} where {car_db.ID} = %s", (car_id, )), attribute_list=car_db.property_list)
+        # attributes["car_id"] = "ABC"
+        # attributes["lat"] = records[0][car_db.LAT]
+        # attributes["lng"] = records[0][car_db.LNG]
+
+        # Process attributes
+        from_time, to_time = data["from_date"] + " " + data["from_time"] + \
+            ":00", data["to_date"] + " " + data["to_time"] + ":00"
+        del data["from_date"], data["to_time"], data["from_time"], data["to_date"]
+        if (datetime.datetime.strptime(from_time, '%Y-%m-%d %H:%M:%S') >= datetime.datetime.strptime(to_time, '%Y-%m-%d %H:%M:%S')):
+            attributes["error"] = True
+            return flask.render_template("booking_infos.html", **attributes)
+
+        try:
+            # Perform action
+
+            data[booking_db.FROM] = from_time
+            data[booking_db.TO] = to_time
+            booking_db.update_booking(id, **data)
+        except Exception as e:
+            print(e)
+            # print(flask.session.get(login_db.ID))
+            attributes["booked_before"] = True
+            return flask.render_template("booking_modify.html", **attributes)
+
+        return flask.redirect(flask.url_for("home"))
     else:
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.redirect(flask.url_for("login"))
@@ -529,7 +555,7 @@ def dashboard():
         return flask.redirect(flask.url_for("forbidden"))
     else:
         print("car_db.get_booked_car()", car_db.get_booked_car())
-        return flask.render_template("dashboard.html", allCar=car_db.get_all_car()[0]['CAR_ID'], bookedCar=car_db.get_booked_car()[0]['CAR_ID'], freeCar=car_db.get_free_car()[0]['CAR_ID'], issues=issues_db.get_today_issues()[0]['Issues_ID'], monthlyRevenue=booking_db.get_monthly_revenue())
+        return flask.render_template("dashboard.html", allCar=car_db.get_number_of_car()[0]['CAR_ID'], bookedCar=car_db.get_booked_car()[0]['CAR_ID'], freeCar=car_db.get_free_car()[0]['CAR_ID'], issues=issues_db.get_today_issues()[0]['Issues_ID'], monthlyRevenues=booking_db.get_monthly_revenue())
 
 
 # AGENT PI

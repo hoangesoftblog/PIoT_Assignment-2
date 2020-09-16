@@ -309,7 +309,7 @@ class CarDatabase (AbstractDatabase):
         return self.to_dictionary(records)
 
     # Number of all car
-    def get_all_car(self):
+    def get_number_of_car(self):
         query = f"select count(*) from {self.table}"
         records = self.execute_return(query)
         return self.to_dictionary(records)
@@ -516,7 +516,18 @@ FROM {self.table}, {CAR_TABLE}
 where {self.CAR_ID} = {CarDatabase.ID}
 group by month({self.FROM}) """
         records = self.execute_return(query)
-        return self.to_dictionary(records)
+        records = dict(records)
+
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        records = list(records.items())
+        records = [list(item) for item in records]
+        # print(records)
+        records = [[months[item[0] - 1]] +
+                   [int(item[1])] + item[2:] for item in records]
+        print(type(records), records)
+
+        return records
 
 
 class EmployeesDatabase(AbstractDatabase):
