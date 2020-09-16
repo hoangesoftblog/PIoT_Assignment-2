@@ -6,7 +6,7 @@ import datetime
 # from abc import *
 from google_calendar import GoogleCalendar
 
-mode = "On"
+mode = "Off"
 
 if mode != "On":
     host = "localhost"
