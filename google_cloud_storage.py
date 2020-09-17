@@ -13,9 +13,11 @@ https://cloud.google.com/storage/docs/reference/libraries
 
 
 class GoogleCloudStorage:
-    """Google calls files on Cloud Storage as blobs"""
+    """Google Cloud Storage class manage google cloud bucket operations such as downloading and uploading files"""
 
     def __init__(self):
+        """Create the Google Cloud Storage class
+        """
         AUTHORIZATION_SCOPES = [
             'https://www.googleapis.com/auth/devstorage.full_control']
 
@@ -48,36 +50,59 @@ class GoogleCloudStorage:
         self.bucket = self.storage_client.get_bucket("facial_img")
 
     def upload_from_filename(self, file_name, name_on_storage, **keyword_args):
-        """
-        blob.upload_from_filename has many arguments.\n
+        """Upload the file, by file name to the google cloud storage bucket
+        blob.upload_from_filename has many arguments.
         Keywords-arguments keyword_args will store whatever
-        params needed for blob.upload_from_filename   
+        params needed for blob.upload_from_filename  
+        ...
+        :param file_name: the name of the file
+        :type file_name: string
+        :param name_on_storage: the name it is saved on the storage
+        :type name_on_storage: string
+        :param keyword_args: the parameters used for uploading the file such as time out
+        :type keyword_args: dict
         """
         blob = self.bucket.blob(name_on_storage)
         blob.upload_from_filename(file_name, **keyword_args)
         print(f"Upload file {file_name} and name as {name_on_storage}")
 
     def upload_from_file(self, file_obj, name_on_storage, **keyword_args):
-        """
-        file_obj: Using open()\n\n
-        blob.upload_from_file has many arguments.\n
+        """Upload the file using the file object
+        file_obj: Using open()
+        blob.upload_from_file has many arguments.
         Keywords-arguments keyword_args will store whatever
         params needed for blob.upload_from_file  
+        ...
+        :param file_obj: the file object of file to be uploaded
+        :type file_obj: file
+        :param name_on_storage: the name it is saved on the storage
+        :type name_on_storage: string
+        :param keyword_args: the parameters used for uploading the file such as time out
+        :type keyword_args: dict
         """
         blob = self.bucket.blob(name_on_storage)
         blob.upload_from_file(file_obj, **keyword_args)
         print(f"Upload object {name_on_storage}")
 
     def download_file(self, source_file_name, destination_file_name, **keyword_args):
-        """
+        """ Download a file on the bucket
         Keywords-arguments keyword_args will store whatever
         params needed for blob.upload_from_file
+        ...
+        :param source_file_name: The file name on the bucket to be save
+        :type source_file_name: string
+        :param destination_file_name: the name it is saved on the local machine
+        :type destination_file_name: string
+        :param keyword_args: the parameters used for downloading the file such as time out
+        :type keyword_args: dict
         """
         blob = self.bucket.blob(source_file_name)
         blob.download_to_filename(destination_file_name, **keyword_args)
         print(f"Download file {source_file_name} and save as {destination_file_name}")
 
     def download_trainer(self):
+        """ Download the trainer file on the trainer bucket
+        """
         # Connect to bucket on Cloud Storage
         trainer_bucket = self.storage_client.get_bucket("trainer")
         blob = trainer_bucket.blob("trainer.yml")
@@ -86,9 +111,15 @@ class GoogleCloudStorage:
 
 
     def get_all_files(self, **keyword_args):
-        """
+        """ Download all the files on the bucket
         Keywords-arguments keyword_args will store whatever
         params needed for Client.list_blobs
+        ...
+        :param keyword_args: the parameters used for downloading the file such as time out
+        :type keyword_args: dict
+        ...
+        :return: the blob containing all the files
+        :rtype: dict
         """
         blobs = self.storage_client.list_blobs(
             self.bucket.name, **keyword_args)

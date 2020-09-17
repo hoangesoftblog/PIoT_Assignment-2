@@ -458,7 +458,6 @@ def agent_pi_engineers_facial(car_id):
 @app.route('/welcome/<int:car_id>', methods = ["GET"])
 def welcome(car_id):
     return flask.render_template("agentPi/welcome.html", car_id = car_id)
- 
 
 if __name__ == "__main__":
     app.run(debug=True)
