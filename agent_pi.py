@@ -57,6 +57,7 @@ class LoginPage(tk.Frame):
         :rtype: void
         """
         tk.Frame.__init__(self, master)
+        self.master = master
 
         self.welcome = tk.Label(self, text = "Welcome!", font=("Arial Bold", 50)).grid(row = 0, ipady = 80)
 
@@ -69,7 +70,7 @@ class LoginPage(tk.Frame):
         label_password = tk.Label(self.login_frame, text = "Password: \t", font=("Arial Bold", 30)).grid(row = 2, column = 0, pady = 5)
         self.entry_password = tk.Entry(self.login_frame, width = 20, font=("Arial Bold", 30), show="*")
         self.entry_password.grid(row = 2, column = 1, pady = 5)
-        self.bt_login = tk.Button(self.login_frame, text = "Login", font=("Arial Bold", 30), fg = "red", command = self.get_username_password_entry)
+        self.bt_login = tk.Button(self.login_frame, text = "Login", font=("Arial Bold", 30), fg = "red", command = self.login_bt_pressed)
         self.bt_login.grid(row = 3, columnspan = 2, pady = 15)
 
         self.bt_login_face = tk.Button(self,width = 30,  text = "Login with facial recognition", font=("Arial Bold", 30), fg = "red", command=lambda: master.switch_frame(FacePage))
@@ -77,10 +78,50 @@ class LoginPage(tk.Frame):
         self.bt_login_qr = tk.Button(self, width = 30 , text = "Engineer QR", command=lambda: master.switch_frame(QrPage), font=("Arial Bold", 30), fg = "red")
         self.bt_login_qr.grid(row = 4)
 
-    def get_username_password_entry(self):
-        print("Username: " + self.entry_username.get())
-        print("Password: " + self.entry_password.get())
+    def login_bt_pressed(self):
+        username = self.entry_username.get()
+        password = self.entry_password.get()
+        print("Username: " + username)
+        print("Password: " + password)
+        if username == "Hieu" and password == "Hieu":
+            self.master.switch_frame(AccessGranted)
+        else: 
+            self.master.switch_frame(AccessDenied)
         return (self.entry_username.get(),self.entry_password.get())
+
+class AccessGranted(tk.Frame):
+    """Showing the screen so users knows that they have successfully identified as the user of the car
+    """
+    def __init__(self, master):
+        """Create the access granted frame
+        ...
+        :param master: the window class of the tkinter GUI
+        :type master: tk.Frame
+        ...
+        :return: void
+        :rtype: void
+        """
+        tk.Frame.__init__(self, master)
+
+        self.access_granted = tk.Label(self, text = "Access Granted!", font=("Arial Bold", 100), fg = "green", pady = 80).pack()
+        tk.Button(self, text = "Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
+
+class AccessDenied(tk.Frame):
+    """Showing the screen so users knows that they been refused to access the car
+    """
+    def __init__(self, master):
+        """Create the access denied frame
+        ...
+        :param master: the window class of the tkinter GUI
+        :type master: tk.Frame
+        ...
+        :return: void
+        :rtype: void
+        """
+        tk.Frame.__init__(self, master)
+        self.access_granted = tk.Label(self, text = "Access Denied!", font=("Arial Bold", 100), fg = "red", pady = 80).pack()
+        tk.Button(self, text = "Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
+
 
 class FacePage(tk.Frame):
     """ The Class to manage the facial recognition frame
@@ -279,6 +320,6 @@ class ApVideoCapture:
             return (ret, None)
 
 
-
-app = AgentPiApp()
-app.mainloop()  
+if __name__ == "__main__":
+    app = AgentPiApp()
+    app.mainloop()  
