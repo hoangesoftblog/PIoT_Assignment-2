@@ -174,7 +174,8 @@ class LoginDatabase (AbstractDatabase):
     """The Login and Register database
 
     """
-    USERNAME = "username"
+    USERNAME = "email"
+    EMAIL = USERNAME
     PASSWORD = "password"
     ID = "ID"
     ROLES = "roles"
@@ -204,7 +205,7 @@ class LoginDatabase (AbstractDatabase):
         query = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.ID} INTEGER primary key auto_increment, {self.USERNAME} varchar(50) unique, {self.PASSWORD} varchar(50), {self.ROLES} varchar(15) )"
         self.execute_no_return(query)
 
-    def add_login(self, username, password, role="user"):
+    def add_login(self, email, password, role="user"):
         """Register a new user
         ...
         :param username: The username of the new user
@@ -217,6 +218,9 @@ class LoginDatabase (AbstractDatabase):
         :return: the new user row
         :rtype: string
         """
+        # The password needed to be hashed first before being put into the DB
+        hashed_password = flask_bcrypt.bcrypt.hashpw(password.encode(
+            'utf-8'), flask_bcrypt.bcrypt.gensalt()).decode('utf-8')
         query = f"insert into {self.table} " + \
             " ({}, {}, {}) values (%s, %s, %s)".format(*self.property_list[1:])
         return self.execute_no_return(query=query, data=(username, password, role))
@@ -243,23 +247,34 @@ class LoginDatabase (AbstractDatabase):
         :return: the new record of the user who changed the password
         :rtype: string
         """
+        hashed_password = flask_bcrypt.bcrypt.hashpw(password.encode(
+            'utf-8'), flask_bcrypt.bcrypt.gensalt()).decode('utf-8')
         query = f"update {self.table} set {self.PASSWORD} = %s where {self.ID} = %s"
         return self.execute_no_return(query, (password, id))
 
-    def find_login(self, username, password):
+    def login_existed(self, email, password):
         """Get the information of a user based on their username and password
         ...
-        :param username: the username of the user to be found
-        :type username: string
+        :param email: the email of the user to be found
+        :type email: string
         :param password: the password of the user to be found
         :type password: string
         ...
         :return: The record of the user
         :rtype: a dictionary of the user's record
         """
-        query = f"select * from {self.table} where {self.USERNAME} = %s and {self.PASSWORD} = %s"
-        records = self.execute_return(query, (username, password))
-        return self.to_dictionary(records)
+        query = f"select * from {self.table} where {self.USERNAME} = %s"
+        print(query)
+        record = self.to_dictionary(
+            self.execute_return(query, (email, ), amount="one"))
+        if record is None:
+            return []
+        else:
+            stored_password = record.get(self.PASSWORD).encode('utf-8')
+            if flask_bcrypt.bcrypt.checkpw(password.encode('utf-8'), stored_password):
+                return [record]
+            else:
+                return []
 
     def get_all_login(self):
         """Get all the users in the database
@@ -331,7 +346,7 @@ class UserDatabase (AbstractDatabase):
         records = self.execute_return(query)
         return self.to_dictionary(records)
 
-    def find_user(self, **search_term):
+    def find_user(self, **search_params):
         """Find a user based on input parameters
         ...
         :param search_term: the parameters to search for
@@ -340,6 +355,13 @@ class UserDatabase (AbstractDatabase):
         :return: The dictionary containt the customers satisfying the search term
         :rtype: dict of user records
         """
+
+        null_keys = [key for key in search_params.keys(
+        ) if search_params.get(key) is None]
+        numeric_keys = [key for key in search_params.keys(
+        ) if key not in null_keys and str(search_params.get(key)).isnumeric()]
+        remaining_keys = [key for key in search_params.keys(
+        ) if key not in null_keys + numeric_keys]
 
         numeric_keys = [self.ID]
 
@@ -442,7 +464,7 @@ class CarDatabase (AbstractDatabase):
         records = self.execute_return(query)
         return self.to_dictionary(records)
 
-    def find_car(self, **search_term):
+    def find_car(self, **search_params):
         """Find a car based on input parameters
         ...
         :param search_term: the parameters to search for
@@ -451,7 +473,12 @@ class CarDatabase (AbstractDatabase):
         :return: The dictionary containt the cars satisfying the search term
         :rtype: dict of user records
         """
-        numeric_keys = [self.SEATS, self.ID]
+        null_keys = [key for key in search_params.keys(
+        ) if search_params.get(key) is None]
+        numeric_keys = [key for key in search_params.keys(
+        ) if key not in null_keys and str(search_params.get(key)).isnumeric()]
+        remaining_keys = [key for key in search_params.keys(
+        ) if key not in null_keys + numeric_keys]
 
         if len(search_term.keys()) > 0:
             search_value = [("%" + value + "%" if key not in numeric_keys else value)
@@ -550,19 +577,11 @@ class BookingDatabase(AbstractDatabase):
         query = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.ID} INTEGER primary key auto_increment, {self.CAR_ID} int, {self.USER_ID} int, {self.BOOKING_DETAIL} text, {self.FROM} datetime, {self.TO} datetime, {self.EVENT_ID_CALENDAR} varchar(50), foreign key({self.USER_ID}) references {USER_TABLE}({UserDatabase.ID}), foreign key({self.CAR_ID}) references {CAR_TABLE}({CarDatabase.ID}) on update cascade on delete set null )"
         self.execute_no_return(query)
 
-    def add_booking(self, car_id, user_id, booking_detail, from_time: str, to_time: str):
+    def add_booking(self, **property_list):
         """Add a new booking schedule
         ...
-        :param car_id: The id of the car to be booked
-        :type car_id: int
-        :param user_id: The id of the user booking the car
-        :type user_id: int
-        :param booking_detail: the description of the booking
-        :type booking_detail: string
-        :param from_time: The start time when the car is available for the user
-        :type from_time: string
-        :param to_time: the end time when the car is expected to be returned by the user
-        :type to_time: string
+        :param property_list: The properties of the new booking to be added(car id, user id, booking details, start/end time)
+        :type property_list: dict
         ...
         :return: the id of the booking id
         :rtype: int
@@ -592,6 +611,8 @@ class BookingDatabase(AbstractDatabase):
         :return: all the booking records
         :rtype: dict of the booking
         """
+        records = []
+        # This is to find all bookings not null
         query = f"select {', '.join(self.join_property_list)} from {BOOKING_TABLE}, {USER_TABLE}, {CAR_TABLE} " + \
             f" where {BOOKING_TABLE}.{BookingDatabase.USER_ID} = {USER_TABLE}.{UserDatabase.ID} and {BOOKING_TABLE}.{BookingDatabase.CAR_ID} = {CAR_TABLE}.{CarDatabase.ID} "
         print(query)
@@ -702,7 +723,7 @@ class EmployeesDatabase(AbstractDatabase):
     NAME = "name"
     property_list = [ID, NAME]
 
-    def __init__(self, host=host, user=user, password=password, schema=schema, tb_name=EMPLOYEE_TABLE, drop_existing_table=False): 
+    def __init__(self, host=host, user=user, password=password, schema=schema, tb_name=EMPLOYEE_TABLE, drop_existing_table=False):
         """The database containing employee information
         """ 
         self.database = schema
@@ -724,20 +745,17 @@ class EmployeesDatabase(AbstractDatabase):
         query = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.ID} INTEGER primary key references {LOGIN_TABLE}({LoginDatabase.ID}), {self.NAME} varchar(100))"
         self.execute_no_return(query)
 
-    def add_employee(self, id, name):
+    def add_employee(self, **property_list):
         """Add an employee
         ...
-        :param id: the id of the employee
-        :type id: int
-        :param name: name of the employee
-        :type name: string
+        :param property_list: the property of the employee (id and name)
+        :type property_list: dict
         ...
         :return: the id of the new employee
         :rtype: int
         """
-        query = f"insert into {self.table} " + \
-            " ({}, {}) values (%s, %s)".format(*self.property_list)
-        return self.execute_no_return(query, (id, name))
+        query = f"insert into {self.table} ({', '.join(property_list.keys())}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} )"
+        self.execute_no_return(query, list(property_list.values()))
 
     def get_all(self):
         """Get all 
@@ -840,8 +858,8 @@ class IssuesDatabase(AbstractDatabase):
         :return: the id of the issue that was completed
         :rtype: int
         """
-        query = f"update {self.table} set {self.TO} = now() where {self.ID} = %s "
-        return self.execute_no_return(query, (id,))
+        query = f"update {self.table} set {self.TO} = now(), {self.STATUS} = %s where {self.ID} = %s "
+        return self.execute_no_return(query, (True, id))
 
     def get_all_issues(self):
         """Get all the issues
@@ -849,10 +867,17 @@ class IssuesDatabase(AbstractDatabase):
         :return: all the issues
         :rtype: dict of all the issues
         """
-        query = f"select {', '.join(self.join_property_list)} from {self.table}, {CAR_TABLE} " + \
-            f" where {self.table}.{self.CAR_ID} = {CAR_TABLE}.{CarDatabase.ID}"
-        records = self.execute_return(query)
-        return self.to_dictionary(records, self.join_property_list)
+        records = []
+        # Get the normal issues
+        query = f"select {', '.join(self.join_property_list)} from {self.table}, {CAR_TABLE} where {self.table}.{self.CAR_ID} = {CAR_TABLE}.{CarDatabase.ID}"
+        records += self.to_dictionary(self.execute_return(query),
+                                      self.join_property_list)
+
+        # Get the issues with car_id or engineer_id is Null
+        query = f"select {', '.join(self.property_list)} from {self.table} where {self.CAR_ID} is %s or {self.ENGINEER_ID} is %s"
+        records += self.to_dictionary(self.execute_return(query, (None, None)))
+
+        return records
 
     def find_issues(self, **search_params):
         """ Get the issues based on the parameters
