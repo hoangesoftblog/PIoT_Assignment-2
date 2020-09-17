@@ -1,24 +1,13 @@
-# # # AP Bluetooth
 
 import bluetooth
 
+bd_addr = "01:23:45:67:89:AB"
 
-def AP_bluetooth():
-    port = bluetooth.PORT_ANY
+port = 1
 
-    while True:
-        server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        server_sock.bind(("", port))
-        server_sock.listen(port)
+sock=bluetooth.BluetoothSocket( bluetooth.RFCOMM )
+sock.connect((bd_addr, port))
 
-        # Accept the connection
-        client_sock, address = server_sock.accept()
-        print("Accepted connection from ", address)
+sock.send("hello!!")
 
-        # Print data
-        print('HIIIIIIIIIIIIIIII')
-
-        client_sock.close()
-        server_sock.close()
-
-AP_bluetooth()
+sock.close()

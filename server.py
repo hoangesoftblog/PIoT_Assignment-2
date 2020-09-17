@@ -1,29 +1,17 @@
-# # # MP Bluetooth
 
 import bluetooth
-      
-def MP_bluetooth():
 
-    msg="hello"
-    
-    while True:
+server_sock=bluetooth.BluetoothSocket( bluetooth.RFCOMM )
 
-        #### Detect devices
-        devices = bluetooth.discover_devices(lookup_names = True)
-        
-        #### Start connection and send data here
-        for addr, name in devices:
-            # Socket mush be opened and closed for each time
-            # To avoid Error 9 - Bad file descriptor
-            sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+port = 0
+server_sock.bind(("",port))
+server_sock.listen(1)
 
-            # Connect error will raise Error 11 - Connection refused
-            sock.connect((addr, 1))
-            sock.send(msg)
+client_sock,address = server_sock.accept()
+print("Accepted connection from ",address) 
 
-            sock.close()
+data = client_sock.recv(1024)
+print("received [%s]" % data) 
 
-MP_bluetooth()
-
-
-
+client_sock.close()
+server_sock.close()
