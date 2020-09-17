@@ -1,7 +1,7 @@
 # """https://code.tutsplus.com/vi/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972"""
 
 import MySQLdb as SQLDatabase
-#import sqlite3 as SQLDatabase
+# import sqlite3 as SQLDatabase
 import datetime
 # from abc import *
 from google_calendar import GoogleCalendar
@@ -255,16 +255,18 @@ class UserDatabase (AbstractDatabase):
         if drop_existing_table:
             query = "DROP TABLE IF EXISTS " + self.table
             self.cursor.execute_no_return(query)
-        
+
         table_property = f"{self.ID} INTEGER primary key, {self.NAME} varchar(100), {self.ADDRESS} varchar(200), {self.PHONE_NUMBER} varchar(20), foreign key ({self.ID}) references {LOGIN_TABLE} ({LoginDatabase.ID}) on update cascade on delete cascade " + f", {self.CREATED_DATE} datetime"
-        query = f"CREATE TABLE IF NOT EXISTS {self.table} " + "(" + table_property + ")"
+        query = f"CREATE TABLE IF NOT EXISTS {self.table} " + \
+            "(" + table_property + ")"
         self.execute_no_return(query)
 
     def add_user(self, **property_list):
         if not property_list.get(self.CREATED_DATE):
-            property_list[self.CREATED_DATE] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            property_list[self.CREATED_DATE] = datetime.datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S")
         query = f"insert into {self.table} ({', '.join(property_list.keys())}) values ({', '.join([' %s ' for i in range(len(property_list.keys()))])})"
-        
+
         return self.execute_no_return(query=query, data=property_list.values())
 
     def get_all(self):
@@ -310,6 +312,23 @@ class UserDatabase (AbstractDatabase):
         params.append(str(user_id))
         return self.execute_no_return(query, params)
 
+    def get_number_of_new_users(self):
+        query = f"SELECT month({self.CREATED_DATE}) as month_number, count(*) as new_users FROM {self.table} group by month({self.CREATED_DATE})"
+        records = self.execute_return(query)
+
+        records = dict(records)
+
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        records = list(records.items())
+        records = [list(item) for item in records]
+        # print(records)
+        records = [[months[item[0] - 1]] +
+                   [int(item[1])] + item[2:] for item in records]
+        print(type(records), records)
+
+        return records
+
 
 class CarDatabase (AbstractDatabase):
     BRAND = "brand"
@@ -352,6 +371,27 @@ class CarDatabase (AbstractDatabase):
     def get_all_car(self):
         query = f"select * from {self.table}"
         records = self.execute_return(query)
+        return self.to_dictionary(records)
+
+    # Number of all car
+    def get_number_of_car(self):
+        query = f"select count(*) from {self.table}"
+        records = self.execute_return(query)
+        return self.to_dictionary(records)
+
+    # Get current booked car in current date
+    def get_booked_car(self):
+        query = f"select COUNT(b.{BookingDatabase.CAR_ID}) from {BOOKING_TABLE} as b WHERE b.{BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day)"
+        # query = f"select DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)"
+        records = self.execute_return(query)
+        print("booked car", records)
+        return self.to_dictionary(records)
+
+    # Get current free car in current date
+    def get_free_car(self):
+        query = f"select COUNT(c.{self.ID}) from {self.table} as c where c.{self.ID} not in (select i.{IssuesDatabase.CAR_ID} as ID from {ISSUES_TABLE} as i WHERE {IssuesDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day) union select b.{BookingDatabase.CAR_ID} as ID from {BOOKING_TABLE} as b WHERE {BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day))"
+        records = self.execute_return(query)
+        print("free car", records)
         return self.to_dictionary(records)
 
     def find_car(self, **search_params):
@@ -481,21 +521,26 @@ class BookingDatabase(AbstractDatabase):
         return records
 
     def find_booking(self, **search_params):
-        #### from-time and end-time are treated separatedly
+        # from-time and end-time are treated separatedly
         from_time, to_time = None, None
         if self.FROM in search_params.keys():
-            from_time = search_params.get(self.FROM) if isinstance(search_params.get(self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
+            from_time = search_params.get(self.FROM) if isinstance(search_params.get(
+                self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
             del search_params[self.FROM]
 
         if self.TO in search_params.keys():
-            to_time = search_params.get(self.TO) if isinstance(search_params.get(self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
+            to_time = search_params.get(self.TO) if isinstance(search_params.get(
+                self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
             del search_params[self.TO]
 
-        #### Specify on which keys are null, numeric or the remaining ones
-        #### Since for each type, they will have different SQL syntaxes
-        null_keys = [key for key in search_params.keys() if search_params.get(key) is None]
-        numeric_keys = [key for key in search_params.keys() if key not in null_keys and str(search_params.get(key)).isnumeric()]
-        remaining_keys = [key for key in search_params.keys() if key not in null_keys + numeric_keys]
+        # Specify on which keys are null, numeric or the remaining ones
+        # Since for each type, they will have different SQL syntaxes
+        null_keys = [key for key in search_params.keys(
+        ) if search_params.get(key) is None]
+        numeric_keys = [key for key in search_params.keys(
+        ) if key not in null_keys and str(search_params.get(key)).isnumeric()]
+        remaining_keys = [key for key in search_params.keys(
+        ) if key not in null_keys + numeric_keys]
 
         if len(search_params.keys()) > 0:
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
@@ -513,11 +558,13 @@ class BookingDatabase(AbstractDatabase):
             if to_time:
                 additional_where_clause += f" and {self.FROM} < %s "
                 parameters += [to_time]
-            
-            print("The combine query:", query + where_clause + additional_where_clause)
+
+            print("The combine query:", query +
+                  where_clause + additional_where_clause)
             print("Params:", parameters)
 
-            records = self.execute_return(query + where_clause + additional_where_clause, parameters)
+            records = self.execute_return(
+                query + where_clause + additional_where_clause, parameters)
             return self.to_dictionary(records, self.join_property_list)
         else:
             return self.get_all_booking()
@@ -549,6 +596,26 @@ class BookingDatabase(AbstractDatabase):
         query = f"update {self.table} set {', '.join([key + ' = %s ' for key in update_values.keys()])} " + \
             f" where {self.ID} = %s"
         return self.execute_no_return(query, list(update_values.values()) + [booking_id])
+
+    # For statistic report, monthly revenue for the last 12 months
+    def get_monthly_revenue(self):
+        query = f"""SELECT month({self.FROM})as month_number, sum(round((unix_timestamp({self.TO}) - unix_timestamp({self.FROM})) / (60 * 60)) * {CarDatabase.COST_PER_HOUR}) as monthly_revenue
+FROM {self.table}, {CAR_TABLE}
+where {self.CAR_ID} = {CarDatabase.ID}
+group by month({self.FROM}) """
+        records = self.execute_return(query)
+        records = dict(records)
+
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        records = list(records.items())
+        records = [list(item) for item in records]
+        # print(records)
+        records = [[months[item[0] - 1]] +
+                   [int(item[1])] + item[2:] for item in records]
+        print(type(records), records)
+
+        return records
 
 
 class EmployeesDatabase(AbstractDatabase):
@@ -652,24 +719,35 @@ class IssuesDatabase(AbstractDatabase):
 
         return records
 
+    # Get current reported car in current date
+    def get_today_issues(self):
+        query = f"SELECT count(*) FROM (select * from {self.table} WHERE {self.FROM} between current_date() and date_add(current_date(), interval 1 day)) as e"
+        records = self.execute_return(query)
+        return self.to_dictionary(records)
+
     def find_issues(self, **search_params):
-        #### from-time and end-time are treated separatedly
+        # from-time and end-time are treated separatedly
         from_time, to_time = None, None
         if self.FROM in search_params.keys():
-            from_time = search_params.get(self.FROM) if isinstance(search_params.get(self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
+            from_time = search_params.get(self.FROM) if isinstance(search_params.get(
+                self.FROM), str) else datetime.datetime.strftime(search_params.get(self.FROM), "%Y-%m-%d %H:%M:%S")
             del search_params[self.FROM]
 
         if self.TO in search_params.keys():
-            to_time = search_params.get(self.TO) if isinstance(search_params.get(self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
+            to_time = search_params.get(self.TO) if isinstance(search_params.get(
+                self.TO), str) else datetime.datetime.strftime(search_params.get(self.TO), "%Y-%m-%d %H:%M:%S")
             del search_params[self.TO]
 
-        #### Specify on which keys are null, numeric or the remaining ones
-        #### Since for each type, they will have different SQL syntaxes
-        null_keys = [key for key in search_params.keys() if search_params.get(key) is None]
-        numeric_keys = [key for key in search_params.keys() if key not in null_keys and str(search_params.get(key)).isnumeric()]
-        remaining_keys = [key for key in search_params.keys() if key not in null_keys + numeric_keys]
+        # Specify on which keys are null, numeric or the remaining ones
+        # Since for each type, they will have different SQL syntaxes
+        null_keys = [key for key in search_params.keys(
+        ) if search_params.get(key) is None]
+        numeric_keys = [key for key in search_params.keys(
+        ) if key not in null_keys and str(search_params.get(key)).isnumeric()]
+        remaining_keys = [key for key in search_params.keys(
+        ) if key not in null_keys + numeric_keys]
 
-        #### Now combine everything into 1 SQL command
+        # Now combine everything into 1 SQL command
         if len(search_params.keys()) > 0:
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
                 [search_params[key]
@@ -682,12 +760,13 @@ class IssuesDatabase(AbstractDatabase):
             if from_time:
                 additional_where_clause += f" and ({self.TO} > %s or {self.TO} is null)"
                 parameters += [from_time]
-            
+
             if to_time:
                 additional_where_clause += f" and {self.FROM} < %s "
                 parameters += [to_time]
-            
-            records = self.execute_return(query + where_clause + additional_where_clause, tuple(parameters))
+
+            records = self.execute_return(
+                query + where_clause + additional_where_clause, tuple(parameters))
             print(records)
             return self.to_dictionary(records, self.join_property_list)
         else:
@@ -806,3 +885,5 @@ if __name__ == "__main__":
 
     # hashed_password = flask_bcrypt.bcrypt.hashpw(password.encode('utf-8'), flask_bcrypt.bcrypt.gensalt()).decode('utf-8')
     # print(len(hashed_password))
+
+    car_db.get_booked_car()

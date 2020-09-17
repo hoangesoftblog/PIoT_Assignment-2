@@ -121,10 +121,10 @@ class GoogleCalendar():
         The API can be seen at:
         https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
         """
-        if from_time is str:
+        if isinstance(from_time, str):
             from_time = datetime.datetime.strptime(
                 from_time, "%Y-%m-%d %H:%M:%S")
-        if to_time is str:
+        if isinstance(to_time, str):
             to_time = datetime.datetime.strptime(to_time, "%Y-%m-%d %H:%M:%S")
 
         start, end = from_time.isoformat(), to_time.isoformat()
@@ -134,8 +134,8 @@ class GoogleCalendar():
             "description": f"""Booking for User {UID} - Car {CID}. {booking_details}""",
             "start": {"dateTime": start, "timeZone": "Asia/Ho_Chi_Minh"},
             "end": {"dateTime": end, "timeZone": "Asia/Ho_Chi_Minh",
-            **additional_params
-            }
+                    **additional_params
+                    }
         }).execute()
 
         return response

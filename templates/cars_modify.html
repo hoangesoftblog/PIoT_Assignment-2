@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<!--
+	Projection by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
+
+<head>
+    <title>CAR RENTAL SYSTEM</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+</head>
+
+<body>
+
+
+    <!-- Header -->
+    <header id="header">
+        <div class="inner">
+            <a href="/home" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
+            <nav id="nav">
+                <!-- <a href="dashboard.html">Dashboard</a>
+                <a href="index.html">Home</a>
+                <a href="login.html">Login</a>
+                <a href="Register.html">Register</a>
+                <a href="carlist.html">Car list</a>
+                <a href="bookinginfo.html">Booking info</a>
+                <a href="rental_history.html">Rental history</a>
+                <a href="reported_car.html">Reported car</a>
+                <a href="/booking_history">Booking History</a> -->
+
+                <a href="/cars">Cars</a>
+                <a href="/users">Users</a>
+                <a href="/booking_history">Booking History</a>
+                <a href="/issues">Car Issues</a>
+                <a href="/logout">Logout</a>
+            </nav>
+            <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <section id="banner" style="background-image: url( {{ url_for('static', filename='images/banner8.jpg') }} )">
+        <div class="inner">
+            <header>
+                <h1>ADMINISTRATION</h1>
+            </header>
+
+            <div class="flex ">
+
+                <div>
+                    <span class="icon fa-car"></span>
+                    <h3>Car rental</h3>
+                    <!-- <p>Suspendisse amet ullamco</p> -->
+                </div>
+
+                <div>
+                    <span class="icon fa-camera"></span>
+                    <h3>Smart connection</h3>
+                    <!-- <p>Class aptent taciti ad litora</p> -->
+                </div>
+
+                <div>
+                    <span class="icon fa-bug"></span>
+                    <h3>Little bugs</h3>
+                    <!-- <p>Nulla vitae mauris non felis</p> -->
+                </div>
+
+            </div>
+
+            <!-- <footer>
+				<a href="#" class="button">Get Started</a>
+			</footer> -->
+        </div>
+    </section>
+
+    <section id="register" class="wrapper align-left">
+        <div class="inner">
+
+            <h3>CAR INFORMATION MODIFY</h3>
+
+            <div class="table-wrapper">
+
+                <form method="post" action="#">
+                    <div class="row uniform">
+                        <!-- <div class="6u 12u$(xsmall)">
+							<input type="text" name="brand" id="car-name" value="" placeholder="Brand" />
+						</div> -->
+                        <!-- <div class="6u$ 12u$(xsmall)" important!>
+							<input type="number" name="seats" id="seats" value="" placeholder="Seats" />
+						</div> -->
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <input type="text" name="brand" id="brand" placeholder="Brand" row="1">
+                            </div>
+                        </div>
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <input type="number" name="seats" id="seats" placeholder="Number of seats" row="1"
+                                    style="	-moz-appearance: none;
+                                -webkit-appearance: none;
+                                -ms-appearance: none;
+                                appearance: none;
+                                background: white;
+                                border-radius: 0px;
+                                border: none;
+                                border: solid 2px #fcba03;
+                                color: black;
+                                display: block;
+                                outline: 0;
+                                padding: 0 1em;
+                                text-decoration: none;
+                                height: 2.75em;
+                                width: 100%;" />
+                            </div>
+                        </div>
+
+                        <!-- Break -->
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <input type="text" name="colour" id="colour" placeholder="Colour" row="1">
+                            </div>
+                        </div>
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <input type="text" name="body_type" id="body_type" placeholder="Body Type" row="1">
+                            </div>
+                        </div>
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <input type="text" name="location" id="location" placeholder="Location" row="1">
+                            </div>
+                        </div>
+
+
+                        <div class="6u 12u$(xsmall)">
+                            <div>
+
+                                <input type="number" name="cost_per_hour" id="cost_per_hour" placeholder="Cost per hour"
+                                    row="1" style="	-moz-appearance: none;
+                                -webkit-appearance: none;
+                                -ms-appearance: none;
+                                appearance: none;
+                                background: white;
+                                border-radius: 0px;
+                                border: none;
+                                border: solid 2px #fcba03;
+                                color: black;
+                                display: block;
+                                outline: 0;
+                                padding: 0 1em;
+                                text-decoration: none;
+                                height: 2.75em;
+                                width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="12u$">
+                            <ul class="actions">
+                                <li><input type="submit" value="Save" /></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+
+            <h3>About us</h3>
+
+            <!-- <form action="#" method="post">
+
+				<div class="field half first">
+					<label for="name">Name</label>
+					<input name="name" id="name" type="text" placeholder="Name">
+				</div>
+				<div class="field half">
+					<label for="email">Email</label>
+					<input name="email" id="email" type="email" placeholder="Email">
+				</div>
+				<div class="field">
+					<label for="message">Message</label>
+					<textarea name="message" id="message" rows="6" placeholder="Message"></textarea>
+				</div>
+				<ul class="actions">
+					<li><input value="Send Message" class="button alt" type="submit"></li>
+				</ul>
+			</form> -->
+
+            <div class="copyright">
+                &copy; Untitled. Design: <a href="https://templated.co">TEMPLATED</a>. Images: <a
+                    href="https://unsplash.com">Unsplash</a>.
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
