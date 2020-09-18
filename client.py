@@ -1,23 +1,41 @@
+import sys
+
 import bluetooth
-      
 
-def main():
 
-    while True:
-        
-        status = "OK"
+addr = None
 
-        #### Detect devices
-        devices = bluetooth.discover_devices(lookup_names = True)
-        
-        #### Start connection and send data here
-        for addr, name in devices:
-            # Socket mush be opened and closed for each time
-            # To avoid Error 9 - Bad file descriptor
-            sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+if len(sys.argv) < 2:
+    print("No device specified. Searching all nearby bluetooth devices for "
+          "the SampleServer service...")
+else:
+    addr = sys.argv[1]
+    print("Searching for SampleServer on {}...".format(addr))
 
-            sock.send(status)
+# search for the SampleServer service
+uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+service_matches = bluetooth.find_service(uuid=uuid, address=addr)
 
-            sock.close()
+if len(service_matches) == 0:
+    print("Couldn't find the SampleServer service.")
+    sys.exit(0)
 
-main()
+first_match = service_matches[0]
+port = first_match["port"]
+name = first_match["name"]
+host = first_match["host"]
+
+print("Connecting to \"{}\" on {}".format(name, host))
+
+# Create the client socket
+sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+sock.connect((host, port))
+
+print("Connected. Type something...")
+while True:
+    data = input()
+    if not data:
+        break
+    sock.send(data)
+
+sock.close()
