@@ -54,13 +54,15 @@ class GoogleCloudStorage:
         blob.upload_from_filename has many arguments.
         Keywords-arguments keyword_args will store whatever
         params needed for blob.upload_from_filename  
-        ...
-        :param file_name: the name of the file
-        :type file_name: string
-        :param name_on_storage: the name it is saved on the storage
-        :type name_on_storage: string
-        :param keyword_args: the parameters used for uploading the file such as time out
-        :type keyword_args: dict
+        
+        Parameters
+        ----------
+        file_name
+            The message to send
+        name_on_storage
+            The name it is saved on the storage
+        keyword_args
+            The parameters used for uploading the file such as time out (in dict form)
         """
         blob = self.bucket.blob(name_on_storage)
         blob.upload_from_filename(file_name, **keyword_args)
@@ -72,13 +74,15 @@ class GoogleCloudStorage:
         blob.upload_from_file has many arguments.
         Keywords-arguments keyword_args will store whatever
         params needed for blob.upload_from_file  
-        ...
-        :param file_obj: the file object of file to be uploaded
-        :type file_obj: file
-        :param name_on_storage: the name it is saved on the storage
-        :type name_on_storage: string
-        :param keyword_args: the parameters used for uploading the file such as time out
-        :type keyword_args: dict
+        
+        Parameters
+        ----------
+        file_obj
+            the file object of file to be uploaded
+        name_on_storage
+            the name it is saved on the storage
+        keyword_args
+            The parameters used for uploading the file such as time out (in dict form)
         """
         blob = self.bucket.blob(name_on_storage)
         blob.upload_from_file(file_obj, **keyword_args)
@@ -88,13 +92,15 @@ class GoogleCloudStorage:
         """ Download a file on the bucket
         Keywords-arguments keyword_args will store whatever
         params needed for blob.upload_from_file
-        ...
-        :param source_file_name: The file name on the bucket to be save
-        :type source_file_name: string
-        :param destination_file_name: the name it is saved on the local machine
-        :type destination_file_name: string
-        :param keyword_args: the parameters used for downloading the file such as time out
-        :type keyword_args: dict
+        
+        Parameters
+        ----------
+        source_file_name
+            The file name on the bucket to be save
+        destination_file_name
+            The name it is saved on the local machine
+        keyword_args
+            The parameters used for uploading the file such as time out (in dict form)
         """
         blob = self.bucket.blob(source_file_name)
         blob.download_to_filename(destination_file_name, **keyword_args)
@@ -114,12 +120,11 @@ class GoogleCloudStorage:
         """ Download all the files on the bucket
         Keywords-arguments keyword_args will store whatever
         params needed for Client.list_blobs
-        ...
-        :param keyword_args: the parameters used for downloading the file such as time out
-        :type keyword_args: dict
-        ...
-        :return: the blob containing all the files
-        :rtype: dict
+        
+        Parameters
+        ----------
+        keyword_args
+            The parameters used for downloading the file such as time out (in dict form)
         """
         blobs = self.storage_client.list_blobs(
             self.bucket.name, **keyword_args)

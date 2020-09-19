@@ -49,19 +49,21 @@ class GoogleCalendar():
         additional_params is implemented to be put into the body of the request from the API
         The API can be seen at:
         https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
-        ...
-        :param user_id: the id of the user booking the car
-        :type user_id: int
-        :param car_id: the id of the car to be booked
-        :type car_id: int
-        :param start_time: the date and time when the car can start to be booked
-        :type start_time: datetime
-        :param end_time: the date and time when the car has to be returned before
-        :type end_time: datetime
-        :param details: the details of the booking
-        :type details: string
-        :param additional_params: the parameters to go with the calendar insert function
-        :type: dict
+        
+        Parameters
+        ----------
+        user_id
+            The id of the user booking the car
+        car_id
+            The id of the car to be booked
+        start_time
+            The date and time when the car can start to be booked
+        end_time
+            The date and time when the car has to be returned before
+        details
+            The details of the booking
+        additional_params
+            The parameters to go with the calendar insert function
         """
         start, end = start_time.isoformat(), end_time.isoformat()
         print(start)
@@ -85,12 +87,11 @@ class GoogleCalendar():
         """Get all the event in a list
         The API can be seen at:
         https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
-        ...
-        :param addtional_params: the parameters to go with the calendar list function
-        :type additional_params: dict
-        ...
-        :return: a list of booked events on the calendar
-        :rtype: list
+        
+        Parameters
+        ----------
+        addtional_params
+            The parameters to go with the calendar list function
         """
         next_page_token = None
         events = []
@@ -112,14 +113,6 @@ class GoogleCalendar():
 
     def get_all_calendarsList(self):
         """Get all the event in a list
-        The API can be seen at:
-        https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
-        ...
-        :param addtional_params: the parameters to go with the calendar list function
-        :type additional_params: dict
-        ...
-        :return: a list of booked events on the calendar
-        :rtype: list
         """
         # Next page-token is a token used to see next list of calendars
         next_page_token = None
@@ -145,12 +138,11 @@ class GoogleCalendar():
 
     def cancel_event(self, event_id):
         """Delete a booked event on the calendar
-        ...
-        :param event_id: the id of the event
-        :type event_id: int
-        ...
-        :return: the response when the event is deleted (whether the cancellation was successful or not or event not found)
-        :rtype: string
+        
+        Parameters
+        ----------
+        event_id
+            The id of the event
         """
         response = self.service.events().delete(
             calendarId=self.calendarList_id, eventId=event_id).execute()
@@ -161,24 +153,23 @@ class GoogleCalendar():
         additional_params is implemented to be put into the body of the Request from the API
         The API can be seen at:
         https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
-        ...
-        :param event_id: the id of the event
-        :type event_id: int
-        :param UID: the id of the user
-        :type UID: int
-        :param CID: the id of the car
-        :type CID: int
-        :param from_time: the new start time of the booking (in the form of datetime)
-        :type from_time: string
-        :param to_time: the new end time of the booking (in the form of datetime)
-        :type to_time: string
-        :param booking_details: the new booking details
-        :type booking_details: string
-        :additional_params: the parameters to go with the calendar update function
-        :type additional_params: dict
-        ...
-        :return: the response when the event is updated (if the update was successful or not, or the event was not found)
-        :rtype: string
+        
+        Parameters
+        ----------
+        event_id
+            The id of the event
+        UID
+            the id of the user
+        CID
+            the id of the car
+        from_time
+            the new start time of the booking (in the form of datetime)
+        to_time
+            the new end time of the booking (in the form of datetime)
+        booking_details
+            the new booking details
+        additional_params
+            the parameters to go with the calendar update function
         """
         if from_time is str:
             from_time = datetime.datetime.strptime(

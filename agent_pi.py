@@ -30,12 +30,11 @@ class AgentPiApp(tk.Tk):
 
     def switch_frame(self, frame_class):
         """To switch the main window frame to another
-        ...
-        :param frame_class: The frame subclass to switch to
-        :type frame_class: tk.Frame
-        ...
-        :return: void
-        :rtype: void
+        
+        Parameters
+        ----------
+        frame_class
+            The frame subclass to switch to
         """
         new_frame = frame_class(self)
         if self._frame is not None:
@@ -50,11 +49,6 @@ class LoginPage(tk.Frame):
     def __init__(self, master):
         """Initializing the login page frame
 
-        :param master: the window class of the tkinter GUI
-        :type master: tk.Frame
-
-        :return: void
-        :rtype: void
         """
         tk.Frame.__init__(self, master)
         self.master = master
@@ -94,12 +88,7 @@ class AccessGranted(tk.Frame):
     """
     def __init__(self, master):
         """Create the access granted frame
-        ...
-        :param master: the window class of the tkinter GUI
-        :type master: tk.Frame
-        ...
-        :return: void
-        :rtype: void
+        
         """
         tk.Frame.__init__(self, master)
 
@@ -111,12 +100,7 @@ class AccessDenied(tk.Frame):
     """
     def __init__(self, master):
         """Create the access denied frame
-        ...
-        :param master: the window class of the tkinter GUI
-        :type master: tk.Frame
-        ...
-        :return: void
-        :rtype: void
+        
         """
         tk.Frame.__init__(self, master)
         self.access_granted = tk.Label(self, text = "Access Denied!", font=("Arial Bold", 100), fg = "red", pady = 80).pack()
@@ -129,12 +113,7 @@ class FacePage(tk.Frame):
     """
     def __init__(self,master):
         """Initializing the facial recognition frame
-        ...
-        :param master: the window class of the tkinter GUI
-        :param type: tkinter.Frame
-        ...
-        :return: void
-        :rtype: void
+        
         """
         tk.Frame.__init__(self, master)
         
@@ -171,9 +150,7 @@ class FacePage(tk.Frame):
 
     def update(self):
         """Update the canvas showing the camera feed on the frame
-        ...
-        :return: void
-        :rtype: void
+        
         """
         # Get frame from video source:
         ret, frame = self.vid.get_frame()
@@ -220,12 +197,7 @@ class QrPage(tk.Frame):
     """
     def __init__(self,master):
         """Initializing the qr recognition frame
-        ...
-        :param master: the window class of the tkinter GUI
-        :type: tkinter.Frame
-        ...
-        :return: void
-        :rtype: void
+        
         """
         tk.Frame.__init__(self, master)
 
@@ -244,9 +216,7 @@ class QrPage(tk.Frame):
 
     def update(self):
         """Update the canvas showing the camera feed on the frame
-        ...
-        :return: void
-        :rtype: void
+        
         """
         # Get frame from video source:
         ret, frame = self.vid.get_frame()
@@ -279,12 +249,11 @@ class ApVideoCapture:
     """
     def __init__(self, video_source = 0):
         """ Turn on the camera
-        ...
-        param video_source: the index of the camera to use, defaults to 0
-        type video_source: int
-        ...
-        return: void
-        rtype: void
+        
+        Parameters
+        ----------
+        video_source
+            The index of the camera to use, defaults to 0
         """
         self.vid = cv2.VideoCapture(video_source)
         if not self.vid.isOpened():
@@ -298,17 +267,11 @@ class ApVideoCapture:
 
     def __del__(self):
         """ Turn off the camera
-        ...
-        return: void
-        rtype: void
         """
         self.vid.release()
 
     def get_frame(self):
-        """ Get the frame that the camera captured
-        ...
-        return: retval, image of the captured sequence
-        rtype: retval, image
+        """ Get the frame that the camera captured as a tuple of (ret, frame)
         """
         if self.vid.isOpened():
             ret, frame = self.vid.read()
