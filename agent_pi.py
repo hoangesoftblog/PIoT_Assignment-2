@@ -14,8 +14,10 @@ class AgentPiApp(tk.Tk):
     or face to access the car, for engineer to show their QR code to access the car
 
     """
-    def __init__(self):
+    def __init__(self, car_id):
         tk.Tk.__init__(self)
+        self.car_id = car_id
+        print("Agent for car of id "+ str(car_id) +  " is created")
         self.attributes('-fullscreen', True)  
 
         # To rename the title of the window
@@ -27,6 +29,26 @@ class AgentPiApp(tk.Tk):
 
         self._frame = None
         self.switch_frame(LoginPage)
+
+    def is_access_allowed(self, user_id):
+        """Return True or False if the user is allowed to access the car or not
+
+        Parameters
+        ----------
+        user_id
+            The Id of the user trying to access the car
+        """
+        ### DATABASE CODE GOES HERE
+        return False
+
+
+    def get_accessible_user_id(self):
+        """Return the user id that is allowed to access the car, at current time
+        
+        """
+        ### DATABASE CODE GOES HERE
+        return 1
+
 
     def switch_frame(self, frame_class):
         """To switch the main window frame to another
@@ -77,10 +99,15 @@ class LoginPage(tk.Frame):
         password = self.entry_password.get()
         print("Username: " + username)
         print("Password: " + password)
+
+        ### IDENTIFICATION & SOCKET CODE GOES HERE
         if username == "Hieu" and password == "Hieu":
             self.master.switch_frame(AccessGranted)
         else: 
             self.master.switch_frame(AccessDenied)
+            
+
+
         return (self.entry_username.get(),self.entry_password.get())
 
 class AccessGranted(tk.Frame):
@@ -116,7 +143,12 @@ class FacePage(tk.Frame):
         
         """
         tk.Frame.__init__(self, master)
-        
+        self.master = master
+
+        ### GET NAME OF USER HERE 
+        self.user_id = self.master.get_accessible_user_id()
+        # self.user_name = 
+
         gcs.download_trainer()
         
         # Get all users from MySQL Database
@@ -171,19 +203,15 @@ class FacePage(tk.Frame):
                 # Recognize the face belongs to which ID
                 Id = self.recognizer.predict(gray[y:y+h,x:x+w])
 
-                for user in self.user_dict:
-                    print(user['USER_ID'])
-                    print(Id)
-                    if(Id[0] == user['USER_ID']):
-                        Id = user['name']
-                        break
-                    else:
-                        Id = "Unknown"
-
+                ### IDENTIFICATION & SOCKET CODE GOES HERE
+                if Id[0] == self.user_id:
+                    name_to_put = self.user_name
+                else:
+                    name_to_put = "Unknown - Access Denied"
 
                 # Put text describe who is in the picture
                 cv2.rectangle(frame, (x-22,y-90), (x+w+22, y-22), (0,255,0), -1)
-                cv2.putText(frame, str(Id), (x,y-40), self.font, 2, (255,255,255), 3)
+                cv2.putText(frame, str(name_to_put), (x,y-40), self.font, 2, (255,255,255), 3)
 
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.main_img.create_image(0, 0, image = self.photo, anchor = tk.NW)
@@ -200,6 +228,7 @@ class QrPage(tk.Frame):
         
         """
         tk.Frame.__init__(self, master)
+        self.master = master
 
         self.vid = ApVideoCapture()
 
@@ -232,6 +261,9 @@ class QrPage(tk.Frame):
                         # draw all lines
                         cv2.line(frame, tuple(bbox[i][0]), tuple(bbox[(i+1) % len(bbox)][0]), color=(255, 0, 0), thickness=2)
                     if data:
+                        ### QR Code content is data, require IDENTIFICATION CODE AND SOCKET CODE
+
+
                         print("[+] QR Code detected, data:", data)
 
                 self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
@@ -284,5 +316,5 @@ class ApVideoCapture:
 
 
 if __name__ == "__main__":
-    app = AgentPiApp()
+    app = AgentPiApp(1)
     app.mainloop()  
