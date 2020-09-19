@@ -1,3 +1,12 @@
+* 19/9/2020:
+- Add:
++ Add booking, users, cars for admin
++ Add basic unit test
++ Update booking has a check
++ Move Statistics functions into StatisticsDatabase
++ Add users account settings
+
+* Before:
 - Add:
 + Sending email
 + Show Google Map/Calendar when Booking Car

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User settings</title>
+</head>
+<body>
+    <h1>Update infos</h1>
+    <form action="#" method="POST">
+        <div>
+            <label for="name">Name</label><br/>
+            <input type="text" id="name" name="name" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="address">Address</label><br/>
+            <input type="text" id="address" name="address" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="phone_number">Phone</label><br/>
+            <input type="tel" id="phone_number" name="phone_number" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <img id="video_capture" src="{{url_for('video')}}"/>
+        </div>
+        <br/>
+        <button>Save!</button>
+    </form>
+</body>
+</html>

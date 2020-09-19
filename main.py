@@ -5,6 +5,8 @@ import time
 import flask_mail
 import qr_code
 import socket_communication
+import camera as VideoCamera
+
 
 app = flask.Flask(__name__)
 app.secret_key = "jose"
@@ -27,6 +29,9 @@ car_db = CarDatabase()
 booking_db = BookingDatabase(calendar=GoogleCalendar())
 employee_db = EmployeesDatabase()
 issues_db = IssuesDatabase()
+statistics_db = StatisticsDatabase()
+camera = VideoCamera.VideoCamera()
+
 
 
 # https://blog.tecladocode.com/how-to-add-user-logins-to-your-flask-website/
@@ -97,8 +102,21 @@ def forget_password():
     if flask.request.method == "GET":
         return flask.render_template("forget_password.html")
     else:
-        data = flask.request.form
         return "Not done yet"
+
+
+@app.route('/user_setting', methods = ["GET", "POST"])
+def update_info():
+    if flask.request.method == "POST":
+        form_data = flask.request.form.to_dict()
+        data = {key: val for key, val in form_data.items() if val}
+        data = {k: (v if v != "None" else None) for k, v in data.items()}
+
+        user_db.update_user(flask.session.get(login_db.ID), **data)
+        return flask.redirect(flask.url_for("home"))
+    else:
+        records = user_db.find_user(**{user_db.ID: flask.session.get(login_db.ID)})
+        return flask.render_template("user_setting.html", **(records[0]))
 
 
 @app.route('/logout', methods=["GET"])
@@ -174,7 +192,17 @@ def booking_info(car_id):
 
 @app.route('/booking_history', methods=["GET", "POST"])
 def booking():
+    all_bookings = booking_db.get_all_booking()
+
+    # Add keys and values for render_template
     attributes = {}
+    attributes["location"] = list(set([i.get(CarDatabase.LOCATION) for i in all_bookings if i.get(CarDatabase.LOCATION)]))
+    attributes["colours"] = list(set([i.get(CarDatabase.COLOUR) for i in all_bookings if i.get(CarDatabase.COLOUR)]))
+    attributes[BookingDatabase.USER_ID] = list(set([i.get(BookingDatabase.USER_ID) for i in all_bookings if i.get(BookingDatabase.USER_ID)]))
+    attributes["brands"] = list(set([i.get(CarDatabase.BRAND) for i in all_bookings if i.get(CarDatabase.BRAND)]))
+    attributes["colours"] = list(set([i.get(CarDatabase.COLOUR) for i in all_bookings if i.get(CarDatabase.COLOUR)]))
+    attributes["seats"] = list(set([i.get(CarDatabase.SEATS) for i in all_bookings if i.get(CarDatabase.SEATS)]))
+
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
@@ -185,25 +213,11 @@ def booking():
         if role == "user":
             data[BookingDatabase.USER_ID] = flask.session.get(login_db.ID)
             records = booking_db.find_booking(**data)
-
-            # Add keys and values used for render_template
             attributes["history"] = records
-            attributes["type"] = car_db.get_values_of_col(car_db.BODY_TYPE)
-            attributes["colours"] = car_db.get_values_of_col(car_db.COLOUR)
-            attributes["seats"] = car_db.get_values_of_col(car_db.SEATS)
-            attributes["brands"] = car_db.get_values_of_col(car_db.BRAND)
-
             return flask.render_template("booking_history.html", **attributes)
         elif role == "admin":
-            records = booking_db.find_booking(**data)
-
-            # Add keys and values used for render_template
-            attributes["history"] = records
-            attributes["type"] = car_db.get_values_of_col(car_db.BODY_TYPE)
-            attributes["colours"] = car_db.get_values_of_col(car_db.COLOUR)
-            attributes["seats"] = car_db.get_values_of_col(car_db.SEATS)
-            attributes["brands"] = car_db.get_values_of_col(car_db.BRAND)
-
+            records = booking_db.find_booking(**data)   
+            attributes["history"] = records       
             return flask.render_template("rental_history.html", **attributes)
         else:
             return flask.redirect(flask.url_for("forbidden"))
@@ -213,28 +227,12 @@ def booking():
         else:
             role = flask.session.get(login_db.ROLES)
             if role == "user":
-                params = {
-                    BookingDatabase.USER_ID: flask.session.get(login_db.ID)}
+                params = {BookingDatabase.USER_ID: flask.session.get(login_db.ID)}
                 records = booking_db.find_booking(**params)
-
-                # Add keys and values for render_template
                 attributes["history"] = records
-                attributes["type"] = car_db.get_values_of_col(car_db.BODY_TYPE)
-                attributes["colours"] = car_db.get_values_of_col(car_db.COLOUR)
-                attributes["seats"] = car_db.get_values_of_col(car_db.SEATS)
-                attributes["brands"] = car_db.get_values_of_col(car_db.BRAND)
-
                 return flask.render_template("booking_history.html", **attributes)
             elif role == "admin":
-                records = booking_db.get_all_booking()
-
-                # Add keys and values for render_template
-                attributes["history"] = records
-                attributes["type"] = car_db.get_values_of_col(car_db.BODY_TYPE)
-                attributes["colours"] = car_db.get_values_of_col(car_db.COLOUR)
-                attributes["seats"] = car_db.get_values_of_col(car_db.SEATS)
-                attributes["brands"] = car_db.get_values_of_col(car_db.BRAND)
-
+                attributes["history"] = all_bookings
                 return flask.render_template("rental_history.html", **attributes)
             else:
                 return flask.redirect(flask.url_for("forbidden"))
@@ -248,44 +246,79 @@ def delete_booking(id):
 
 @app.route('/booking/modify/<int:id>', methods=["POST", "GET"])
 def modify_booking(id):
+    # Set the default values of attributes in the form
     attributes = {"error": False, "booked_before": False}
+    old_records = booking_db.find_booking(**{booking_db.ID: id})
+    attributes = {**attributes, **(old_records[0])}
+    old_from, old_end = old_records[0].get(booking_db.FROM), old_records[0].get(booking_db.TO)
+    attributes["from_date"], attributes["to_date"], attributes["from_time"], attributes["to_time"] = old_from.strftime('%Y-%m-%d'), old_end.strftime('%Y-%m-%d'), old_from.strftime('%H:%M'), old_end.strftime('%H:%M')
+
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
         data = {k: (v if v != "None" else None) for k, v in data.items()}
 
-        # records = car_db.to_dictionary(car_db.execute_return(
-        #     f"select * from {car_db.table} where {car_db.ID} = %s", (car_id, )), attribute_list=car_db.property_list)
-        # attributes["car_id"] = "ABC"
-        # attributes["lat"] = records[0][car_db.LAT]
-        # attributes["lng"] = records[0][car_db.LNG]
+        # Process submitted attributes
+        from_time, to_time = data["from_date"] + " " + data["from_time"] + ":00", data["to_date"] + " " + data["to_time"] + ":00"
+        del data["from_date"], data["to_time"], data["from_time"], data["to_date"]
+
+        # Check if from_time < to_time
+        if (datetime.datetime.strptime(from_time, '%Y-%m-%d %H:%M:%S') >= datetime.datetime.strptime(to_time, '%Y-%m-%d %H:%M:%S')):
+            attributes["error"] = True
+            attributes["from_date"] = old_records[0][booking_db.FROM].split
+            return flask.render_template("booking_infos.html", **attributes)
+
+        # Try to insert into table booking
+        try:
+            # Perform action
+            data[booking_db.FROM], data[booking_db.TO] = from_time, to_time
+            booking_db.update_booking(id, **data)
+        except Exception as e:
+            print(e)
+            attributes["booked_before"] = True
+            return flask.render_template("booking_modify.html", **attributes)
+        else:
+            return flask.redirect(flask.url_for("home"))
+    else:
+        if flask.session.get(login_db.USERNAME, None) is None:
+            return flask.redirect(flask.url_for("login"))
+        else:
+            print(attributes)
+            return flask.render_template("booking_modify.html", **attributes)
+
+@app.route('/booking/add', methods = ["GET", "POST"])
+def booking_add():
+    attributes = {}
+    attributes[BookingDatabase.CAR_ID] = list(set(car_db.get_values_of_col(car_db.ID)))
+    attributes[BookingDatabase.USER_ID] = list(set(user_db.get_values_of_col(user_db.ID)))
+    print(attributes)
+    if flask.request.method == "POST":
+        form_data = flask.request.form.to_dict()
+        data = {key: val for key, val in form_data.items() if val}
+        data = {k: (v if v != "None" else None) for k, v in data.items()}
 
         # Process attributes
         from_time, to_time = data["from_date"] + " " + data["from_time"] + \
             ":00", data["to_date"] + " " + data["to_time"] + ":00"
         del data["from_date"], data["to_time"], data["from_time"], data["to_date"]
         if (datetime.datetime.strptime(from_time, '%Y-%m-%d %H:%M:%S') >= datetime.datetime.strptime(to_time, '%Y-%m-%d %H:%M:%S')):
-            attributes["error"] = True
-            return flask.render_template("booking_infos.html", **attributes)
+            return flask.render_template("booking_add.html", message="Departure should be lower than Arrival", **attributes)
 
         try:
             # Perform action
-
             data[booking_db.FROM] = from_time
             data[booking_db.TO] = to_time
-            booking_db.update_booking(id, **data)
+            booking_db.add_booking(**data)
         except Exception as e:
-            print(e)
-            # print(flask.session.get(login_db.ID))
-            attributes["booked_before"] = True
-            return flask.render_template("booking_modify.html", **attributes)
-
-        return flask.redirect(flask.url_for("home"))
+            return flask.render_template("booking_add.html", message=str(e), **attributes)
+        else:
+            return flask.redirect(flask.url_for("home"))
     else:
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.redirect(flask.url_for("login"))
-        else:
-            return flask.render_template("booking_modify.html", id=id)
+        else:       
+            return flask.render_template("booking_add.html", **attributes)
+
 
 
 # Issues
@@ -424,6 +457,8 @@ def cars():
 
         # Add keys, values for attributes
         attributes['cars'] = records
+        attributes['brands'] = car_db.get_values_of_col(car_db.BRAND)
+        attributes['seats'] = car_db.get_values_of_col(car_db.SEATS)
         attributes['type'] = car_db.get_values_of_col(car_db.BODY_TYPE)
         attributes['colours'] = car_db.get_values_of_col(car_db.COLOUR)
         return flask.render_template("cars_users.html", **attributes)
@@ -431,15 +466,15 @@ def cars():
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.redirect(flask.url_for("login"))
         else:
-            cars = car_db.get_all_car()
-
-            # Change behaviour based on the ROLES
-            role = flask.session.get(login_db.ROLES)
             # Add keys, values for attributes
+            attributes['brands'] = car_db.get_values_of_col(car_db.BRAND)
+            attributes['seats'] = car_db.get_values_of_col(car_db.SEATS)
             attributes['cars'] = car_db.get_all_car()
             attributes['type'] = car_db.get_values_of_col(car_db.BODY_TYPE)
             attributes['colours'] = car_db.get_values_of_col(car_db.COLOUR)
 
+            # Change behaviour based on the ROLES
+            role = flask.session.get(login_db.ROLES)
             if role == "user":
                 return flask.render_template("cars_users.html", **attributes)
             elif role == "admin":
@@ -477,7 +512,6 @@ def cars_modify(id):
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
         data = {k: (v if v != "None" else None) for k, v in data.items()}
-        print(data)
 
         records = car_db.update_car(id, **data)
         return flask.redirect(flask.url_for("cars"))
@@ -485,7 +519,7 @@ def cars_modify(id):
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.redirect(flask.url_for("login"))
         else:
-            return flask.render_template("cars_modify.html", car_id=id)
+            return flask.render_template("cars_modify.html", **(car_db.find_car(**{car_db.ID: id})[0]))
 
 
 # Users
@@ -519,6 +553,29 @@ def users():
                 return flask.redirect(flask.url_for("forbidden"))
 
 
+@app.route('/users/add', methods=["GET", "POST"])
+def users_add():
+    if flask.request.method == "POST":
+        form_data = flask.request.form.to_dict()
+        data = {key: val for key, val in form_data.items() if val}
+        data = {k: (v if v != "None" else None) for k, v in data.items()}
+        print(data)
+        
+        login_keys, user_keys = [login_db.USERNAME, login_db.PASSWORD], [user_db.NAME, user_db.ADDRESS, user_db.PHONE_NUMBER]
+        try:
+            new_id = login_db.add_login(**{k: data.get(k) for k in login_keys})
+            records = user_db.add_user(**{user_db.ID: new_id}, **{k: data.get(k) for k in user_keys})
+        except Exception as e:
+            return flask.render_template("users_add.html", message = "Email has been existed before")
+        else:
+            return flask.redirect(flask.url_for("users"))
+    else:
+        if flask.session.get(login_db.USERNAME, None) is None:
+            return flask.redirect(flask.url_for("login"))
+        else:
+            return flask.render_template("users_add.html")
+
+
 @app.route('/users/delete/<int:id>', methods=["GET"])
 def users_delete(id):
     user_db.remove_user(id)
@@ -539,7 +596,8 @@ def users_modify(id):
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.redirect(flask.url_for("login"))
         else:
-            return flask.render_template("users_modify.html", ID=id)
+            print(user_db.find_user(**{user_db.ID: id}))
+            return flask.render_template("users_modify.html", **(user_db.find_user(**{user_db.ID: id})[0]))
 
 
 @app.route('/403', methods=["GET"])
@@ -554,8 +612,22 @@ def dashboard():
     elif flask.session.get(login_db.ROLES) != "manager":
         return flask.redirect(flask.url_for("forbidden"))
     else:
-        print("car_db.get_booked_car()", car_db.get_booked_car())
-        return flask.render_template("dashboard.html", allCar=car_db.get_number_of_car()[0]['CAR_ID'], bookedCar=car_db.get_booked_car()[0]['CAR_ID'], freeCar=car_db.get_free_car()[0]['CAR_ID'], issues=issues_db.get_today_issues()[0]['Issues_ID'], monthlyRevenues=booking_db.get_monthly_revenue(), numberOfNewUsers=user_db.get_number_of_new_users())
+        # print("car_db.get_booked_car()", car_db.get_booked_car())
+        return flask.render_template("dashboard.html", allCar=statistics_db.get_number_of_car()[0][0], bookedCar=statistics_db.get_booked_car()[0][0], freeCar=statistics_db.get_free_car()[0][0], issues=statistics_db.get_today_issues()[0][0], monthlyRevenues=statistics_db.get_monthly_revenue(), numberOfNewUsers=statistics_db.get_number_of_new_users())
+
+def camera_generator(camera):
+    #get camera frame
+    while True:
+        frame = camera.get_frame_in_bytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
+@app.route('/video', methods = ['GET'])
+def video():
+    return flask.Response(camera_generator(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
 
 
 # AGENT PI

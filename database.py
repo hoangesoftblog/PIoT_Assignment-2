@@ -287,13 +287,17 @@ class UserDatabase (AbstractDatabase):
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
                 [search_params[key]
                     for key in numeric_keys] + [None for key in null_keys]
-            additional_where_clause = f" where {' and '.join([key + ' like %s ' for key in remaining_keys])} " + ("and" if numeric_keys else "") + \
+
+            # query is the base
+            # where_clause is for join table
+            # additional_where_clause is for real search params
+            query = f"""select * from {self.table}  """
+            where_clause = f""" where 1 """
+            additional_where_clause = ("and" if remaining_keys else "") + f" {' and '.join([key + ' like %s ' for key in remaining_keys])} " + ("and" if numeric_keys else "") + \
                 f" {' and '.join([key + ' = %s ' for key in numeric_keys])} " + (
                     "and" if null_keys else "") + f" {' and '.join([key + ' is %s ' for key in null_keys])} "
-            query = f"""select * from {self.table}  """
-            print(query + additional_where_clause)
-            records = self.execute_return(
-                query + additional_where_clause, parameters)
+            print(query + where_clause + additional_where_clause)
+            records = self.execute_return(query + where_clause + additional_where_clause, parameters)
             return self.to_dictionary(records)
         else:
             return self.get_all()
@@ -311,23 +315,6 @@ class UserDatabase (AbstractDatabase):
         params = list(new_values)
         params.append(str(user_id))
         return self.execute_no_return(query, params)
-
-    def get_number_of_new_users(self):
-        query = f"SELECT month({self.CREATED_DATE}) as month_number, count(*) as new_users FROM {self.table} group by month({self.CREATED_DATE})"
-        records = self.execute_return(query)
-
-        records = dict(records)
-
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        records = list(records.items())
-        records = [list(item) for item in records]
-        # print(records)
-        records = [[months[item[0] - 1]] +
-                   [int(item[1])] + item[2:] for item in records]
-        print(type(records), records)
-
-        return records
 
 
 class CarDatabase (AbstractDatabase):
@@ -373,27 +360,6 @@ class CarDatabase (AbstractDatabase):
         records = self.execute_return(query)
         return self.to_dictionary(records)
 
-    # Number of all car
-    def get_number_of_car(self):
-        query = f"select count(*) from {self.table}"
-        records = self.execute_return(query)
-        return self.to_dictionary(records)
-
-    # Get current booked car in current date
-    def get_booked_car(self):
-        query = f"select COUNT(b.{BookingDatabase.CAR_ID}) from {BOOKING_TABLE} as b WHERE b.{BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day)"
-        # query = f"select DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)"
-        records = self.execute_return(query)
-        print("booked car", records)
-        return self.to_dictionary(records)
-
-    # Get current free car in current date
-    def get_free_car(self):
-        query = f"select COUNT(c.{self.ID}) from {self.table} as c where c.{self.ID} not in (select i.{IssuesDatabase.CAR_ID} as ID from {ISSUES_TABLE} as i WHERE {IssuesDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day) union select b.{BookingDatabase.CAR_ID} as ID from {BOOKING_TABLE} as b WHERE {BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day))"
-        records = self.execute_return(query)
-        print("free car", records)
-        return self.to_dictionary(records)
-
     def find_car(self, **search_params):
         null_keys = [key for key in search_params.keys(
         ) if search_params.get(key) is None]
@@ -407,13 +373,18 @@ class CarDatabase (AbstractDatabase):
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
                 [search_params[key]
                     for key in numeric_keys] + [None for key in null_keys]
-            additional_where_clause = f" where {' and '.join([key + ' like %s ' for key in remaining_keys])} " + ("and" if numeric_keys else "") + \
+
+            # query is the base query
+            # where_clause is the join condition
+            # additional_where_clause is where all search items will be
+            query = f"""select * from {self.table}  """
+            where_clause = f""" where 1 """
+            additional_where_clause = ("and" if remaining_keys else "") + f" {' and '.join([key + ' like %s ' for key in remaining_keys])} " + ("and" if numeric_keys else "") + \
                 f" {' and '.join([key + ' = %s ' for key in numeric_keys])} " + (
                     "and" if null_keys else "") + f" {' and '.join([key + ' is %s ' for key in null_keys])} "
-            query = f"""select * from {self.table}  """
-            print(query + additional_where_clause)
-            records = self.execute_return(
-                query + additional_where_clause, parameters)
+            print(query + where_clause + additional_where_clause)
+
+            records = self.execute_return(query + where_clause + additional_where_clause, parameters)
             return self.to_dictionary(records)
         else:
             return self.get_all_car()
@@ -425,11 +396,9 @@ class CarDatabase (AbstractDatabase):
     def update_car(self, car_id, **update_values):
         cols_update, new_values = update_values.keys(), update_values.values()
 
-        # Prepare query
+        # Prepare query and params
         query = f"update {self.table} set {', '.join([str(col) + ' = %s' for col in cols_update])} where {self.ID} = %s;"
-        # Prepare params
-        params = list(new_values)
-        params.append(car_id)
+        params = list(new_values) + [car_id]
         return self.execute_no_return(query, params)
 
     def get_values_of_col(self, col_name):
@@ -488,21 +457,17 @@ class BookingDatabase(AbstractDatabase):
         records_2 = self.execute_return(query_2, (property_list.get(
             self.CAR_ID), property_list.get(self.TO), property_list.get(self.FROM)))
 
-        print("Record:", records)
-        print("Record 2:", records_2)
-
+        
         # If there is no one booking, then add booking
         if len(records) > 0 or len(records_2) > 0:
             raise Exception(
                 "This car has been booked or being fixed at this time.")
         else:
             # Add to Google Calendar first
-            response = self.calendar.add_event(property_list.get(self.USER_ID), property_list.get(self.CAR_ID), datetime.datetime.strptime(property_list.get(self.FROM), "%Y-%m-%d %H:%M:%S"),
-                                               datetime.datetime.strptime(property_list.get(self.TO), "%Y-%m-%d %H:%M:%S"), property_list.get(self.BOOKING_DETAIL), **{"colorId": str(int(property_list.get(self.CAR_ID)) % 11)})
+            response = self.calendar.add_event(property_list.get(self.USER_ID), property_list.get(self.CAR_ID), datetime.datetime.strptime(property_list.get(self.FROM), "%Y-%m-%d %H:%M:%S"), datetime.datetime.strptime(property_list.get(self.TO), "%Y-%m-%d %H:%M:%S"), property_list.get(self.BOOKING_DETAIL), **{"colorId": str(int(property_list.get(self.CAR_ID)) % 11)})
             event_id = response["id"]
 
             query = f"insert into {self.table} ({', '.join(property_list.keys())}, {self.EVENT_ID_CALENDAR}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} , %s)"
-            print(query)
             self.execute_no_return(query, list(
                 property_list.values()) + [event_id])
 
@@ -542,10 +507,15 @@ class BookingDatabase(AbstractDatabase):
         remaining_keys = [key for key in search_params.keys(
         ) if key not in null_keys + numeric_keys]
 
+        # Build the parameter list and the combine query
         if len(search_params.keys()) > 0:
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
                 [search_params[key]
                     for key in numeric_keys] + [None for key in null_keys]
+
+            # query is the base query
+            # where_clause is the join condition
+            # additional_where_clause is where all search items will be
             query = f"select {', '.join(self.join_property_list)} from {BOOKING_TABLE}, {USER_TABLE}, {CAR_TABLE} "
             where_clause = f" where {BOOKING_TABLE}.{BookingDatabase.USER_ID} = {USER_TABLE}.{UserDatabase.ID} and {BOOKING_TABLE}.{BookingDatabase.CAR_ID} = {CAR_TABLE}.{CarDatabase.ID} "
             additional_where_clause = ("and" if remaining_keys else "") + f" {' and '.join([key + ' like %s ' for key in remaining_keys])} " + (
@@ -559,12 +529,7 @@ class BookingDatabase(AbstractDatabase):
                 additional_where_clause += f" and {self.FROM} < %s "
                 parameters += [to_time]
 
-            print("The combine query:", query +
-                  where_clause + additional_where_clause)
-            print("Params:", parameters)
-
-            records = self.execute_return(
-                query + where_clause + additional_where_clause, parameters)
+            records = self.execute_return(query + where_clause + additional_where_clause, parameters)
             return self.to_dictionary(records, self.join_property_list)
         else:
             return self.get_all_booking()
@@ -572,50 +537,53 @@ class BookingDatabase(AbstractDatabase):
     def cancel_booking(self, booking_id):
         # Get the Calendar ID for booking
         records = self.find_booking(**{self.ID: booking_id})
-        print("THE RECORDS", records)
-        event_calendar_id = records[0][self.EVENT_ID_CALENDAR]
+        if len(records) < 1:
+            return
+        else:
+            event_calendar_id = records[0][self.EVENT_ID_CALENDAR]
 
-        # Cancel on database
-        query = f"delete from {self.table} where {self.ID} = %s"
-        self.execute_no_return(query, (booking_id,))
-        print("Cancel booking ", booking_id)
+            # Cancel on database
+            query = f"delete from {self.table} where {self.ID} = %s"
+            self.execute_no_return(query, (booking_id,))
+            print("Cancel booking ", booking_id)
 
-        # Cancel on Google Calendar
-        self.calendar.cancel_event(event_calendar_id)
+            # Cancel on Google Calendar
+            self.calendar.cancel_event(event_calendar_id)
 
     def update_booking(self, booking_id, **update_values):
+        # Find the value of old record
         records = self.find_booking(**{self.ID: booking_id})
-        event_calendar_id = records[0][self.EVENT_ID_CALENDAR]
 
-        calendar_update_keys = self.property_list[1: -1]
-        calendar_update_params = {key: update_values.get(key) if update_values.get(
-            key) else records[0][key] for key in calendar_update_keys}
+        if len(records) == 0:
+            return None
+        else:
+            event_calendar_id = records[0][self.EVENT_ID_CALENDAR]
 
-        self.calendar.update_event(event_calendar_id, **calendar_update_params)
+            # Check for anyone who rent at updated moment first
+            query = f"""select * from (select * from {self.table} where {self.CAR_ID} = %s) as b where not (b.{self.FROM} >= %s or b.{self.TO} <= %s)"""
+            records_1 = self.execute_return(query, (records[0].get(
+                self.CAR_ID), update_values.get(self.TO), update_values.get(self.FROM)))
 
-        query = f"update {self.table} set {', '.join([key + ' = %s ' for key in update_values.keys()])} " + \
-            f" where {self.ID} = %s"
-        return self.execute_no_return(query, list(update_values.values()) + [booking_id])
+            # Now check if the car is currently reported
+            query_2 = f"""select * from (select * from {ISSUES_TABLE} where {IssuesDatabase.CAR_ID} = %s) as b where b.{IssuesDatabase.FROM} < %s and (b.{IssuesDatabase.TO} <= %s or b.{IssuesDatabase.TO} is null)"""
+            records_2 = self.execute_return(query_2, (records[0].get(
+                self.CAR_ID), update_values.get(self.TO), update_values.get(self.FROM)))
 
-    # For statistic report, monthly revenue for the last 12 months
-    def get_monthly_revenue(self):
-        query = f"""SELECT month({self.FROM})as month_number, sum(round((unix_timestamp({self.TO}) - unix_timestamp({self.FROM})) / (60 * 60)) * {CarDatabase.COST_PER_HOUR}) as monthly_revenue
-FROM {self.table}, {CAR_TABLE}
-where {self.CAR_ID} = {CarDatabase.ID}
-group by month({self.FROM}) """
-        records = self.execute_return(query)
-        records = dict(records)
+            if len(records_1) > 1 or len(records_2) > 0:
+                raise Exception(
+                    "This car has been booked or being fixed at this time.")
+            else:
+                # Then update it with new values
+                calendar_update_keys = self.property_list[1: -1]
+                calendar_update_params = {key: update_values.get(key) if update_values.get(
+                    key) else records[0][key] for key in calendar_update_keys}
 
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        records = list(records.items())
-        records = [list(item) for item in records]
-        # print(records)
-        records = [[months[item[0] - 1]] +
-                   [int(item[1])] + item[2:] for item in records]
-        print(type(records), records)
+                self.calendar.update_event(
+                    event_calendar_id, **calendar_update_params)
 
-        return records
+                query = f"update {self.table} set {', '.join([key + ' = %s ' for key in update_values.keys()])} " + \
+                    f" where {self.ID} = %s"
+                return self.execute_no_return(query, list(update_values.values()) + [booking_id])
 
 
 class EmployeesDatabase(AbstractDatabase):
@@ -694,8 +662,7 @@ class IssuesDatabase(AbstractDatabase):
         self.execute_no_return(query)
 
     def add_issues(self, **property_list):
-        query = f"insert into {self.table} " + \
-            f" ({', '.join(property_list.keys())} , {self.FROM}, {self.STATUS}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} , now(), %s)"
+        query = f"insert into {self.table} " + f" ({', '.join(property_list.keys())} , {self.FROM}, {self.STATUS}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} , now(), %s)"
         self.execute_no_return(query, list(property_list.values()) + [False])
 
     def accept_issues(self, id, engineer_id):
@@ -718,12 +685,6 @@ class IssuesDatabase(AbstractDatabase):
         records += self.to_dictionary(self.execute_return(query, (None, None)))
 
         return records
-
-    # Get current reported car in current date
-    def get_today_issues(self):
-        query = f"SELECT count(*) FROM (select * from {self.table} WHERE {self.FROM} between current_date() and date_add(current_date(), interval 1 day)) as e"
-        records = self.execute_return(query)
-        return self.to_dictionary(records)
 
     def find_issues(self, **search_params):
         # from-time and end-time are treated separatedly
@@ -752,6 +713,10 @@ class IssuesDatabase(AbstractDatabase):
             parameters = ["%" + search_params[key] + "%" for key in remaining_keys] + \
                 [search_params[key]
                     for key in numeric_keys] + [None for key in null_keys]
+
+            # query is the base query
+            # where_clause is the join condition
+            # additional_where_clause is where all search items will be
             query = f"select {', '.join(self.join_property_list)} from {self.table}, {CAR_TABLE} "
             where_clause = f" where {CAR_TABLE}.{CarDatabase.ID} = {self.table}.{self.CAR_ID} "
             additional_where_clause = (" and " if remaining_keys else "") + f" {' and '.join([key + ' like %s ' for key in remaining_keys])} " + (
@@ -767,7 +732,7 @@ class IssuesDatabase(AbstractDatabase):
 
             records = self.execute_return(
                 query + where_clause + additional_where_clause, tuple(parameters))
-            print(records)
+            # print(records)
             return self.to_dictionary(records, self.join_property_list)
         else:
             return self.get_all_issues()
@@ -786,6 +751,88 @@ class IssuesDatabase(AbstractDatabase):
         self.execute_no_return(query, (id, ))
 
 
+class StatisticsDatabase(AbstractDatabase):
+    def __init__(self, host=host, user=user, password=password, schema=schema, drop_existing_table=False):
+        self.database = schema
+        self.host = host
+        self.user = user
+        self.password = password
+
+    # For statistic report, monthly revenue for the last 12 months
+
+    def get_monthly_revenue(self):
+        query = f"""SELECT month({BookingDatabase.FROM})as month_number, 
+            sum(round((unix_timestamp({BookingDatabase.TO}) - unix_timestamp({BookingDatabase.FROM})) / (60 * 60)) * {CarDatabase.COST_PER_HOUR}) as monthly_revenue
+            FROM {BOOKING_TABLE}, {CAR_TABLE}
+            where {BookingDatabase.CAR_ID} = {CarDatabase.ID}
+            group by month({BookingDatabase.FROM}) """
+        records = self.execute_return(query)
+        records = dict(records)
+
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        records = list(records.items())
+        records = [list(item) for item in records]
+        records = [[months[item[0] - 1]] + [int(item[1])] + item[2:] for item in records]
+
+        return records
+
+    # Get current reported car in current date
+    def get_today_issues(self):
+        query = f"""SELECT count(*) 
+        FROM (select * from {ISSUES_TABLE} 
+        WHERE {IssuesDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day)) as e"""
+        records = self.execute_return(query)
+        return records
+
+    def get_number_of_new_users(self):
+        query = f"""SELECT month({UserDatabase.CREATED_DATE}) as month_number, count(*) as new_users 
+        FROM {USER_TABLE} 
+        group by month({UserDatabase.CREATED_DATE})"""
+        records = self.execute_return(query)
+
+        records = dict(records)
+
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        records = list(records.items())
+        records = [list(item) for item in records]
+        records = [[months[item[0] - 1]] + [int(item[1])] + item[2:] for item in records]
+
+        return records
+
+    # Number of all car
+
+    def get_number_of_car(self):
+        query = f"select count(*) from {CAR_TABLE}"
+        records = self.execute_return(query)
+        return records
+
+    # Get current booked car in current date
+
+    def get_booked_car(self):
+        query = f"""select COUNT(b.{BookingDatabase.CAR_ID}) from {BOOKING_TABLE} as b 
+        WHERE b.{BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day)"""
+        # query = f"select DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)"
+        records = self.execute_return(query)
+        return records
+
+    # Get current free car in current date
+
+    def get_free_car(self):
+        query = f"""select COUNT(c.{CarDatabase.ID}) from {CAR_TABLE} as c 
+        where c.{CarDatabase.ID} not in 
+            (select i.{IssuesDatabase.CAR_ID} as ID from {ISSUES_TABLE} as i 
+            WHERE {IssuesDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day
+            ) 
+            union 
+            select b.{BookingDatabase.CAR_ID} as ID from {BOOKING_TABLE} as b 
+            WHERE {BookingDatabase.FROM} between current_date() and date_add(current_date(), interval 1 day)
+            )"""
+        records = self.execute_return(query)
+        return records
+
+
 if __name__ == "__main__":
     # Drop schema first
     connector = SQLDatabase.connect(host, user, password)
@@ -795,17 +842,22 @@ if __name__ == "__main__":
     connector.commit()
     connector.close()
 
-    # Drop all events
+    # # Drop all events
     calendar = GoogleCalendar()
     calendar.cancel_all_events()
 
-    # Login Database
-    # Role 0 is User
-    # Role 1 is Engineer
-    # Role 2 is Manager
-    # Role 3 is Admin
-
+    # # # # Define the Database
     login_db = LoginDatabase()
+    user_db = UserDatabase()
+    car_db = CarDatabase()
+    employee_db = EmployeesDatabase()
+    booking_db = BookingDatabase(calendar=calendar)
+    issues_db = IssuesDatabase()
+
+
+
+    # # # # Insert data into tables
+    # Login Database
     print(login_db.add_login("hoangafublog@email.com", "112358", "user"))
     print(login_db.add_login("hoangviethoa123@yahoo.com.vn", "159753", "engineer"))
     print(login_db.add_login("hoangesoftblog", "1", "manager"))
@@ -813,27 +865,11 @@ if __name__ == "__main__":
     print(login_db.add_login("temp1", "12", "user"))
     print(login_db.add_login("temp", "1", "user"))
 
-    print(login_db.change_password(3, "1010101"))
-    print(login_db.delete_login(5))
-    print(login_db.get_all_login())
-    print(login_db.login_existed("hello", "123456"))
-
     # User Database
+    user_db.add_user(USER_ID=1, name="hoang truong", address="Thu Duc, TP.HCM", phone_number="0973557408")
+    user_db.add_user(USER_ID=6, name="rand", address="rand",phone_number="0973557408")
 
-    user_db = UserDatabase()
-    user_db.add_user(USER_ID=1, name="hoang truong",
-                     address="Thu Duc, TP.HCM", phone_number="0973557408")
-    user_db.add_user(USER_ID=6, name="rand", address="rand",
-                     phone_number="0973557408")
-
-    # print(user_db.find_user(**{user_db.ID: 1}))
-    # user_db.update_user(6, **{user_db.NAME: "Viet Nam oi"})
-    # user_db.remove_user(6)
-    # user_db.add_user(USER_ID=6, name="rand", address="rand", phone_number="0973557408")
-    # print(user_db.get_all())
-
-    # #### Car database
-    car_db = CarDatabase()
+    # Car Database
     car_db.insert_car(**{car_db.BRAND: "Honda Civic", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Black", car_db.SEATS: "4",
                          car_db.LOCATION: "Thu Duc", car_db.COST_PER_HOUR: "1000000", car_db.LAT: 10.730104, car_db.LNG: 106.691745})
     car_db.insert_car(**{car_db.BRAND: "Toyota Camry", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Brown", car_db.SEATS: "5",
@@ -841,38 +877,66 @@ if __name__ == "__main__":
     car_db.insert_car(**{car_db.BRAND: "Fortuner", car_db.BODY_TYPE: "Something", car_db.COLOUR: "Green", car_db.SEATS: "7",
                          car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "2000000", car_db.LAT: 10.856727, car_db.LNG: 106.766620})
 
-    # print(car_db.find_car(**{car_db.BRAND: "Toyota"}))
-    # print(car_db.update_car(4, **{car_db.BRAND: "Zoros", car_db.BODY_TYPE: "Unicycle"}))
-    # car_db.remove_car(4)
-    # print(car_db.get_all_car())
+    # Employees Database
+    employee_db.add_employee(**{employee_db.ID: 2, employee_db.NAME: "Dang Dinh Khanh"})
+    employee_db.add_employee(**{employee_db.ID: 3, employee_db.NAME: "Someone 1"})
+    employee_db.add_employee(**{employee_db.ID: 4, employee_db.NAME: "Someone 2"})
+    
+    # Booking Database
+    booking_db.add_booking(CID=2, UID=1, booking_details="Hello, it's me!", from_time='2020-09-24 13:10:10', to_time='2020-09-25 14:10:10')
+    booking_db.add_booking(CID=1, UID=6, booking_details="I want to borrow it!", from_time='2020-09-24 05:10:10', to_time='2020-09-26 09:10:10')
+    booking_db.add_booking(CID=3, UID=1, booking_details="1234", from_time='2020-10-01 10:10:10', to_time='2020-10-02 10:10:10')
 
-    # # #### Employees database
-    employee_db = EmployeesDatabase()
-    employee_db.add_employee(
-        **{employee_db.ID: 2, employee_db.NAME: "Dang Dinh Khanh"})
-    employee_db.add_employee(
-        **{employee_db.ID: 3, employee_db.NAME: "Someone 1"})
-    employee_db.add_employee(
-        **{employee_db.ID: 4, employee_db.NAME: "Someone 2"})
+    # Issues Database
+    issues_db.add_issues(CID2=3, Engineer_ID=2)
+    issues_db.add_issues(CID2=1, Engineer_ID=2)
 
-    # employee_db.update_employee(4, **{employee_db.NAME: "??????"})
-    # print(employee_db.get_all())
 
-    # # #### Booking database
-    booking_db = BookingDatabase(calendar=calendar)
-    # # booking_db.add_booking(2, 1, "Hello, it's me!", '2020-08-24 13:10:10', '2020-08-25 14:10:10')
-    # # booking_db.add_booking(1, 1, "I want to borrow it!", '2020-08-24 05:10:10', '2020-08-26 09:10:10')
-    # # booking_db.add_booking(3, 1, "1234", '2020-06-01 10:10:10', '2020-06-30 10:10:10')
-    # # print(booking_db.get_all_booking())
-    # # booking_db.cancel_booking(3)
-    # # print(len(booking_db.find_booking(seats=4, address="Thu Duc, TP.HCM")))
 
-    # # #### Issues Database
-    issues_db = IssuesDatabase()
-    # query = f"select {issues_db.ENGINEER_ID}, count({issues_db.ENGINEER_ID}) from {issues_db.table} group by {issues_db.ENGINEER_ID}"
-    # result = dict(issues_db.execute_return(query))
-    # print(result)
-    # # issues_db.add_issues(2, 2, "Nha phan phoi duy long", "Please fix it soon")
+    # # # # Other methods
+    login_db.change_password(3, "1010101")
+    login_db.delete_login(5)
+    print("User existed:", login_db.login_existed("hello", "123456"))
+    print("All login:", login_db.get_all_login())
+
+
+    # User Database
+    print("User 1 is:", user_db.find_user(**{user_db.ID: 1}))
+    print()
+    user_db.update_user(6, **{user_db.NAME: "Viet Nam oi"})
+    user_db.remove_user(6)
+    user_db.add_user(USER_ID=6, name="rand", address="rand", phone_number="0973104912")
+    print("Get all users:", user_db.get_all())
+    print()
+
+    # Car database
+    print(r"Find car with brand 'Toyota':", car_db.find_car(**{car_db.BRAND: "Toyota"}))
+    print(car_db.update_car(4, **{car_db.BRAND: "Zoros", car_db.BODY_TYPE: "Unicycle"}))
+    car_db.remove_car(1)
+    print("All cars:", car_db.get_all_car())
+    print()
+
+    # Employees database
+    employee_db.update_employee(4, **{employee_db.NAME: "??????"})
+    print("All employees:", employee_db.get_all())
+    print()
+
+    # Booking database
+    booking_db.update_booking(3, from_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    booking_db.cancel_booking(2)
+    print("Booking with seats = 4 and location = Thu Duc:", booking_db.find_booking(seats=4, address="Thu Duc, TP.HCM"))
+    print("All bookings:", booking_db.get_all_booking())
+    print()
+
+    # Issues Database
+    print("Issues with ID = 1:", issues_db.find_issues(Issues_ID=1))
+    issues_db.modify_issues(1, start_time='2020-10-03 10:10:10')
+    issues_db.complete_issues(1)
+    issues_db.cancel_issues(2)
+    print("All issues:", issues_db.get_all_issues())
+    print()
+
+    
 
     # # ###### Test set
     # # # # Test for add same username - table Account
@@ -886,4 +950,5 @@ if __name__ == "__main__":
     # hashed_password = flask_bcrypt.bcrypt.hashpw(password.encode('utf-8'), flask_bcrypt.bcrypt.gensalt()).decode('utf-8')
     # print(len(hashed_password))
 
-    car_db.get_booked_car()
+    statistics_db = StatisticsDatabase()
+    method_list = [print(method + ":", getattr(statistics_db, method)()) for method in dir(statistics_db) if callable(getattr(statistics_db, method)) and method not in dir(AbstractDatabase())]

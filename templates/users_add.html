@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a new user</title>
+</head>
+<body>
+    <h1>Users' new infos</h1>
+    {% if message %}
+    <h2 style="color: red;">{{message}}</h2>
+    {% endif %}
+    <form action="#" method="POST">
+        <h2>Login Info</h2>
+        <div>
+            <label for="email">Email</label><br/>
+            <input type="email" id="email" name="email" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="password">Password</label><br/>
+            <input type="text" id="password" name="password" row="1" required/>
+        </div>
+        <br/>
+        <h2>Additional Info</h2>
+        <div>
+            <label for="name">Name</label><br/>
+            <input type="text" id="name" name="name" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="address">Address</label><br/>
+            <input type="text" id="address" name="address" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="phone_number">Phone</label><br/>
+            <input type="tel" id="phone_number" name="phone_number" row="1" required/>
+        </div>
+        <br/>
+        <button>Save user!</button>
+    </form>
+</body>
+</html>

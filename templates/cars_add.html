@@ -7,9 +7,33 @@
 </head>
 <body>
     <h1>Cars' new infos</h1>
-    <form action="/cars/add", method="POST">
+    <form action="#" method="POST">
         <div>
+            <label for="brand">Brand</label><br/>
+            <input type="text" id="brand" name="brand" row="1" required/>
         </div>
+        <br/>
+        <div>
+            <label for="body_type">Body Type</label><br/>
+            <input type="text" id="body_type" name="body_type" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="seats">Seats</label><br/>
+            <input type="number" id="seats" name="seats" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="colour">Colour</label><br/>
+            <input type="text" id="colour" name="colour" row="1" required/>
+        </div>
+        <br/>
+        <div>
+            <label for="location">Location</label><br/>
+            <input type="text" id="location" name="location" row="1" required/>
+        </div>
+        <br/>
+        <button>Save car!</button>
     </form>
 </body>
 </html>

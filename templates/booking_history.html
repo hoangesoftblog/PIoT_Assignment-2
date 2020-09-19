@@ -23,6 +23,7 @@
             <nav id="nav">
                 <a href="/cars">Cars</a>
                 <a href="/booking_history">Booking History</a>
+                <a href="/user_setting">User setting</a>
                 <a href="/logout">Logout</a>
             </nav>
             <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
@@ -93,9 +94,9 @@
 
                         <div class="6u 12u$(xsmall)">
                             <div class="select-wrapper">
-                                <select name="seats" id="demo-category">
-                                    <option value="">- Seats -</option>
-                                    {% for value in seats %}
+                                <select name="location" id="demo-category">
+                                    <option value="">- Location -</option>
+                                    {% for value in location %}
                                     <option value="{{value}}">{{ value }}</option>
                                     {% endfor %}
                                 </select>
@@ -103,7 +104,7 @@
                         </div>
 
                         <!-- Break -->
-                        <div class="6u 12u$(xsmall)">
+                        <!-- <div class="6u 12u$(xsmall)">
                             <div class="select-wrapper">
                                 <select name="colour" id="demo-category">
                                     <option value="">- Color -</option>
@@ -122,8 +123,8 @@
                                     <option value="{{value}}">{{ value }}</option>
                                     {% endfor %}
                                 </select>
-                            </div>
-                        </div>
+                            </div> 
+                        </div> -->
 
 
 
