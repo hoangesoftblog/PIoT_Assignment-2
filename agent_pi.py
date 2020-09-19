@@ -177,6 +177,8 @@ class FacePage(tk.Frame):
         self.main_img.pack()
         tk.Button(self, text = "Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
         
+        self.identification_count = 0
+
         self.update()
 
 
@@ -205,6 +207,11 @@ class FacePage(tk.Frame):
 
                 ### IDENTIFICATION & SOCKET CODE GOES HERE
                 if Id[0] == self.user_id:
+                    # If the target face is found 10 times then access is granted
+                    self.identification_count += 1
+                    if self.identification_count > 10:
+                        self.master.switch_frame(AccessGranted)
+
                     name_to_put = self.user_name
                 else:
                     name_to_put = "Unknown - Access Denied"
