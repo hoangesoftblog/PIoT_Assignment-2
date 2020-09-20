@@ -41,10 +41,25 @@ class GoogleCalendar():
         self.service = build('calendar', 'v3', credentials=creds)
 
     def add_event(self, user_id, car_id, start_time: datetime, end_time: datetime, details, **additional_params):
-        """
+        """ Add a booking event onto google calendar
         additional_params is implemented to be put into the body of the request from the API
         The API can be seen at:
         https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
+        
+        Parameters
+        ----------
+        user_id
+            The id of the user booking the car
+        car_id
+            The id of the car to be booked
+        start_time
+            The date and time when the car can start to be booked
+        end_time
+            The date and time when the car has to be returned before
+        details
+            The details of the booking
+        additional_params
+            The parameters to go with the calendar insert function
         """
         start, end = start_time.isoformat(), end_time.isoformat()
 
@@ -65,8 +80,14 @@ class GoogleCalendar():
         return response
 
     def get_all_events(self, **additional_params):
-        """The API can be seen at:
+        """Get all the event in a list
+        The API can be seen at:
         https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
+        
+        Parameters
+        ----------
+        addtional_params
+            The parameters to go with the calendar list function
         """
         next_page_token = None
         events = []
@@ -87,6 +108,9 @@ class GoogleCalendar():
         return events
 
     def get_all_calendarsList(self):
+        """ 
+        Get all calendar list
+        """
         # Next page-token is a token used to see next list of calendars
         next_page_token = None
 
@@ -110,14 +134,40 @@ class GoogleCalendar():
                 break
 
     def cancel_event(self, event_id):
+        """Get all the event in a list
+        The API can be seen at:
+        https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
+        
+        Parameters
+        ----------
+        addtional_params
+            The parameters to go with the calendar list function
+        """
         response = self.service.events().delete(calendarId=self.calendarList_id, eventId=event_id).execute()
         return response
 
     def update_event(self, event_id, UID, CID, from_time, to_time, booking_details, **additional_params):
-        """
+        """ Update the calendar event parameters
         additional_params is implemented to be put into the body of the Request from the API
         The API can be seen at:
         https://developers.google.com/calendar/v3/reference/events/list?authuser=1&apix_params=%7B%22calendarId%22%3A%22b6omo64aca40geo3fa6svitkg4%40group.calendar.google.com%22%7D
+        
+        Parameters
+        ----------
+        event_id
+            The id of the event
+        UID
+            the id of the user
+        CID
+            the id of the car
+        from_time
+            the new start time of the booking (in the form of datetime)
+        to_time
+            the new end time of the booking (in the form of datetime)
+        booking_details
+            the new booking details
+        additional_params
+            the parameters to go with the calendar update function
         """
         if isinstance(from_time, str):
             from_time = datetime.datetime.strptime(from_time, "%Y-%m-%d %H:%M:%S")
@@ -137,6 +187,9 @@ class GoogleCalendar():
         return response
 
     def cancel_all_events(self):
+        """
+        Delete all booked event on the calendar
+        """
         events = self.get_all_events()
         for event in events:
             self.cancel_event(event["id"])

@@ -1,3 +1,4 @@
+
 # Imports the Google Cloud client library
 from google.cloud import storage
 import pickle
@@ -13,9 +14,11 @@ https://cloud.google.com/storage/docs/reference/libraries
 
 
 class GoogleCloudStorage:
-    """Google calls files on Cloud Storage as blobs"""
+    """Google Cloud Storage class manage google cloud bucket operations such as downloading and uploading files"""
 
     def __init__(self):
+        """Create the Google Cloud Storage class
+        """
         AUTHORIZATION_SCOPES = [
             'https://www.googleapis.com/auth/devstorage.full_control']
 
@@ -48,46 +51,82 @@ class GoogleCloudStorage:
         self.bucket = self.storage_client.get_bucket("facial_img")
 
     def upload_from_filename(self, file_name, name_on_storage, **keyword_args):
-        """
-        blob.upload_from_filename has many arguments.\n
+        """Upload the file, by file name to the google cloud storage bucket
+        blob.upload_from_filename has many arguments.
         Keywords-arguments keyword_args will store whatever
-        params needed for blob.upload_from_filename   
+        params needed for blob.upload_from_filename  
+        
+        Parameters
+        ----------
+        file_name
+            The message to send
+        name_on_storage
+            The name it is saved on the storage
+        keyword_args
+            The parameters used for uploading the file such as time out (in dict form)
         """
         blob = self.bucket.blob(name_on_storage)
         blob.upload_from_filename(file_name, **keyword_args)
         print(f"Upload file {file_name} and name as {name_on_storage}")
 
     def upload_from_file(self, file_obj, name_on_storage, **keyword_args):
-        """
-        file_obj: Using open()\n\n
-        blob.upload_from_file has many arguments.\n
+        """Upload the file using the file object
+        file_obj: Using open()
+        blob.upload_from_file has many arguments.
         Keywords-arguments keyword_args will store whatever
         params needed for blob.upload_from_file  
+        
+        Parameters
+        ----------
+        file_obj
+            the file object of file to be uploaded
+        name_on_storage
+            the name it is saved on the storage
+        keyword_args
+            The parameters used for uploading the file such as time out (in dict form)
         """
         blob = self.bucket.blob(name_on_storage)
         blob.upload_from_file(file_obj, **keyword_args)
         print(f"Upload object {name_on_storage}")
 
     def download_file(self, source_file_name, destination_file_name, **keyword_args):
-        """
+        """ Download a file on the bucket
         Keywords-arguments keyword_args will store whatever
         params needed for blob.upload_from_file
+        
+        Parameters
+        ----------
+        source_file_name
+            The file name on the bucket to be save
+        destination_file_name
+            The name it is saved on the local machine
+        keyword_args
+            The parameters used for uploading the file such as time out (in dict form)
         """
         blob = self.bucket.blob(source_file_name)
         blob.download_to_filename(destination_file_name, **keyword_args)
         print(f"Download file {source_file_name} and save as {destination_file_name}")
 
     def download_trainer(self):
-        # Connect to bucket on Cloud Storage
-        trainer_bucket = self.storage_client.get_bucket("trainer")
-        blob = trainer_bucket.blob("trainer.yml")
-        blob.download_to_filename("trainer/trainer.yml")
-        print("Trainer.yml downloaded")
+        """ Download the trainer file on the trainer bucket
+        """
+        if not os.path.exists("trainer.yml"):
+            # Connect to bucket on Cloud Storage
+            trainer_bucket = self.storage_client.get_bucket("trainer")
+            blob = trainer_bucket.blob("trainer.yml")
+            blob.download_to_filename("trainer.yml")
+            print("Trainer.yml downloaded")
+
 
     def get_all_files(self, **keyword_args):
-        """
+        """ Download all the files on the bucket
         Keywords-arguments keyword_args will store whatever
         params needed for Client.list_blobs
+        
+        Parameters
+        ----------
+        keyword_args
+            The parameters used for downloading the file such as time out (in dict form)
         """
         blobs = self.storage_client.list_blobs(
             self.bucket.name, **keyword_args)

@@ -6,6 +6,7 @@ import flask_mail
 import qr_code
 import socket_communication
 import camera as VideoCamera
+import base64
 
 
 app = flask.Flask(__name__)
@@ -30,7 +31,7 @@ booking_db = BookingDatabase(calendar=GoogleCalendar())
 employee_db = EmployeesDatabase()
 issues_db = IssuesDatabase()
 statistics_db = StatisticsDatabase()
-camera = VideoCamera.VideoCamera()
+
 
 
 
@@ -615,17 +616,27 @@ def dashboard():
         # print("car_db.get_booked_car()", car_db.get_booked_car())
         return flask.render_template("dashboard.html", allCar=statistics_db.get_number_of_car()[0][0], bookedCar=statistics_db.get_booked_car()[0][0], freeCar=statistics_db.get_free_car()[0][0], issues=statistics_db.get_today_issues()[0][0], monthlyRevenues=statistics_db.get_monthly_revenue(), numberOfNewUsers=statistics_db.get_number_of_new_users())
 
-def camera_generator(camera):
+def image_generator(camera, UID):
+    while True:
+        yield camera.capture_faces(UID)
+
+def camera_generator(camera, UID):
     #get camera frame
     while True:
-        frame = camera.get_frame_in_bytes()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + next(image_generator(camera, UID)) + b'\r\n\r\n')
 
 
 @app.route('/video', methods = ['GET'])
 def video():
-    return flask.Response(camera_generator(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
+    # value = next(camera_generator(camera))
+    # with open("temp", "r+b") as f:
+    #     f.write(value)
+    # if issubclass(value, bytes):
+    #     frame = (b'--frame\r\n'
+    #             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n') 
+    return flask.Response(camera_generator(VideoCamera.VideoCamera(), flask.session.get(login_db.ID)), mimetype='multipart/x-mixed-replace; boundary=frame')
+    # return flask.redirect(flask.url_for("home"))
 
 
 

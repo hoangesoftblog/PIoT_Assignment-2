@@ -9,7 +9,6 @@ gcs = google_cloud_storage.GoogleCloudStorage()
 
 def get_usable_camera_id():
     """Find the first camera that is usable by the device
-
     :return: int
     """
     for i in range(4):
@@ -46,7 +45,6 @@ def show_video_capture():
 def faceset_capture(id, name):
     """When run will start capturing images of faces on the camera, save in the /user_dataset folder
     Naming scheme is based on id
-
     :param id: id of the new user to capture face
     :param name: name of the new user to capture face
     :type id: string
@@ -78,6 +76,7 @@ def faceset_capture(id, name):
             file_name = "User."+str(id)+"."+str(name)+'.'+str(count)+".jpg"
             # cv2.imwrite("user_dataset/User."+str(id)+"."+str(name)+'.'+str(count)+".jpg", gray[y:y+h,x:x+w])
             cv2.imwrite("user_dataset/" + file_name, gray[y:y+h,x:x+w])
+            # upload images to cloud
             gcs.upload_from_filename("user_dataset/" + file_name, file_name)
 
         # Display the  frame, with bounded rectangle on the person's face
@@ -87,10 +86,6 @@ def faceset_capture(id, name):
         if (cv2.waitKey(100) & 0xFF == ord('q')) or count > 20:
             break
 
-    # list_of_users[str(id)] = name
-    write_user_dataset(str(id), name)
-
-    # upload images to cloud
     
 
     # Ends camera
@@ -102,7 +97,6 @@ def faceset_capture(id, name):
 
 def train_faceset():
     """Will train all the face models and store it in trainer.yml
-
     :return: void
     """
     # Create Local Binary Patterns Histograms for face recognization

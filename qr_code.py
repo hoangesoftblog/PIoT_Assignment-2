@@ -28,10 +28,14 @@ def start_reading_qr():
     cap.release()
     cv2.destroyAllWindows()
 
-def generate_qr_code(content,file_name):
+def generate_qr_code(content):
     # output file name
-    filename = str(file_name) + "_qr.png"
+    filename = str(content) + "_qr.png"
     # generate qr code
     img = qrcode.make(content)
     # save img to a file
     img.save(filename)
+
+
+if __name__ == "__main__":
+    generate_qr_code("2")
