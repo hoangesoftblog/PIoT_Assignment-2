@@ -7,7 +7,7 @@ import datetime
 from google_calendar import GoogleCalendar
 import flask_bcrypt
 
-mode = "Off"
+mode = "On"
 
 if mode != "On":
     host = "localhost"
@@ -1126,65 +1126,65 @@ if __name__ == "__main__":
     employee_db.add_employee(
         **{employee_db.ID: 4, employee_db.NAME: "Ho Minh Duc"})
 
-    # Booking Database
-    booking_db.add_booking(CID=2, UID=1, booking_details="Hello, it's me!",
-                           from_time='2020-09-24 13:10:10', to_time='2020-09-25 14:10:10')
-    booking_db.add_booking(CID=1, UID=6, booking_details="I want to borrow it!",
-                           from_time='2020-09-24 05:10:10', to_time='2020-09-26 09:10:10')
-    booking_db.add_booking(CID=3, UID=1, booking_details="1234",
-                           from_time='2020-10-01 10:10:10', to_time='2020-10-02 10:10:10')
+    # # Booking Database
+    # booking_db.add_booking(CID=2, UID=1, booking_details="Hello, it's me!",
+    #                        from_time='2020-09-24 13:10:10', to_time='2020-09-25 14:10:10')
+    # booking_db.add_booking(CID=1, UID=6, booking_details="I want to borrow it!",
+    #                        from_time='2020-09-24 05:10:10', to_time='2020-09-26 09:10:10')
+    # booking_db.add_booking(CID=3, UID=1, booking_details="1234",
+    #                        from_time='2020-10-01 10:10:10', to_time='2020-10-02 10:10:10')
 
-    # Issues Database
-    issues_db.add_issues(CID2=3, Engineer_ID=2)
-    issues_db.add_issues(CID2=1, Engineer_ID=2)
+    # # Issues Database
+    # issues_db.add_issues(CID2=3, Engineer_ID=2)
+    # issues_db.add_issues(CID2=1, Engineer_ID=2)
 
-    # # # Other methods
-    login_db.change_password(3, "1010101")
-    login_db.delete_login(5)
-    print("User existed:", login_db.login_existed("hello", "123456"))
-    print("All login:", login_db.get_all_login())
+    # # # # Other methods
+    # login_db.change_password(3, "1010101")
+    # login_db.delete_login(5)
+    # print("User existed:", login_db.login_existed("hello", "123456"))
+    # print("All login:", login_db.get_all_login())
 
-    # User Database
-    print("User 1 is:", user_db.find_user(**{user_db.ID: 1}))
-    print()
-    user_db.update_user(6, **{user_db.NAME: "Viet Nam oi"})
-    user_db.remove_user(5)
+    # # User Database
+    # print("User 1 is:", user_db.find_user(**{user_db.ID: 1}))
+    # print()
+    # user_db.update_user(6, **{user_db.NAME: "Viet Nam oi"})
+    # user_db.remove_user(5)
 
-    print("Get all users:", user_db.get_all())
-    print()
+    # print("Get all users:", user_db.get_all())
+    # print()
 
-    # Car database
-    print(r"Find car with brand 'Toyota':",
-          car_db.find_car(**{car_db.BRAND: "Toyota"}))
-    print(car_db.update_car(
-        4, **{car_db.BRAND: "Zoros", car_db.BODY_TYPE: "Unicycle"}))
-    car_db.remove_car(1)
-    car_db.unlock_car(2)
+    # # Car database
+    # print(r"Find car with brand 'Toyota':",
+    #       car_db.find_car(**{car_db.BRAND: "Toyota"}))
+    # print(car_db.update_car(
+    #     4, **{car_db.BRAND: "Zoros", car_db.BODY_TYPE: "Unicycle"}))
+    # car_db.remove_car(1)
+    # car_db.unlock_car(2)
 
-    print("All cars:", car_db.get_all_car())
-    print()
+    # print("All cars:", car_db.get_all_car())
+    # print()
 
-    # Employees database
-    employee_db.update_employee(4, **{employee_db.NAME: "??????"})
-    print("All employees:", employee_db.get_all())
-    print()
+    # # Employees database
+    # employee_db.update_employee(4, **{employee_db.NAME: "??????"})
+    # print("All employees:", employee_db.get_all())
+    # print()
 
-    # Booking database
-    booking_db.update_booking(
-        3, from_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    booking_db.cancel_booking(2)
-    print("Booking with seats = 4 and location = Thu Duc:",
-          booking_db.find_booking(seats=4, address="Thu Duc, TP.HCM"))
-    print("All bookings:", booking_db.get_all_booking())
-    print()
+    # # Booking database
+    # booking_db.update_booking(
+    #     3, from_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    # booking_db.cancel_booking(2)
+    # print("Booking with seats = 4 and location = Thu Duc:",
+    #       booking_db.find_booking(seats=4, address="Thu Duc, TP.HCM"))
+    # print("All bookings:", booking_db.get_all_booking())
+    # print()
 
-    # Issues Database
-    print("Issues with ID = 1:", issues_db.find_issues(Issues_ID=1))
-    issues_db.modify_issues(1, start_time='2020-10-03 10:10:10')
-    issues_db.complete_issues(1)
-    issues_db.cancel_issues(2)
-    print("All issues:", issues_db.get_all_issues())
-    print()
+    # # Issues Database
+    # print("Issues with ID = 1:", issues_db.find_issues(Issues_ID=1))
+    # issues_db.modify_issues(1, start_time='2020-10-03 10:10:10')
+    # issues_db.complete_issues(1)
+    # issues_db.cancel_issues(2)
+    # print("All issues:", issues_db.get_all_issues())
+    # print()
 
     statistics_db = StatisticsDatabase()
     method_list = [print(method + ":", getattr(statistics_db, method)()) for method in dir(statistics_db)

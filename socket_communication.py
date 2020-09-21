@@ -3,10 +3,6 @@ import database
 import json
 import datetime
 
-login_db = database.LoginDatabase()
-booking_db = database.BookingDatabase()
-issues_db = database.IssuesDatabase()
-
 
 
 def tcp_start_server():
@@ -23,6 +19,10 @@ def tcp_start_server():
     # Standard loopback interface address (localhost)
     # Port to listen on (non-privileged ports are > 1023)
     
+    login_db = database.LoginDatabase()
+    booking_db = database.BookingDatabase()
+    issues_db = database.IssuesDatabase()
+
     while True:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind(ADDRESS)
