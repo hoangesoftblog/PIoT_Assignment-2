@@ -433,8 +433,7 @@ def issues():
         else:
             role = flask.session.get(login_db.ROLES)
             if role == "engineer":
-                params = {
-                    issues_db.ENGINEER_ID: flask.session.get(login_db.ID)}
+                params = {issues_db.ENGINEER_ID: flask.session.get(login_db.ID)}
                 issues = issues_db.find_issues(**params)
                 all_issues = issues_db.get_all_issues()
 
@@ -444,7 +443,6 @@ def issues():
                     issues_db.CAR_ID)
                 attributes['engineer_id_list'] = issues_db.get_values_of_col(
                     issues_db.ENGINEER_ID)
-                attributes["my_issues"] = issues
                 # attributes['location_list'] = issues_db.get_values_of_col(car_db.LOCATION)
                 # attributes['status'] = issues_db.get_values_of_col(issues_db.STATUS)
                 return flask.render_template("issues_engineer.html", **attributes)
@@ -622,9 +620,9 @@ def add_car():
             return flask.redirect(flask.url_for("cars"))
         else:
             # Insert data into database
-            records = car_db.insert_car(**data)
+            # records = car_db.insert_car(**data)
             # return flask.redirect(flask.url_for("cars"))
-            return flask.render_template("cars_add.html", message = "File is not chosen")
+            return flask.render_template("cars_add.html", message = "Not enough data or no images")
     else:
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.redirect(flask.url_for("login"))

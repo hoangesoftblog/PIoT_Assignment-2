@@ -63,7 +63,7 @@ class VideoCamera:
                 # Since the image is still in Stream, we have to export it into files 
                 # and then upload it
                 # Then delete it to save spaces
-                file_name = "User " + str(UID) + ' - ' + str(self.count) + ".jpg"
+                file_name = "User." + str(UID) + '.' + str(self.count) + ".jpg"
                 cv2.imwrite(file_name, gray[y:y+h, x:x+w])
                 self.gcs.upload_from_filename(file_name, file_name)
                 if os.path.exists(file_name):

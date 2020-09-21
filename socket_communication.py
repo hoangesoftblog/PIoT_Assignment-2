@@ -7,6 +7,8 @@ login_db = database.LoginDatabase()
 booking_db = database.BookingDatabase()
 issues_db = database.IssuesDatabase()
 
+
+
 def tcp_start_server():
     """Start the server to be connected by socket
 
@@ -15,7 +17,9 @@ def tcp_start_server():
     # 1) Receive a message what kind of login it is from Client
     # 2) Receive the data from the Login
     # 3) Check if that user is using the right car at the right time
-    ADDRESS = ("10.247.201.39", 65433)  
+    # ADDRESS = ("10.247.197.247", 65433)  
+    ADDRESS = ("127.0.0.1", 65433)  
+
     # Standard loopback interface address (localhost)
     # Port to listen on (non-privileged ports are > 1023)
     
@@ -123,8 +127,8 @@ def tcp_start_server():
 class Socket_Client:
     """The client to connect to the server and exchange message
     """
-    # HOST = "127.0.0.1" # The server's hostname or IP address.
-    HOST = "10.247.201.39" # The server's hostname or IP address.
+    HOST = "127.0.0.1" # The server's hostname or IP address.
+    # HOST = "10.247.197.247" # The server's hostname or IP address.
     PORT = 65433        # The port used by the server.
     ADDRESS = (HOST, PORT)
 

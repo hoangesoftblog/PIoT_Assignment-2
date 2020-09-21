@@ -73,7 +73,7 @@ class LoginPage(tk.Frame):
         self.bt_login = tk.Button(self.login_frame, text = "Login", font=("Arial Bold", 30), fg = "red", command = self.login_bt_pressed)
         self.bt_login.grid(row = 3, columnspan = 2, pady = 15)
 
-        self.bt_login_face = tk.Button(self,width = 30,  text = "Login with facial recognition", font=("Arial Bold", 30), fg = "red", command=lambda: master.switch_frame(FacePage))
+        self.bt_login_face = tk.Button(self, width = 30,  text = "Login with facial recognition", font=("Arial Bold", 30), fg = "red", command=lambda: master.switch_frame(FacePage))
         self.bt_login_face.grid(row = 3, pady = 60)
         self.bt_login_qr = tk.Button(self, width = 30 , text = "Engineer QR", command=lambda: master.switch_frame(QrPage), font=("Arial Bold", 30), fg = "red")
         self.bt_login_qr.grid(row = 4)
@@ -169,7 +169,7 @@ class FacePage(tk.Frame):
         # Elements on the UI
         self.canvas = tk.Canvas(self, width = self.vid.width, height=self.vid.height)
         self.canvas.pack()
-        tk.Button(self, tst="Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
+        tk.Button(self, text="Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
         
         # Since we need to check if a same face is detect for 5 times
         # identification_count counts how many times it has been appeared already

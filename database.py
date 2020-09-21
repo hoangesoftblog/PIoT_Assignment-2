@@ -432,7 +432,7 @@ class CarDatabase (AbstractDatabase):
             query = "DROP TABLE IF EXISTS " + self.table
             self.cursor.execute(query)
 
-        query = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.ID} INTEGER primary key auto_increment, {self.BRAND} varchar(20), {self.BODY_TYPE} varchar(30), {self.COLOUR} varchar(40), {self.SEATS} numeric, {self.LOCATION} varchar(100), {self.COST_PER_HOUR} numeric, {self.LAT} float, {self.LNG} float, {self.IMAGE} text, {self.BEING_USED} bool )" 
+        query = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.ID} INTEGER primary key auto_increment, {self.BRAND} varchar(100), {self.BODY_TYPE} varchar(30), {self.COLOUR} varchar(40), {self.SEATS} numeric, {self.LOCATION} varchar(100), {self.COST_PER_HOUR} numeric, {self.LAT} float, {self.LNG} float, {self.IMAGE} text, {self.BEING_USED} bool )" 
         self.execute_no_return(query)
 
     def insert_car(self, **property_list):
@@ -585,6 +585,9 @@ class BookingDatabase(AbstractDatabase):
         query_2 = f"""select * from (select * from {ISSUES_TABLE} where {IssuesDatabase.CAR_ID} = %s) as b where b.{IssuesDatabase.FROM} < %s and (b.{IssuesDatabase.TO} <= %s or b.{IssuesDatabase.TO} is null)"""
         records_2 = self.execute_return(query_2, (property_list.get(
             self.CAR_ID), property_list.get(self.TO), property_list.get(self.FROM)))
+
+        print(records)
+        print(records_2)
 
         # If there is no one booking, then add booking
         if len(records) > 0 or len(records_2) > 0:
@@ -817,7 +820,7 @@ class IssuesDatabase(AbstractDatabase):
         self.host = host
         self.user = user
         self.password = password
-        self.join_property_list = self.property_list + [CarDatabase.LOCATION]
+        self.join_property_list = self.property_list + CarDatabase.property_list
 
         # Check for existing schema
         query = f"create database if not exists {self.database}"
@@ -1096,12 +1099,24 @@ if __name__ == "__main__":
     user_db.add_user(USER_ID=6, name="Random user", address="TP.HCM, VN", phone_number="0913885983")
 
     # Car Database
-    car_db.insert_car(**{car_db.BRAND: "Honda Civic", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Black", car_db.SEATS: "4",
-                         car_db.LOCATION: "Thu Duc", car_db.COST_PER_HOUR: "1000000", car_db.LAT: 10.730104, car_db.LNG: 106.691745})
-    car_db.insert_car(**{car_db.BRAND: "Toyota Camry", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Brown", car_db.SEATS: "5",
-                        car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "1500000", car_db.LAT: 10.857306, car_db.LNG: 106.769463})
-    car_db.insert_car(**{car_db.BRAND: "Fortuner", car_db.BODY_TYPE: "Something", car_db.COLOUR: "Green", car_db.SEATS: "7",
-                         car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "2000000", car_db.LAT: 10.856727, car_db.LNG: 106.766620})
+    car_db.insert_car(**{car_db.BRAND: "Merc C 300 AMG", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Black", car_db.SEATS: "4", car_db.LOCATION: "Dist. 1", car_db.COST_PER_HOUR: "100000", car_db.LAT: 10.778157, car_db.LNG: 106.702830})
+
+    car_db.insert_car(**{car_db.BRAND: "Merc E 200", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "White", car_db.SEATS: "4", car_db.LOCATION: "Dist. 7", car_db.COST_PER_HOUR: "120000", car_db.LAT: 10.744073, car_db.LNG: 106.701548})
+
+    car_db.insert_car(**{car_db.BRAND: "Merc S 450 L", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Grey", car_db.SEATS: "4", car_db.LOCATION: "RMIT", car_db.COST_PER_HOUR: "150000", car_db.LAT: 10.730060, car_db.LNG: 106.692875})
+
+    car_db.insert_car(**{car_db.BRAND: "BMW X4", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Red", car_db.SEATS: "5", car_db.LOCATION: "Dist. Binh Thanh", car_db.COST_PER_HOUR: "100000", car_db.LAT: 10.805242, car_db.LNG: 106.716938})
+
+    car_db.insert_car(**{car_db.BRAND: "BMW X7", car_db.BODY_TYPE: "SUV", car_db.COLOUR: "Black", car_db.SEATS: "7", car_db.LOCATION: "Thu Duc", car_db.COST_PER_HOUR: "180000", car_db.LAT: 10.730104, car_db.LNG: 106.691745})
+    car_db.insert_car(**{car_db.BRAND: "Audi Q7", car_db.BODY_TYPE: "SUV", car_db.COLOUR: "Yellow", car_db.SEATS: "7", car_db.LOCATION: "Dist. 2", car_db.COST_PER_HOUR: "180000", car_db.LAT: 10.815434, car_db.LNG: 106.730482})
+
+
+    car_db.insert_car(**{car_db.BRAND: "Merc GLC 300", car_db.BODY_TYPE: "SUV", car_db.COLOUR: "Black", car_db.SEATS: "5", car_db.LOCATION: "Dist. 8", car_db.COST_PER_HOUR: "180000", car_db.LAT: 10.739963, car_db.LNG: 106.657276})
+
+    car_db.insert_car(**{car_db.BRAND: "Honda City", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Blue", car_db.SEATS: "4", car_db.LOCATION: "Dist. 8", car_db.COST_PER_HOUR: "100000", car_db.LAT: 10.739963, car_db.LNG: 106.657276})
+    car_db.insert_car(**{car_db.BRAND: "Merc GLC 250", car_db.BODY_TYPE: "SUV", car_db.COLOUR: "Red", car_db.SEATS: "5", car_db.LOCATION: "Dist. 8", car_db.COST_PER_HOUR: "180000", car_db.LAT: 10.739963, car_db.LNG: 106.657276})
+
+    car_db.insert_car(**{car_db.BRAND: "Honda Accord", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Blue", car_db.SEATS: "4", car_db.LOCATION: "Dist. 8", car_db.COST_PER_HOUR: "150000", car_db.LAT: 10.739963, car_db.LNG: 106.657276})
 
     # Employees Database
     employee_db.add_employee(
