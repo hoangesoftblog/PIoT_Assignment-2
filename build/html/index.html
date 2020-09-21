@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Automatic Car Share System’s documentation! &#8212; Car Sharing System 0.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-automatic-car-share-system-s-documentation">
+<h1>Welcome to Automatic Car Share System’s documentation!<a class="headerlink" href="#welcome-to-automatic-car-share-system-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This is the introduction to our documentation</p>
+<p>The system is expected to be able to automatically unlock cars and allow users to use the cars accordingly to their bookings.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="car-sharing-system-main">
+<h1>Car Sharing System Main<a class="headerlink" href="#car-sharing-system-main" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="module-database">
+<span id="car-sharing-system-database"></span><h1>Car Sharing System Database<a class="headerlink" href="#module-database" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="database.AbstractDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">AbstractDatabase</code><a class="headerlink" href="#database.AbstractDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>An Abstract Database, served as a standard for other databases</p>
+<dl class="py method">
+<dt id="database.AbstractDatabase.execute_no_return">
+<code class="sig-name descname">execute_no_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">connector_setting</span><span class="p">:</span> <span class="n">tuple</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.AbstractDatabase.execute_no_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute query on the database, return the row id, but does not return the records
+…
+:param query: the query command to be executed
+:type query: string
+:param data: the data to put into the query
+:type data: string
+:param connector_setting: the setting for the connector to initialize
+:type connector: string
+…
+:return: the id of the last row of the database
+:rtype: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.AbstractDatabase.execute_return">
+<code class="sig-name descname">execute_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">amount</span><span class="o">=</span><span class="default_value">'many'</span></em>, <em class="sig-param"><span class="n">connector_setting</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.AbstractDatabase.execute_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute query on the MySQL database, and return the records
+…
+:param query: the query command to be executed
+:type query: string
+:param data: the data to put into the query
+:type data: string
+:param amount: choose to either fetch one of the query or fetch all of the found query
+:type amount: “many” or “one” string
+:param connector_setting: the setting for the connector to initialize
+:type connector: string
+…
+:return: the record(s) found by the query
+:rtype: a dict of resulted query</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.AbstractDatabase.to_dictionary">
+<code class="sig-name descname">to_dictionary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">attribute_list</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.AbstractDatabase.to_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dict data type of input data and attributee
+…
+:param data: the data of attribute
+:type data: string
+:param attribute_list: the list of attribute that you want to add to the data
+:type attribute_list: string
+…
+:return: the dict type of attributes and its data
+:rtype: tuple</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="database.BookingDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">BookingDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'root'</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">'h&#64;angeSoftB1og'</span></em>, <em class="sig-param"><span class="n">schema</span><span class="o">=</span><span class="default_value">'temps'</span></em>, <em class="sig-param"><span class="n">tb_name</span><span class="o">=</span><span class="default_value">'Booking'</span></em>, <em class="sig-param"><span class="n">calendar</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drop_existing_table</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.BookingDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="database.BookingDatabase.add_booking">
+<code class="sig-name descname">add_booking</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">property_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.BookingDatabase.add_booking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new booking schedule</p>
+<dl class="simple">
+<dt>property_list</dt><dd><p>The properties of the new booking to be added(car id, user id, booking details, start/end time)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.BookingDatabase.cancel_booking">
+<code class="sig-name descname">cancel_booking</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">booking_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.BookingDatabase.cancel_booking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel the booking made before</p>
+<dl class="simple">
+<dt>booking_id</dt><dd><p>the id of the booking</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.BookingDatabase.find_booking">
+<code class="sig-name descname">find_booking</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">search_params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.BookingDatabase.find_booking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a booking based on the search parameters</p>
+<dl class="simple">
+<dt>search_params</dt><dd><p>the attributes of the booking we are looking for in dict form</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.BookingDatabase.get_all_booking">
+<code class="sig-name descname">get_all_booking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.BookingDatabase.get_all_booking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all booking info</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.BookingDatabase.update_booking">
+<code class="sig-name descname">update_booking</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">booking_id</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">update_values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.BookingDatabase.update_booking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the information of the booking</p>
+<dl class="simple">
+<dt>booking_id</dt><dd><p>The id of the booking</p>
+</dd>
+<dt>update_values</dt><dd><p>The key and value of the booking parameters in dict form</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="database.CarDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">CarDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'root'</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">'h&#64;angeSoftB1og'</span></em>, <em class="sig-param"><span class="n">schema</span><span class="o">=</span><span class="default_value">'temps'</span></em>, <em class="sig-param"><span class="n">tb_name</span><span class="o">=</span><span class="default_value">'Car'</span></em>, <em class="sig-param"><span class="n">drop_existing_table</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.CarDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="database.CarDatabase.find_car">
+<code class="sig-name descname">find_car</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">search_params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.CarDatabase.find_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a car based on input parameters</p>
+<dl class="simple">
+<dt>search_params</dt><dd><p>the parameters to search for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.CarDatabase.get_all_car">
+<code class="sig-name descname">get_all_car</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.CarDatabase.get_all_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all cars in dict form</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.CarDatabase.insert_car">
+<code class="sig-name descname">insert_car</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">property_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.CarDatabase.insert_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the the new car to the database</p>
+<dl class="simple">
+<dt>property_list</dt><dd><p>the information of the car, should be in the self.property_list array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.CarDatabase.remove_car">
+<code class="sig-name descname">remove_car</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">car_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.CarDatabase.remove_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a car based on their id</p>
+<dl class="simple">
+<dt>car_id</dt><dd><p>id of the car to be deleted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.CarDatabase.update_car">
+<code class="sig-name descname">update_car</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">car_id</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">update_values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.CarDatabase.update_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the parameters of a car</p>
+<dl class="simple">
+<dt>car_id</dt><dd><p>id of the car to be updated</p>
+</dd>
+<dt>update_values</dt><dd><p>the parameters to be updated and their new values in dict form</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="database.EmployeesDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">EmployeesDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'root'</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">'h&#64;angeSoftB1og'</span></em>, <em class="sig-param"><span class="n">schema</span><span class="o">=</span><span class="default_value">'temps'</span></em>, <em class="sig-param"><span class="n">tb_name</span><span class="o">=</span><span class="default_value">'Employee'</span></em>, <em class="sig-param"><span class="n">drop_existing_table</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.EmployeesDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="database.EmployeesDatabase.add_employee">
+<code class="sig-name descname">add_employee</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">property_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.EmployeesDatabase.add_employee" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an employee</p>
+<dl class="simple">
+<dt>property_list</dt><dd><p>the property of the employee (id and name)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.EmployeesDatabase.get_all">
+<code class="sig-name descname">get_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.EmployeesDatabase.get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all employees</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.EmployeesDatabase.update_employee">
+<code class="sig-name descname">update_employee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">employee_id</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">update_values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.EmployeesDatabase.update_employee" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the information of the employee</p>
+<dl class="simple">
+<dt>employee_id</dt><dd><p>The id of the employee</p>
+</dd>
+<dt>update_values</dt><dd><p>the key and value of the employee parameters in dict form</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="database.IssuesDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">IssuesDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'root'</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">'h&#64;angeSoftB1og'</span></em>, <em class="sig-param"><span class="n">schema</span><span class="o">=</span><span class="default_value">'temps'</span></em>, <em class="sig-param"><span class="n">tb_name</span><span class="o">=</span><span class="default_value">'Issues'</span></em>, <em class="sig-param"><span class="n">drop_existing_table</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.IssuesDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="database.IssuesDatabase.add_issues">
+<code class="sig-name descname">add_issues</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">property_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.IssuesDatabase.add_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an issue</p>
+<dl class="simple">
+<dt>property_list</dt><dd><p>the properties of the issues, such as Car id, engineer ID, from time, to time</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.IssuesDatabase.cancel_issues">
+<code class="sig-name descname">cancel_issues</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.IssuesDatabase.cancel_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel the issue</p>
+<dl class="simple">
+<dt>id</dt><dd><p>the id of the issue</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.IssuesDatabase.complete_issues">
+<code class="sig-name descname">complete_issues</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.IssuesDatabase.complete_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signifying that the issue is solved</p>
+<dl class="simple">
+<dt>id</dt><dd><p>the id of the issue</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.IssuesDatabase.find_issues">
+<code class="sig-name descname">find_issues</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">search_params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.IssuesDatabase.find_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the issues based on the parameters</p>
+<dl class="simple">
+<dt>search_params</dt><dd><p>the parameters dict to search for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.IssuesDatabase.get_all_issues">
+<code class="sig-name descname">get_all_issues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.IssuesDatabase.get_all_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the issues</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.IssuesDatabase.modify_issues">
+<code class="sig-name descname">modify_issues</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">update_values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.IssuesDatabase.modify_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changing issue information</p>
+<dl class="simple">
+<dt>id</dt><dd><p>the id of the issue</p>
+</dd>
+<dt>update_values</dt><dd><p>the values to be changed</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="database.LoginDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">LoginDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'root'</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">'h&#64;angeSoftB1og'</span></em>, <em class="sig-param"><span class="n">schema</span><span class="o">=</span><span class="default_value">'temps'</span></em>, <em class="sig-param"><span class="n">tb_name</span><span class="o">=</span><span class="default_value">'Login_Info'</span></em>, <em class="sig-param"><span class="n">drop_existing_table</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.LoginDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Login and Register database</p>
+<dl class="py method">
+<dt id="database.LoginDatabase.add_login">
+<code class="sig-name descname">add_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">role</span><span class="o">=</span><span class="default_value">'user'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.LoginDatabase.add_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a new user</p>
+<dl class="simple">
+<dt>username</dt><dd><p>The username of the new user</p>
+</dd>
+<dt>password</dt><dd><p>The password of the new user</p>
+</dd>
+<dt>role</dt><dd><p>The role of the user, string “user”, “manager”, “admin” or “engineer”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.LoginDatabase.change_password">
+<code class="sig-name descname">change_password</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">password</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.LoginDatabase.change_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change password of a user</p>
+<dl class="simple">
+<dt>id</dt><dd><p>The id of the user to be deleted</p>
+</dd>
+<dt>password</dt><dd><p>The new password</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.LoginDatabase.delete_login">
+<code class="sig-name descname">delete_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.LoginDatabase.delete_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a user</p>
+<dl class="simple">
+<dt>id</dt><dd><p>The id of the user to be deleted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.LoginDatabase.get_all_login">
+<code class="sig-name descname">get_all_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.LoginDatabase.get_all_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the information of a user based on their username and password</p>
+<dl class="simple">
+<dt>email</dt><dd><p>The email of the user to be found</p>
+</dd>
+<dt>password</dt><dd><p>The password of the user to be found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.LoginDatabase.login_existed">
+<code class="sig-name descname">login_existed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">password</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.LoginDatabase.login_existed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the information of a user based on their username and password</p>
+<dl class="simple">
+<dt>email</dt><dd><p>The email of the user to be found</p>
+</dd>
+<dt>password</dt><dd><p>The password of the user to be found</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="database.StatisticsDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">StatisticsDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'root'</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">'h&#64;angeSoftB1og'</span></em>, <em class="sig-param"><span class="n">schema</span><span class="o">=</span><span class="default_value">'temps'</span></em>, <em class="sig-param"><span class="n">drop_existing_table</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.StatisticsDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="database.StatisticsDatabase.get_booked_car">
+<code class="sig-name descname">get_booked_car</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.StatisticsDatabase.get_booked_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the amount of cars that booked by each month</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.StatisticsDatabase.get_free_car">
+<code class="sig-name descname">get_free_car</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.StatisticsDatabase.get_free_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of free cars (No booking, no issues) by month</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.StatisticsDatabase.get_monthly_revenue">
+<code class="sig-name descname">get_monthly_revenue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.StatisticsDatabase.get_monthly_revenue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get revenue for each month</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.StatisticsDatabase.get_number_of_car">
+<code class="sig-name descname">get_number_of_car</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.StatisticsDatabase.get_number_of_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the total number of cars in the inventory</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.StatisticsDatabase.get_number_of_new_users">
+<code class="sig-name descname">get_number_of_new_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.StatisticsDatabase.get_number_of_new_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of new users by today</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.StatisticsDatabase.get_today_issues">
+<code class="sig-name descname">get_today_issues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.StatisticsDatabase.get_today_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the amount of issues for today</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="database.UserDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">database.</code><code class="sig-name descname">UserDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">'localhost'</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'root'</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">'h&#64;angeSoftB1og'</span></em>, <em class="sig-param"><span class="n">schema</span><span class="o">=</span><span class="default_value">'temps'</span></em>, <em class="sig-param"><span class="n">tb_name</span><span class="o">=</span><span class="default_value">'Account'</span></em>, <em class="sig-param"><span class="n">drop_existing_table</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.UserDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="database.UserDatabase.add_user">
+<code class="sig-name descname">add_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">property_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.UserDatabase.add_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new customer</p>
+<dl class="simple">
+<dt>property_list</dt><dd><p>the information of the user, should be in the property_list dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.UserDatabase.find_user">
+<code class="sig-name descname">find_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">search_params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.UserDatabase.find_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a user based on input parameters</p>
+<dl class="simple">
+<dt>search_term</dt><dd><p>The parameters to search for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.UserDatabase.get_all">
+<code class="sig-name descname">get_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.UserDatabase.get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get The dictionary containt all the customers</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.UserDatabase.remove_user">
+<code class="sig-name descname">remove_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.UserDatabase.remove_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a user based on their id</p>
+<dl class="simple">
+<dt>user_id</dt><dd><p>id of the user to be deleted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database.UserDatabase.update_user">
+<code class="sig-name descname">update_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_id</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">update_values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.UserDatabase.update_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the parameters of a user</p>
+<dl class="simple">
+<dt>user_id</dt><dd><p>id of the user to be updated</p>
+</dd>
+<dt>update_values</dt><dd><p>the parameters to be updated and their new values in dict form</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-google_cloud_storage">
+<span id="car-sharing-system-google-cloud-service"></span><h1>Car Sharing System Google Cloud Service<a class="headerlink" href="#module-google_cloud_storage" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="google_cloud_storage.GoogleCloudStorage">
+<em class="property">class </em><code class="sig-prename descclassname">google_cloud_storage.</code><code class="sig-name descname">GoogleCloudStorage</code><a class="headerlink" href="#google_cloud_storage.GoogleCloudStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Google Cloud Storage class manage google cloud bucket operations such as downloading and uploading files</p>
+<dl class="py method">
+<dt id="google_cloud_storage.GoogleCloudStorage.download_file">
+<code class="sig-name descname">download_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_file_name</span></em>, <em class="sig-param"><span class="n">destination_file_name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">keyword_args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#google_cloud_storage.GoogleCloudStorage.download_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a file on the bucket
+Keywords-arguments keyword_args will store whatever
+params needed for blob.upload_from_file</p>
+<dl class="simple">
+<dt>source_file_name</dt><dd><p>The file name on the bucket to be save</p>
+</dd>
+<dt>destination_file_name</dt><dd><p>The name it is saved on the local machine</p>
+</dd>
+<dt>keyword_args</dt><dd><p>The parameters used for uploading the file such as time out (in dict form)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="google_cloud_storage.GoogleCloudStorage.download_trainer">
+<code class="sig-name descname">download_trainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#google_cloud_storage.GoogleCloudStorage.download_trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the trainer file on the trainer bucket</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="google_cloud_storage.GoogleCloudStorage.get_all_files">
+<code class="sig-name descname">get_all_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">keyword_args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#google_cloud_storage.GoogleCloudStorage.get_all_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download all the files on the bucket
+Keywords-arguments keyword_args will store whatever
+params needed for Client.list_blobs</p>
+<dl class="simple">
+<dt>keyword_args</dt><dd><p>The parameters used for downloading the file such as time out (in dict form)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="google_cloud_storage.GoogleCloudStorage.upload_file_and_return_url">
+<code class="sig-name descname">upload_file_and_return_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">name_on_storage</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">additional_params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#google_cloud_storage.GoogleCloudStorage.upload_file_and_return_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the image to the car_assets bucket, and return the public URL for that assets</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="google_cloud_storage.GoogleCloudStorage.upload_from_file">
+<code class="sig-name descname">upload_from_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_obj</span></em>, <em class="sig-param"><span class="n">name_on_storage</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">keyword_args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#google_cloud_storage.GoogleCloudStorage.upload_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload the file using the file object
+file_obj: Using open()
+blob.upload_from_file has many arguments.
+Keywords-arguments keyword_args will store whatever
+params needed for blob.upload_from_file</p>
+<dl class="simple">
+<dt>file_obj</dt><dd><p>the file object of file to be uploaded</p>
+</dd>
+<dt>name_on_storage</dt><dd><p>the name it is saved on the storage</p>
+</dd>
+<dt>keyword_args</dt><dd><p>The parameters used for uploading the file such as time out (in dict form)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="google_cloud_storage.GoogleCloudStorage.upload_from_filename">
+<code class="sig-name descname">upload_from_filename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">name_on_storage</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">keyword_args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#google_cloud_storage.GoogleCloudStorage.upload_from_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload the file, by file name to the google cloud storage bucket
+blob.upload_from_filename has many arguments.
+Keywords-arguments keyword_args will store whatever
+params needed for blob.upload_from_filename</p>
+<dl class="simple">
+<dt>file_name</dt><dd><p>The message to send</p>
+</dd>
+<dt>name_on_storage</dt><dd><p>The name it is saved on the storage</p>
+</dd>
+<dt>keyword_args</dt><dd><p>The parameters used for uploading the file such as time out (in dict form)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-agent_pi">
+<span id="car-sharing-system-agent-pi-gui"></span><h1>Car Sharing System Agent Pi GUI<a class="headerlink" href="#module-agent_pi" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="agent_pi.AccessDenied">
+<em class="property">class </em><code class="sig-prename descclassname">agent_pi.</code><code class="sig-name descname">AccessDenied</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">master</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.AccessDenied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Showing the screen so users knows that they been refused to access the car</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agent_pi.AccessGranted">
+<em class="property">class </em><code class="sig-prename descclassname">agent_pi.</code><code class="sig-name descname">AccessGranted</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">master</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.AccessGranted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Showing the screen so users knows that they have successfully identified as the user of the car</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agent_pi.AgentPiApp">
+<em class="property">class </em><code class="sig-prename descclassname">agent_pi.</code><code class="sig-name descname">AgentPiApp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">car_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.AgentPiApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Agent PI GUI built with tkinter, is a subclass of the Tk class, a window, used for customers to login with their credentials
+or face to access the car, for engineer to show their QR code to access the car</p>
+<dl class="py method">
+<dt id="agent_pi.AgentPiApp.switch_frame">
+<code class="sig-name descname">switch_frame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame_class</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.AgentPiApp.switch_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>To switch the main window frame to another</p>
+<dl class="simple">
+<dt>frame_class</dt><dd><p>The frame subclass to switch to</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="agent_pi.ApVideoCapture">
+<em class="property">class </em><code class="sig-prename descclassname">agent_pi.</code><code class="sig-name descname">ApVideoCapture</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">video_source</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.ApVideoCapture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide video capture to the other frames</p>
+<dl class="py method">
+<dt id="agent_pi.ApVideoCapture.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.ApVideoCapture.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the frame that the camera captured as a tuple of (ret, frame)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="agent_pi.FacePage">
+<em class="property">class </em><code class="sig-prename descclassname">agent_pi.</code><code class="sig-name descname">FacePage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">master</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.FacePage" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Class to manage the facial recognition frame</p>
+<dl class="py method">
+<dt id="agent_pi.FacePage.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.FacePage.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the canvas showing the camera feed on the frame</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="agent_pi.LoginPage">
+<em class="property">class </em><code class="sig-prename descclassname">agent_pi.</code><code class="sig-name descname">LoginPage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">master</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.LoginPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Login Page frame, to show the options available to the users</p>
+<dl class="py method">
+<dt id="agent_pi.LoginPage.login_bt_pressed">
+<code class="sig-name descname">login_bt_pressed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.LoginPage.login_bt_pressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the event that attached to bt_login</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="agent_pi.QrPage">
+<em class="property">class </em><code class="sig-prename descclassname">agent_pi.</code><code class="sig-name descname">QrPage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">master</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.QrPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Class to manage the QR recognition frame
+…</p>
+<dl class="py method">
+<dt id="agent_pi.QrPage.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agent_pi.QrPage.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the canvas showing the camera feed on the frame.</p>
+<p>Multiple QR codes are not supported</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-socket_communication">
+<span id="car-sharing-system-socket-communication"></span><h1>Car Sharing System Socket Communication<a class="headerlink" href="#module-socket_communication" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="socket_communication.Socket_Client">
+<em class="property">class </em><code class="sig-prename descclassname">socket_communication.</code><code class="sig-name descname">Socket_Client</code><a class="headerlink" href="#socket_communication.Socket_Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>The client to connect to the server and exchange message</p>
+<dl class="py method">
+<dt id="socket_communication.Socket_Client.receive_message">
+<code class="sig-name descname">receive_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#socket_communication.Socket_Client.receive_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the message from the connected server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="socket_communication.Socket_Client.send_message">
+<code class="sig-name descname">send_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em><span class="sig-paren">)</span><a class="headerlink" href="#socket_communication.Socket_Client.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send the message to the connected server</p>
+<dl class="simple">
+<dt>message</dt><dd><p>The message to be sent</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="socket_communication.tcp_start_server">
+<code class="sig-prename descclassname">socket_communication.</code><code class="sig-name descname">tcp_start_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#socket_communication.tcp_start_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the server to be connected by socket</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-camera">
+<span id="car-sharing-system-camera"></span><h1>Car Sharing System Camera<a class="headerlink" href="#module-camera" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="camera.VideoCamera">
+<em class="property">class </em><code class="sig-prename descclassname">camera.</code><code class="sig-name descname">VideoCamera</code><a class="headerlink" href="#camera.VideoCamera" title="Permalink to this definition">¶</a></dt>
+<dd><p>The camera class to record faces</p>
+<dl class="py method">
+<dt id="camera.VideoCamera.capture_faces">
+<code class="sig-name descname">capture_faces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">UID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#camera.VideoCamera.capture_faces" title="Permalink to this definition">¶</a></dt>
+<dd><p>When run will start capturing images of faces on the camera, and save it on the cloud
+Naming scheme is based on id</p>
+<dl class="simple">
+<dt>UID</dt><dd><p>the id of the user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="camera.VideoCamera.get_frame_in_bytes">
+<code class="sig-name descname">get_frame_in_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#camera.VideoCamera.get_frame_in_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the recorded frame in bytes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="camera.VideoCamera.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#camera.VideoCamera.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the recorded retval and frame</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Car Sharing System</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, 'Pham Trung Hieu - Truong Quoc Hoang - Ho Minh Duc - Dang Dinh Khanh'.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

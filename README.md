@@ -30,29 +30,43 @@ The system involves using 2 kinds of Raspberry Pi:
 - For the Agent Pi, run the agent_pi.py through Python 3 interpreter, the GUI will generates and allow users to identify themselves to the car.
 
 ## User credentials, used for testing:
-Customer:
+
+#Customer:
+
 - username: s3694808@rmit.edu.vn
+
 - password: Rm!th@angeSoftB1og
-System admin:
+
+#System admin:
+
 - username:hoangesoftblog@gmail.com
+
 - password: Rm!t
-Company manager:
+
+#Company manager:
+
 - username: s3694365@rmit.edu.vn
+
 - password: 123456
-Engineer:
+
+#Engineer:
+
 - username: s3618748@rmit.edu.vn
+
 - password: 159753
+
 
 
 ## Contribution Reports:
 ### Github:
-
-![GitHub Logo](/images/logo.png)
-
+Our commits on github have the following flow:
+![Github](/images/Github.png)
 
 
 
 ### Trello:
+Our Trello result at the end of week 12 have most of their tasks finished. Appears as below
+![Trello](/images/Trello.png)
 
 
 
