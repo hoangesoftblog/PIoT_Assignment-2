@@ -8,6 +8,9 @@ booking_db = database.BookingDatabase()
 issues_db = database.IssuesDatabase()
 
 def tcp_start_server():
+    """Start the server to be connected by socket
+
+    """
     #### Dataflow for Socket Communication
     # 1) Receive a message what kind of login it is from Client
     # 2) Receive the data from the Login
@@ -118,7 +121,8 @@ def tcp_start_server():
 
 
 class Socket_Client:
-
+    """The client to connect to the server and exchange message
+    """
     # HOST = "127.0.0.1" # The server's hostname or IP address.
     HOST = "localhost" # The server's hostname or IP address.
     PORT = 65433        # The port used by the server.
@@ -132,10 +136,19 @@ class Socket_Client:
 
 
     def send_message(self, message):
+        """Send the message to the connected server
+        
+        Parameters
+        ----------
+        message
+            The message to be sent
+        """
         self.the_socket.sendall(message)
 
 
     def receive_message(self):
+        """Return the message from the connected server
+        """
         message = self.the_socket.recv(1024)
         return message.decode()
 

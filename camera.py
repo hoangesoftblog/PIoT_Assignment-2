@@ -4,6 +4,8 @@ import google_cloud_storage
 import os
 
 class VideoCamera:
+    """The camera class to record faces
+    """
     def __init__(self):
         self.video = cv2.VideoCapture(0)
         self.gcs = google_cloud_storage.GoogleCloudStorage()
@@ -16,11 +18,15 @@ class VideoCamera:
 
 
     def get_frame_in_bytes(self):
+        """Return the recorded frame in bytes
+        """
         ret, frame = self.video.read()
         ret2, jpeg = cv2.imencode('.jpg', frame)
         return jpeg.tobytes()
 
     def read():
+        """Return the recorded retval and frame
+        """
         return self.video.read()
 
 
@@ -28,9 +34,11 @@ class VideoCamera:
         """
         When run will start capturing images of faces on the camera, and save it on the cloud
         Naming scheme is based on id
-        :param UID: User ID to capture face
-        :type UID: str or int
-        :return: void
+        
+        Parameters
+        ----------
+        UID
+            the id of the user
         """
         
         # Capture camera frame
@@ -58,8 +66,8 @@ class VideoCamera:
                 file_name = "User " + str(UID) + ' - ' + str(self.count) + ".jpg"
                 cv2.imwrite(file_name, gray[y:y+h, x:x+w])
                 self.gcs.upload_from_filename(file_name, file_name)
-                # if os.path.exists(file_name):
-                #     os.remove(file_name)
+                if os.path.exists(file_name):
+                    os.remove(file_name)
         else:
             pass
 

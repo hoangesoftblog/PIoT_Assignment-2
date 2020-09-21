@@ -110,12 +110,11 @@ class GoogleCloudStorage:
     def download_trainer(self):
         """ Download the trainer file on the trainer bucket
         """
-        if not os.path.exists("trainer.yml"):
-            # Connect to bucket on Cloud Storage
-            trainer_bucket = self.storage_client.get_bucket("trainer")
-            blob = trainer_bucket.blob("trainer.yml")
-            blob.download_to_filename("trainer.yml")
-            print("Trainer.yml downloaded")
+        # Connect to bucket on Cloud Storage
+        trainer_bucket = self.storage_client.get_bucket("trainer")
+        blob = trainer_bucket.blob("trainer.yml")
+        blob.download_to_filename("trainer.yml")
+        print("Trainer.yml downloaded")
 
 
     def get_all_files(self, **keyword_args):
@@ -131,6 +130,16 @@ class GoogleCloudStorage:
         blobs = self.storage_client.list_blobs(
             self.bucket.name, **keyword_args)
         return blobs
+
+    def upload_file_and_return_url(self, file_name, name_on_storage, **additional_params):
+        """
+        Add the image to the car_assets bucket, and return the public URL for that assets
+        """
+        assets_bucket = self.storage_client.bucket("car_assets")
+        blob = assets_bucket.blob(name_on_storage)
+        blob.upload_from_filename(file_name, **additional_params)
+        return blob.public_url
+
 
 
 if __name__ == "__main__":

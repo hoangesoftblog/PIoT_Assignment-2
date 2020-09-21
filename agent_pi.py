@@ -34,24 +34,6 @@ class AgentPiApp(tk.Tk):
         self._frame = None
         self.switch_frame(LoginPage)
 
-    def is_access_allowed(self, user_id):
-        """Return True or False if the user is allowed to access the car or not
-        Parameters
-        ----------
-        user_id
-            The Id of the user trying to access the car
-        """
-        ### DATABASE CODE GOES HERE
-        return False
-
-
-    def get_accessible_user_id(self):
-        """Return the user id that is allowed to access the car, at current time
-        
-        """
-        ### DATABASE CODE GOES HERE
-        return 1
-
 
     def switch_frame(self, frame_class):
         """To switch the main window frame to another
@@ -167,13 +149,12 @@ class FacePage(tk.Frame):
         self.master = master
         
         # Get all users from MySQL Database
-        login_db = LoginDatabase()
+        # login_db = LoginDatabase()
         # self.user_dict = users.get_all()
         # print(self.user_dict)
 
-        # Download all neccessary files if needed
-        if not os.path.exists("trainer.yml"):
-            gcs.download_trainer()
+        # Download all neccessary files
+        gcs.download_trainer()
 
         # Create Face Detector
         self.faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
@@ -188,7 +169,7 @@ class FacePage(tk.Frame):
         # Elements on the UI
         self.canvas = tk.Canvas(self, width = self.vid.width, height=self.vid.height)
         self.canvas.pack()
-        tk.Button(self, text="Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
+        tk.Button(self, tst="Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
         
         # Since we need to check if a same face is detect for 5 times
         # identification_count counts how many times it has been appeared already
@@ -306,7 +287,7 @@ class QrPage(tk.Frame):
                     cv2.line(frame, tuple(bbox[i][0]), tuple(bbox[(i+1) % len(bbox)][0]), color=(255, 0, 0), thickness=2)
 
             if data:
-                data = {IssuesDatabase.ENGINEER_ID: data, Iss.CAR_ID: self.master.car_id}
+                data = {IssuesDatabase.ENGINEER_ID: data, IssuesDatabase.CAR_ID: self.master.car_id}
 
                 client_socket = socket_communication.Socket_Client()
                 client_socket.send_message("QR".encode())

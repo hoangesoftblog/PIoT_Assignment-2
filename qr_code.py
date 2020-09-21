@@ -2,6 +2,9 @@ import cv2
 import qrcode
 
 def start_reading_qr():
+    """Use the camera to read the QR code
+
+    """
     # initialize the camera
     cap = cv2.VideoCapture(0)
     # initialize the cv2 QRCode detector
@@ -29,6 +32,15 @@ def start_reading_qr():
     cv2.destroyAllWindows()
 
 def generate_qr_code(content):
+    """ Generate qr code based on input content
+    
+    
+    Parameters
+    ----------
+    content
+        The content to be turned into a qr file
+
+    """
     # output file name
     filename = str(content) + "_qr.png"
     # generate qr code

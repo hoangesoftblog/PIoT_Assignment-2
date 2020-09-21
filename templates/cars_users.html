@@ -177,10 +177,14 @@
 				{% for car in cars %}
 				<article>
 					<div class="image">
-						<img src="{{ url_for('static', filename='images/1.jpg') }} " alt="Pic 01"
+						<!--  -->
+						<img src="{{ car.get('image') if car.get('image') else url_for('static', filename='images/1.jpg') }} " alt="Pic 01"
 							style="height: 200px; width: 380px;" />
-						<img src="https://maps.googleapis.com/maps/api/staticmap?markers={{car.get('lat')}},{{car.get('lng')}}&size=380x180&zoom=18&key=AIzaSyANGfoaQpqDhLUzCV_LLp1e5E4tleqEdFg" alt="Pic 01"
-							style="height: 180px; width: 380px;" />
+							
+							<!-- https://maps.googleapis.com/maps/api/staticmap?markers={{car.get('lat')}},{{car.get('lng')}}&size=380x180&zoom=18&key=AIzaSyANGfoaQpqDhLUzCV_LLp1e5E4tleqEdFg -->
+						<iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyANGfoaQpqDhLUzCV_LLp1e5E4tleqEdFg&q={{car.get('lat')}},{{car.get('lng')}}&zoom=18" alt="Pic 01"
+						height: 180px; width: 380px; style="height: 180px; width: 380px;" >
+						</iframe>
 					</div>
 					<header>
 						<h3 style="display: inline-block;">{{car.get('brand')}} - </h3> <h3 style="display: inline-block; color: #fcba03;">{{car.get('cost_per_hour')}} VND</h3>

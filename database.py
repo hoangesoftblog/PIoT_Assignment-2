@@ -361,7 +361,6 @@ class UserDatabase (AbstractDatabase):
             additional_where_clause = ("and" if remaining_keys else "") + f" {' and '.join([key + ' like %s ' for key in remaining_keys])} " + ("and" if numeric_keys else "") + \
                 f" {' and '.join([key + ' = %s ' for key in numeric_keys])} " + (
                     "and" if null_keys else "") + f" {' and '.join([key + ' is %s ' for key in null_keys])} "
-            print(query + where_clause + additional_where_clause)
             records = self.execute_return(
                 query + where_clause + additional_where_clause, parameters)
             return self.to_dictionary(records)
@@ -376,7 +375,8 @@ class UserDatabase (AbstractDatabase):
         user_id
             id of the user to be deleted
         """
-        query = f"delete from {self.table} where {self.ID} = %s"
+        
+        query = f"delete from {LOGIN_TABLE} where {LoginDatabase.ID} = %s"
         self.execute_no_return(query, (user_id,))
 
     def update_user(self, user_id, **update_values):
@@ -410,8 +410,10 @@ class CarDatabase (AbstractDatabase):
     ID = "CAR_ID"
     LAT = "lat"
     LNG = "lng"
+    IMAGE = "image"
+    BEING_USED = "being_used"
     property_list = [ID, BRAND, BODY_TYPE, COLOUR,
-                     SEATS, LOCATION, COST_PER_HOUR, LAT, LNG]
+                     SEATS, LOCATION, COST_PER_HOUR, LAT, LNG, IMAGE, BEING_USED]
 
     def __init__(self, host=host, user=user, password=password, schema=schema, tb_name=CAR_TABLE, drop_existing_table=False):
         self.database = schema
@@ -430,7 +432,7 @@ class CarDatabase (AbstractDatabase):
             query = "DROP TABLE IF EXISTS " + self.table
             self.cursor.execute(query)
 
-        query = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.ID} INTEGER primary key auto_increment, {self.BRAND} varchar(20), {self.BODY_TYPE} varchar(30), {self.COLOUR} varchar(40), {self.SEATS} numeric, {self.LOCATION} varchar(100), {self.COST_PER_HOUR} numeric, {self.LAT} float, {self.LNG} float)"
+        query = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.ID} INTEGER primary key auto_increment, {self.BRAND} varchar(20), {self.BODY_TYPE} varchar(30), {self.COLOUR} varchar(40), {self.SEATS} numeric, {self.LOCATION} varchar(100), {self.COST_PER_HOUR} numeric, {self.LAT} float, {self.LNG} float, {self.IMAGE} text, {self.BEING_USED} bool )" 
         self.execute_no_return(query)
 
     def insert_car(self, **property_list):
@@ -441,6 +443,9 @@ class CarDatabase (AbstractDatabase):
         property_list
             the information of the car, should be in the self.property_list array
         """
+        if self.BEING_USED not in property_list:
+            property_list[self.BEING_USED] = False
+
         query = f"insert into {self.table} ({', '.join(property_list.keys())}) values ({', '.join([' %s ' for i in range(len(property_list.values()))])} )"
         return self.execute_no_return(query, list(property_list.values()))
 
@@ -516,6 +521,13 @@ class CarDatabase (AbstractDatabase):
         query = f"update {self.table} set {', '.join([str(col) + ' = %s' for col in cols_update])} where {self.ID} = %s;"
         params = list(new_values) + [car_id]
         return self.execute_no_return(query, params)
+
+    def unlock_car(self, car_id):
+        return self.update_car(car_id, **{self.BEING_USED: True})
+
+    def lock_car(self, car_id):
+        return self.update_car(car_id, **{self.BEING_USED: False})
+
 
 
 # Between car and user
@@ -1070,34 +1082,34 @@ if __name__ == "__main__":
 
     # # # # Insert data into tables
     # Login Database
-    print(login_db.add_login("hoangafublog@email.com", "112358", "user"))
-    print(login_db.add_login("hoangviethoa123@yahoo.com.vn", "159753", "engineer"))
-    print(login_db.add_login("hoangesoftblog", "1", "manager"))
-    print(login_db.add_login("hoangesoftblog@gmail.com", "123456", "admin"))
-    print(login_db.add_login("temp1", "12", "user"))
-    print(login_db.add_login("temp", "1", "user"))
+    login_db.add_login("s3694808@rmit.edu.vn", "Rm!th@angeSoftB1og", "user")
+    login_db.add_login("s3618748@rmit.edu.vn", "159753", "engineer")
+    login_db.add_login("s3694365@rmit.edu.vn", "123456", "manager")
+    login_db.add_login("hoangesoftblog@gmail.com", "Rm!t", "admin")
+    login_db.add_login("l9933429@rmit.edu.vn", "password", "user")
+    login_db.add_login("random_user@yahoo.com.vn", "password", "user")
+    login_db.add_login("random_user2@yahoo.com.vn", "password2", "user")
 
     # User Database
-    user_db.add_user(USER_ID=1, name="hoang truong",
-                     address="Thu Duc, TP.HCM", phone_number="0973557408")
-    user_db.add_user(USER_ID=6, name="rand", address="rand",
-                     phone_number="0973557408")
+    user_db.add_user(USER_ID=1, name="hoang truong", address="Thu Duc, TP.HCM", phone_number="0973557408")
+    user_db.add_user(USER_ID=5, name="hoang (English)", address="Q. Thu Duc, TP. HCM", phone_number="0973557408")
+    user_db.add_user(USER_ID=6, name="Random user", address="TP.HCM, VN", phone_number="0913885983")
 
     # Car Database
     car_db.insert_car(**{car_db.BRAND: "Honda Civic", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Black", car_db.SEATS: "4",
                          car_db.LOCATION: "Thu Duc", car_db.COST_PER_HOUR: "1000000", car_db.LAT: 10.730104, car_db.LNG: 106.691745})
     car_db.insert_car(**{car_db.BRAND: "Toyota Camry", car_db.BODY_TYPE: "Sedan", car_db.COLOUR: "Brown", car_db.SEATS: "5",
-                         car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "1500000", car_db.LAT: 10.857306, car_db.LNG: 106.769463})
+                        car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "1500000", car_db.LAT: 10.857306, car_db.LNG: 106.769463})
     car_db.insert_car(**{car_db.BRAND: "Fortuner", car_db.BODY_TYPE: "Something", car_db.COLOUR: "Green", car_db.SEATS: "7",
                          car_db.LOCATION: "Q1", car_db.COST_PER_HOUR: "2000000", car_db.LAT: 10.856727, car_db.LNG: 106.766620})
 
     # Employees Database
     employee_db.add_employee(
-        **{employee_db.ID: 2, employee_db.NAME: "Dang Dinh Khanh"})
+            **{employee_db.ID: 2, employee_db.NAME: "Dang Dinh Khanh"})
     employee_db.add_employee(
-        **{employee_db.ID: 3, employee_db.NAME: "Someone 1"})
+        **{employee_db.ID: 3, employee_db.NAME: "Pham Trung Hieu"})
     employee_db.add_employee(
-        **{employee_db.ID: 4, employee_db.NAME: "Someone 2"})
+        **{employee_db.ID: 4, employee_db.NAME: "Ho Minh Duc"})
 
     # Booking Database
     booking_db.add_booking(CID=2, UID=1, booking_details="Hello, it's me!",
@@ -1111,7 +1123,7 @@ if __name__ == "__main__":
     issues_db.add_issues(CID2=3, Engineer_ID=2)
     issues_db.add_issues(CID2=1, Engineer_ID=2)
 
-    # # # # Other methods
+    # # # Other methods
     login_db.change_password(3, "1010101")
     login_db.delete_login(5)
     print("User existed:", login_db.login_existed("hello", "123456"))
@@ -1121,9 +1133,8 @@ if __name__ == "__main__":
     print("User 1 is:", user_db.find_user(**{user_db.ID: 1}))
     print()
     user_db.update_user(6, **{user_db.NAME: "Viet Nam oi"})
-    user_db.remove_user(6)
-    user_db.add_user(USER_ID=6, name="rand", address="rand",
-                     phone_number="0973104912")
+    user_db.remove_user(5)
+
     print("Get all users:", user_db.get_all())
     print()
 
@@ -1133,6 +1144,8 @@ if __name__ == "__main__":
     print(car_db.update_car(
         4, **{car_db.BRAND: "Zoros", car_db.BODY_TYPE: "Unicycle"}))
     car_db.remove_car(1)
+    car_db.unlock_car(2)
+
     print("All cars:", car_db.get_all_car())
     print()
 
@@ -1158,6 +1171,11 @@ if __name__ == "__main__":
     print("All issues:", issues_db.get_all_issues())
     print()
 
+    statistics_db = StatisticsDatabase()
+    method_list = [print(method + ":", getattr(statistics_db, method)()) for method in dir(statistics_db)
+                   if callable(getattr(statistics_db, method)) and method not in dir(AbstractDatabase())]
+
+
     # # ###### Test set
     # # # # Test for add same username - table Account
     # # # account_db.add_user("hoangesoftblog", "h@angeSoftB1og", "hoang truong", "Thu Duc, TP.HCM", "0973557408")
@@ -1170,6 +1188,4 @@ if __name__ == "__main__":
     # hashed_password = flask_bcrypt.bcrypt.hashpw(password.encode('utf-8'), flask_bcrypt.bcrypt.gensalt()).decode('utf-8')
     # print(len(hashed_password))
 
-    statistics_db = StatisticsDatabase()
-    method_list = [print(method + ":", getattr(statistics_db, method)()) for method in dir(statistics_db)
-                   if callable(getattr(statistics_db, method)) and method not in dir(AbstractDatabase())]
+    

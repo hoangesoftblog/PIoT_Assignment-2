@@ -7,6 +7,9 @@ import qr_code
 import socket_communication
 import camera as VideoCamera
 import base64
+from werkzeug.utils import secure_filename
+import google_cloud_storage
+import os
 
 
 app = flask.Flask(__name__)
@@ -22,6 +25,11 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = flask_mail.Mail(app)
 
+# Config upload files
+UPLOAD_FOLDER = ""
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
 
 # flask_cors.CORS(app=app)
 login_db = LoginDatabase()
@@ -32,6 +40,8 @@ employee_db = EmployeesDatabase()
 issues_db = IssuesDatabase()
 statistics_db = StatisticsDatabase()
 
+cloud_storage = google_cloud_storage.GoogleCloudStorage()
+
 
 
 
@@ -41,6 +51,13 @@ statistics_db = StatisticsDatabase()
 # MASTER PI
 @app.route('/login', methods=["POST", "GET"])
 def login(error=False):
+    """Log the user into the system
+    
+    Parameters
+    ----------
+    error
+        The modes to render the html page
+    """
     if flask.request.method == "GET":
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.render_template("login.html", error=error)
@@ -62,6 +79,9 @@ def login(error=False):
 
 @app.route('/register', methods=["POST", "GET"])
 def sign_up():
+    """Register the user
+    
+    """
     attributes = {"error": False, "email_existed": False}
     if flask.request.method == "GET":
         if flask.session.get(login_db.USERNAME) == None:
@@ -100,6 +120,9 @@ def sign_up():
 
 @app.route('/forget_password', methods=["GET", "POST"])
 def forget_password():
+    """Render the forget password page
+
+    """
     if flask.request.method == "GET":
         return flask.render_template("forget_password.html")
     else:
@@ -108,6 +131,9 @@ def forget_password():
 
 @app.route('/user_setting', methods = ["GET", "POST"])
 def update_info():
+    """Update the user setting
+    
+    """
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
@@ -122,12 +148,18 @@ def update_info():
 
 @app.route('/logout', methods=["GET"])
 def logout():
+    """Logout of the system
+    
+    """
     flask.session.clear()
     return flask.redirect(flask.url_for("login"))
 
 
 @app.route('/home', methods=["GET", "POST"])
 def home():
+    """Render the home page for the user/admin/manager/engineer
+    
+    """
     role = flask.session.get(login_db.ROLES)
     if role == "user":
         return cars()
@@ -144,6 +176,13 @@ def home():
 # Booking
 @app.route('/booking/<int:car_id>', methods=["GET", "POST"])
 def booking_info(car_id):
+    """Show the calendar of booking info of the car
+    
+    Parameters
+    ----------
+    car_id
+        The id of the car to check
+    """
     attributes = {"error": False, "booked_before": False}
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
@@ -193,6 +232,9 @@ def booking_info(car_id):
 
 @app.route('/booking_history', methods=["GET", "POST"])
 def booking():
+    """Book the car for the user
+
+    """
     all_bookings = booking_db.get_all_booking()
 
     # Add keys and values for render_template
@@ -241,12 +283,26 @@ def booking():
 
 @app.route('/booking/cancel/<int:id>', methods=["POST", "GET"])
 def delete_booking(id):
+    """Remove the booking
+    
+    Parameters
+    ----------
+    id
+        id of the booking
+    """
     booking_db.cancel_booking(id)
     return flask.redirect(flask.url_for("booking"))
 
 
 @app.route('/booking/modify/<int:id>', methods=["POST", "GET"])
 def modify_booking(id):
+    """Change the information of the booking
+    
+    Parameters
+    ----------
+    id
+        Id of the booking to be changed
+    """
     # Set the default values of attributes in the form
     attributes = {"error": False, "booked_before": False}
     old_records = booking_db.find_booking(**{booking_db.ID: id})
@@ -289,6 +345,13 @@ def modify_booking(id):
 
 @app.route('/booking/add', methods = ["GET", "POST"])
 def booking_add():
+    """Log the user into the system
+    
+    Parameters
+    ----------
+    error
+        The modes to render the html page
+    """
     attributes = {}
     attributes[BookingDatabase.CAR_ID] = list(set(car_db.get_values_of_col(car_db.ID)))
     attributes[BookingDatabase.USER_ID] = list(set(user_db.get_values_of_col(user_db.ID)))
@@ -325,6 +388,9 @@ def booking_add():
 # Issues
 @app.route('/issues', methods=["POST", "GET"])
 def issues():
+    """Render the page with car issues
+    
+    """
     attributes = {}
     if flask.request.method == "POST":
         # Get submitted form data
@@ -401,6 +467,13 @@ def issues():
 @app.route('/issues/add/<int:id>', methods=["GET"])
 @app.route('/cars/report/<int:id>', methods=["GET"])
 def cars_report(id):
+    """Report that a car has issues
+    
+    Parameters
+    ----------
+    id
+        The id of the car
+    """
     # This is difficult because if there is no Issues in the DB
     # The normal query used for this return nothing
 
@@ -428,6 +501,13 @@ def cars_report(id):
 
 @app.route('/issues/cancel/<int:id>', methods=["GET"])
 def cancel_issues(id):
+    """Cancelling an issue
+    
+    Parameters
+    ----------
+    id
+        id of the issue
+    """
     issues_db.cancel_issues(id)
     return flask.redirect(flask.url_for("issues"))
 
@@ -440,6 +520,13 @@ def cancel_issues(id):
 
 @app.route('/issues/complete/<int:id>', methods=["GET"])
 def complete_issues(id):
+    """Report that an issue is completed
+    
+    Parameters
+    ----------
+    id
+        id of the completed issue
+    """
     issues_db.complete_issues(id)
     return flask.redirect(flask.url_for("issues"))
 
@@ -447,6 +534,9 @@ def complete_issues(id):
 # Cars
 @app.route('/cars', methods=["GET", "POST"])
 def cars():
+    """Render the car page for user or admins
+    
+    """
     attributes = {}
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
@@ -486,20 +576,55 @@ def cars():
 
 @app.route('/cars/delete/<int:id>', methods=["GET"])
 def cars_delete(id):
+    """Remove a car from the system
+    
+    Parameters
+    ----------
+    id
+        The id of the car to be deleted
+    """
     car_db.remove_car(id)
     return flask.redirect(flask.url_for("cars"))
 
 
 @app.route('/cars/add', methods=["GET", "POST"])
 def add_car():
+    """Adding a car to the system
+    
+    """
     if flask.request.method == "POST":
+        # Handle normal form data
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
         data = {k: (v if v != "None" else None) for k, v in data.items()}
-        print(data)
+        print("Data:", data)
 
-        records = car_db.insert_car(**data)
-        return flask.redirect(flask.url_for("cars"))
+        print("Request files:", flask.request.files.to_dict())
+        # Handle the upload images
+        if car_db.IMAGE not in flask.request.files:
+            print("No images upload")
+        
+        # Retrieve real files in the requests
+        upload_file = flask.request.files.get(car_db.IMAGE)
+        if upload_file and allowed_file(upload_file.filename):
+            # Upload file
+            filename = secure_filename(upload_file.filename)
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            upload_file.save(file_path)
+            file_url = cloud_storage.upload_file_and_return_url(file_path, filename)
+            # Delete file created temporarily
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+            # Insert data into database
+            data[car_db.IMAGE] = file_url
+            records = car_db.insert_car(**data)
+            return flask.redirect(flask.url_for("cars"))
+        else:
+            # Insert data into database
+            records = car_db.insert_car(**data)
+            # return flask.redirect(flask.url_for("cars"))
+            return flask.render_template("cars_add.html", message = "File is not chosen")
     else:
         if flask.session.get(login_db.USERNAME, None) is None:
             return flask.redirect(flask.url_for("login"))
@@ -509,6 +634,13 @@ def add_car():
 
 @app.route('/cars/modify/<int:id>', methods=["POST", "GET"])
 def cars_modify(id):
+    """Change the information of a car
+    
+    Parameters
+    ----------
+    id
+        id of the car to be modified
+    """
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
@@ -526,6 +658,13 @@ def cars_modify(id):
 # Users
 @app.route('/users', methods=["POST", "GET"])
 def users():
+    """print 
+    
+    Parameters
+    ----------
+    error
+        The modes to render the html page
+    """
     attributes = {}
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
@@ -556,6 +695,9 @@ def users():
 
 @app.route('/users/add', methods=["GET", "POST"])
 def users_add():
+    """Add a user to the system
+    
+    """
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
@@ -579,12 +721,26 @@ def users_add():
 
 @app.route('/users/delete/<int:id>', methods=["GET"])
 def users_delete(id):
+    """Delete a user from the system
+    
+    Parameters
+    ----------
+    id
+        id of the user to be deleted
+    """
     user_db.remove_user(id)
     return flask.redirect(flask.url_for("users"))
 
 
 @app.route('/users/modify/<int:id>', methods=["POST", "GET"])
 def users_modify(id):
+    """Change the user information
+    
+    Parameters
+    ----------
+    id
+        the id of the user to change
+    """    
     if flask.request.method == "POST":
         form_data = flask.request.form.to_dict()
         data = {key: val for key, val in form_data.items() if val}
@@ -603,11 +759,15 @@ def users_modify(id):
 
 @app.route('/403', methods=["GET"])
 def forbidden():
+    """Render the forbidden page
+    """
     return flask.render_template("403.html")
 
 
 @app.route('/dashboard', methods=["GET"])
 def dashboard():
+    """Render the dashboard
+    """
     if flask.session.get(login_db.USERNAME, None) is None:
         return flask.redirect(flask.url_for("login"))
     elif flask.session.get(login_db.ROLES) != "manager":
@@ -616,6 +776,104 @@ def dashboard():
         # print("car_db.get_booked_car()", car_db.get_booked_car())
         return flask.render_template("dashboard.html", allCar=statistics_db.get_number_of_car()[0][0], bookedCar=statistics_db.get_booked_car()[0][0], freeCar=statistics_db.get_free_car()[0][0], issues=statistics_db.get_today_issues()[0][0], monthlyRevenues=statistics_db.get_monthly_revenue(), numberOfNewUsers=statistics_db.get_number_of_new_users())
 
+
+# # AGENT PI
+# @app.route('/agentPi/<int:car_id>', methods=["GET"])
+# def agent_pi(car_id):
+#     return flask.render_template("agentPi/agentPi.html", car_id=car_id)
+
+
+# @app.route('/agentPi/<int:car_id>/users', methods=["GET"])
+# def agent_pi_users(car_id):
+#     return flask.render_template("/agentPi/agentPi_users.html", car_id=car_id)
+
+
+# @app.route('/agentPi/<int:car_id>/users/normal', methods=["GET", "POST"])
+# def agent_pi_users_normal(car_id):
+#     if flask.request.method == "POST":
+#         client_socket = socket_communication.Socket_Client()
+
+#         form_data = flask.request.form.to_dict()
+#         data = form_data
+#         data[booking_db.CAR_ID] = car_id
+
+#         print(data)
+
+#         client_socket.send_message("Users".encode())
+#         client_socket.receive_message()
+#         client_socket.send_message("Normal".encode())
+#         client_socket.receive_message()
+#         client_socket.send_message(json.dumps(data).encode())
+#         client_socket.receive_message()
+#         return_message = client_socket.receive_message()
+
+#         print("Return message:", return_message)
+
+#         if return_message == "Correct":
+#             return flask.redirect(flask.url_for("welcome", car_id=car_id))
+#         else:
+#             return flask.render_template("agentPi/agentPi_users_normal.html", car_id=car_id, message=return_message)
+
+#     else:
+#         return flask.render_template("agentPi/agentPi_users_normal.html", car_id=car_id, message="")
+
+
+# @app.route('/agentPi/<int:car_id>/users/facial', methods=["GET", "POST"])
+# def agent_pi_users_facial(car_id):
+#     return "Facial Implementation"
+
+
+# @app.route('/agentPi/<int:car_id>/engineers', methods=["GET"])
+# def agent_pi_engineers(car_id):
+#     return flask.render_template("/agentPi/agentPi_engineers.html", car_id=car_id)
+
+
+# @app.route('/agentPi/<int:car_id>/engineers/normal', methods=["GET", "POST"])
+# def agent_pi_engineers_normal(car_id):
+#     if flask.request.method == "POST":
+#         client_socket = socket_communication.Socket_Client()
+
+#         form_data = flask.request.form.to_dict()
+#         data = form_data
+#         data[issues_db.CAR_ID] = car_id
+
+#         print(data)
+
+#         # Send and receive data back and forth
+#         client_socket.send_message("Engineers".encode())
+#         client_socket.receive_message()
+#         client_socket.send_message("Normal".encode())
+#         client_socket.receive_message()
+#         client_socket.send_message(json.dumps(data).encode())
+#         client_socket.receive_message()
+#         return_message = client_socket.receive_message()
+
+#         print("Return message:", return_message)
+
+#         if return_message == "Correct":
+#             return flask.redirect(flask.url_for("welcome", car_id=car_id))
+#         else:
+#             return flask.render_template("agentPi/agentPi_engineers_normal.html", car_id=car_id, message=return_message)
+
+#     else:
+#         return flask.render_template("agentPi/agentPi_engineers_normal.html", car_id=car_id, message="")
+
+
+# @app.route('/login_agentPi/facial', methods=["GET"])
+# def login_agent_pi_facial():
+#     return "Waiting to implement"
+
+
+# @app.route('/welcome/<int:car_id>', methods=["GET"])
+# def welcome(car_id):
+#     return flask.render_template("agentPi/welcome.html", car_id=car_id)
+
+
+# @app.route('/login_agentPi/QR', methods=["GET", "POST"])
+# def QR_detect():
+#     return flask.render_template("QR_detect.html")
+
+# Utility route
 def image_generator(camera, UID):
     while True:
         yield camera.capture_faces(UID)
@@ -639,104 +897,17 @@ def video():
     # return flask.redirect(flask.url_for("home"))
 
 
-
-
-# AGENT PI
-@app.route('/agentPi/<int:car_id>', methods=["GET"])
-def agent_pi(car_id):
-    return flask.render_template("agentPi/agentPi.html", car_id=car_id)
-
-
-@app.route('/agentPi/<int:car_id>/users', methods=["GET"])
-def agent_pi_users(car_id):
-    return flask.render_template("/agentPi/agentPi_users.html", car_id=car_id)
-
-
-@app.route('/agentPi/<int:car_id>/users/normal', methods=["GET", "POST"])
-def agent_pi_users_normal(car_id):
-    if flask.request.method == "POST":
-        client_socket = socket_communication.Socket_Client()
-
-        form_data = flask.request.form.to_dict()
-        data = form_data
-        data[booking_db.CAR_ID] = car_id
-
-        print(data)
-
-        client_socket.send_message("Users".encode())
-        client_socket.receive_message()
-        client_socket.send_message("Normal".encode())
-        client_socket.receive_message()
-        client_socket.send_message(json.dumps(data).encode())
-        client_socket.receive_message()
-        return_message = client_socket.receive_message()
-
-        print("Return message:", return_message)
-
-        if return_message == "Correct":
-            return flask.redirect(flask.url_for("welcome", car_id=car_id))
-        else:
-            return flask.render_template("agentPi/agentPi_users_normal.html", car_id=car_id, message=return_message)
-
-    else:
-        return flask.render_template("agentPi/agentPi_users_normal.html", car_id=car_id, message="")
-
-
-@app.route('/agentPi/<int:car_id>/users/facial', methods=["GET", "POST"])
-def agent_pi_users_facial(car_id):
-    return "Facial Implementation"
-
-
-@app.route('/agentPi/<int:car_id>/engineers', methods=["GET"])
-def agent_pi_engineers(car_id):
-    return flask.render_template("/agentPi/agentPi_engineers.html", car_id=car_id)
-
-
-@app.route('/agentPi/<int:car_id>/engineers/normal', methods=["GET", "POST"])
-def agent_pi_engineers_normal(car_id):
-    if flask.request.method == "POST":
-        client_socket = socket_communication.Socket_Client()
-
-        form_data = flask.request.form.to_dict()
-        data = form_data
-        data[issues_db.CAR_ID] = car_id
-
-        print(data)
-
-        # Send and receive data back and forth
-        client_socket.send_message("Engineers".encode())
-        client_socket.receive_message()
-        client_socket.send_message("Normal".encode())
-        client_socket.receive_message()
-        client_socket.send_message(json.dumps(data).encode())
-        client_socket.receive_message()
-        return_message = client_socket.receive_message()
-
-        print("Return message:", return_message)
-
-        if return_message == "Correct":
-            return flask.redirect(flask.url_for("welcome", car_id=car_id))
-        else:
-            return flask.render_template("agentPi/agentPi_engineers_normal.html", car_id=car_id, message=return_message)
-
-    else:
-        return flask.render_template("agentPi/agentPi_engineers_normal.html", car_id=car_id, message="")
-
-
-@app.route('/login_agentPi/facial', methods=["GET"])
-def login_agent_pi_facial():
-    return "Waiting to implement"
-
-
-@app.route('/welcome/<int:car_id>', methods=["GET"])
-def welcome(car_id):
-    return flask.render_template("agentPi/welcome.html", car_id=car_id)
-
-
-@app.route('/login_agentPi/QR', methods=["GET", "POST"])
-def QR_detect():
-    return flask.render_template("QR_detect.html")
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 if __name__ == "__main__":
+    # import threading
+    # try: 
+    #     thread_main = threading.Thread(target=app.run, args={"debug": True})
+    #     thread_main.start()
+    #     thread_main = threading.Thread(target=socket_communication.tcp_start_server)
+    #     thread_main.start()
+    # except Exception as e:
+    #     print(e)
     app.run(debug=True)
