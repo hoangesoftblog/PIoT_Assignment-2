@@ -73,29 +73,31 @@
 			<iframe
 				src="https://calendar.google.com/calendar/embed?&amp;wkst=1&amp;bgcolor=%23ffffff&amp;ctz=Asia%2FHo_Chi_Minh&amp;src=YjZvbW82NGFjYTQwZ2VvM2ZhNnN2aXRrZzRAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&amp;color=%23F4511E&amp;showTz=1"
 				style="border:solid 0px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+			<br><br><br>
 			<form method="post" action="#">
-				<div class="row uniform">
-                    <div class="6u 12u$(xsmall)">
-                        <div class="select-wrapper">
-                            <select name="CID" id="demo-category" required>
-                                <option value="">- Car ID -</option>
-                                {% for value in CID %}
-                                <option value="{{value}}">{{ value }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="6u 12u$(xsmall)">
-                        <div class="select-wrapper">
-                            <select name="UID" id="demo-category" required>
-                                <option value="">- User ID -</option>
-                                {% for value in UID %}
-                                <option value="{{value}}">{{ value }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    
+				<div class=" uniform">
+					<div class="6u 12u$(xsmall)">
+						<div class="select-wrapper">
+							<select name="CID" id="demo-category" required>
+								<option value="">- Car ID -</option>
+								{% for value in CID %}
+								<option value="{{value}}">{{ value }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<br>
+					<div class="6u 12u$(xsmall)">
+						<div class="select-wrapper">
+							<select name="UID" id="demo-category" required>
+								<option value="">- User ID -</option>
+								{% for value in UID %}
+								<option value="{{value}}">{{ value }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<br><br>
 					<div style="margin-right: 65px;">
 						<label for="from" style="color: grey;">From</label>
 						<div id="from">
