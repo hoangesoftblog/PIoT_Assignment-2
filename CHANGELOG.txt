@@ -1,0 +1,20 @@
+* 19/9/2020:
+- Add:
++ Add booking, users, cars for admin
++ Add basic unit test
++ Update booking has a check
++ Move Statistics functions into StatisticsDatabase
++ Add users account settings
+
+* Before:
+- Add:
++ Sending email
++ Show Google Map/Calendar when Booking Car
++ Hashing/Salting Password
++ Some pages have been added with new search features or new warnings
+
+- Fix:
++ Getting all Booking/Issues does not include those cases with Null in Foreign Keys
++ Issues now has a Status property
++ Register only stores on LoginDatabase (Infos for UserDatabase will be saved later)
++ Code refactorization

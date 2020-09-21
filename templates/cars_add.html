@@ -79,11 +79,17 @@
     <section id="register" class="wrapper align-left">
         <div class="inner">
 
-            <h3>USER SEARCH</h3>
+
+            {% if message %}
+            <h2 style="color: red;">{{message}}</h2>
+            {% endif %}
+            <h3>ADD NEW CAR TO SYSTEM</h3>
+
+
 
             <!-- <div class="table-wrapper"> -->
 
-                <form method="POST" action="/users">
+                <form method="post" action="#" enctype="multipart/form-data">
                     <div class="row uniform">
                         <!-- <div class="6u 12u$(xsmall)">
 							<input type="text" name="brand" id="car-name" value="" placeholder="Brand" />
@@ -93,75 +99,103 @@
 						</div> -->
 
                         <div class="6u 12u$(xsmall)">
-                            <input type="text" id="USER_ID" name="USER_ID" row="1" placeholder="User ID" />
+                            <div class="select-wrapper">
+                                <input type="text" name="brand" id="brand" placeholder="Brand" row="1">
+                            </div>
                         </div>
 
                         <div class="6u 12u$(xsmall)">
-                            <input type="text" id="name" name="name" row="1" placeholder="User Name" />
+                            <div class="select-wrapper">
+                                <input type="number" name="seats" id="seats" placeholder="Number of seats" row="1"
+                                    style="	-moz-appearance: none;
+                                -webkit-appearance: none;
+                                -ms-appearance: none;
+                                appearance: none;
+                                background: white;
+                                border-radius: 0px;
+                                border: none;
+                                border: solid 2px #fcba03;
+                                color: black;
+                                display: block;
+                                outline: 0;
+                                padding: 0 1em;
+                                text-decoration: none;
+                                height: 2.75em;
+                                width: 100%;" />
+                            </div>
                         </div>
 
                         <!-- Break -->
                         <div class="6u 12u$(xsmall)">
-                            <input type="text" id="address" name="address" row="1" placeholder="User Address" />
+                            <div class="select-wrapper">
+                                <input type="text" name="colour" id="colour" placeholder="Colour" row="1">
+                            </div>
                         </div>
 
                         <div class="6u 12u$(xsmall)">
-                            <input type="text" id="phone_number" name="phone_number" row="1"
-                                placeholder="User Phone Number" />
+                            <div class="select-wrapper">
+                                <input type="text" name="body_type" id="body_type" placeholder="Body Type" row="1">
+                            </div>
+                        </div>
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <input type="text" name="location" id="location" placeholder="Location" row="1">
+                            </div>
+                        </div>
+
+
+                        <div class="6u 12u$(xsmall)">
+                            <div>
+
+                                <input type="number" name="cost_per_hour" id="cost_per_hour" placeholder="Cost per hour"
+                                    row="1" style="	-moz-appearance: none;
+                                -webkit-appearance: none;
+                                -ms-appearance: none;
+                                appearance: none;
+                                background: white;
+                                border-radius: 0px;
+                                border: none;
+                                border: solid 2px #fcba03;
+                                color: black;
+                                display: block;
+                                outline: 0;
+                                padding: 0 1em;
+                                text-decoration: none;
+                                height: 2.75em;
+                                width: 100%;">
+                            </div>
+                        </div>
+
+
+                        <div class="6u 12u$(xsmall)">
+                            <div class="select-wrapper">
+                                <input type="file" id="image" name="image" required style="	-moz-appearance: none;
+                                -webkit-appearance: none;
+                                -ms-appearance: none;
+                                appearance: none;
+                                background: white;
+                                border-radius: 0px;
+                                border: none;
+                                border: solid 2px #fcba03;
+                                color: black;
+                                display: block;
+                                outline: 0;
+                                padding: 0 1em;
+                                text-decoration: none;
+                                height: 2.75em;
+                                width: 100%;" />
+                            </div>
                         </div>
 
                         <div class="12u$">
                             <ul class="actions">
-                                <li><input type="submit" value="Find users" /></li>
+                                <li><input type="submit" value="Add car" /></li>
                             </ul>
                         </div>
                     </div>
                 </form>
             <!-- </div> -->
-        </div>
-    </section>
-
-    <section id="register" class="wrapper align-left">
-        <div class="inner">
-
-            <h3 style="display: inline-block;">LIST OF USERS</h3>
-            <a href="/users/add" style="float: right;">
-                <button>+ Users</button>
-            </a>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Phone Number</th>
-                            <th>Remove user</th>
-                            <th>Modify user</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr>
-                            {% for property in ['name', 'address', 'phone_number'] %}
-                            <td>{{ user.get(property) if user.get(property) else 'N/A' }}</td>
-                            {% endfor %}
-                            <!-- {% if property != 'ID' %}
-                            {% else %} 
-                            {% endif %}-->
-                            <td><button>
-                                    <a href="/users/delete/{{ user.get('USER_ID') }}">Remove user</a>
-                                </button></td>
-                            <td><button>
-                                    <a href="/users/modify/{{ user.get('USER_ID') }}">Modify user</a>
-                                </button></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-            </div>
-
         </div>
     </section>
 

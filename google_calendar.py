@@ -66,7 +66,6 @@ class GoogleCalendar():
             The parameters to go with the calendar insert function
         """
         start, end = start_time.isoformat(), end_time.isoformat()
-        print(start)
 
         response = self.service.events().insert(calendarId=self.calendarList_id, body={
             "summary": f"Booking: User {user_id} - Car {car_id}",
@@ -171,10 +170,9 @@ class GoogleCalendar():
         additional_params
             the parameters to go with the calendar update function
         """
-        if from_time is str:
-            from_time = datetime.datetime.strptime(
-                from_time, "%Y-%m-%d %H:%M:%S")
-        if to_time is str:
+        if isinstance(from_time, str):
+            from_time = datetime.datetime.strptime(from_time, "%Y-%m-%d %H:%M:%S")
+        if isinstance(to_time, str):
             to_time = datetime.datetime.strptime(to_time, "%Y-%m-%d %H:%M:%S")
 
         start, end = from_time.isoformat(), to_time.isoformat()
@@ -198,8 +196,15 @@ class GoogleCalendar():
 
 if __name__ == "__main__":
     calendar = GoogleCalendar()
-    # calendar.get_all_calendarsList()
-    # print(len(calendar.get_all_events()))
-    # calendar.add_event(1, 2, datetime.datetime.now(), datetime.datetime.now() + datetime.timedelta(1), "birthday today")
-    # calendar.cancel_all_events()
-    # print(len(calendar.get_all_events()))
+    events_id = []
+    calendar.cancel_all_events()
+    events_id += [calendar.add_event(1, 2, datetime.datetime.now(), datetime.datetime.now() + datetime.timedelta(1), "birthday today").get('id')]
+    events_id += [calendar.add_event(2, 3, datetime.datetime.now(), datetime.datetime.now() + datetime.timedelta(2), "Travel today").get('id')]
+    calendar.update_event(events_id[1], 2, 3, datetime.datetime.now() + datetime.timedelta(2), datetime.datetime.now() + datetime.timedelta(3), "No travel anymore")
+    calendar.cancel_event(events_id[0])
+    print("All events:", calendar.get_all_events())
+    print()
+    calendar.cancel_all_events()
+    print("Cancel all events")
+    print("All events:", calendar.get_all_events())
+    print()

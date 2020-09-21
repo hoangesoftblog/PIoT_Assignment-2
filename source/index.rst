@@ -41,8 +41,6 @@ Car Sharing System Google Cloud Service
 .. automodule:: google_cloud_storage
    :members:
 
-Car Sharing System Google Calendar
-======================================================
 
 .. automodule:: google_calendar
    :members:
@@ -59,4 +57,24 @@ Car Sharing System Socket Communication
 ======================================================
 
 .. automodule:: socket_communication
+=======
+Car Sharing System Agent Pi GUI
+======================================================
+
+.. automodule:: agent_pi
+   :members:
+
+
+Car Sharing System Socket Communication
+======================================================
+
+.. automodule:: socket_communication
+   :members:
+
+
+
+Car Sharing System Camera
+======================================================
+
+.. automodule:: camera
    :members:

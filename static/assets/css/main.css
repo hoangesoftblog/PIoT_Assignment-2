@@ -1605,7 +1605,7 @@ label {
 	margin: 0 0 1em 0;
 }
 
-input[type="text"], input[type="password"], input[type="email"], input[type="tel"], select, textarea {
+input[type="text"], input[type="number"], input[type="password"], input[type="email"], input[type="tel"], select, textarea {
 	-moz-appearance: none;
 	-webkit-appearance: none;
 	-ms-appearance: none;
@@ -1622,11 +1622,11 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tel
 	width: 100%;
 }
 
-input[type="text"]:invalid, input[type="password"]:invalid, input[type="email"]:invalid, input[type="tel"]:invalid, select:invalid, textarea:invalid {
+input[type="text"]:invalid, input[type="password"]:invalid, input[type="email"]:invalid, input[type="number"]:invalid, input[type="tel"]:invalid, select:invalid, textarea:invalid {
 	box-shadow: none;
 }
 
-input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus, textarea:focus {
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="tel"]:focus, select:focus, textarea:focus {
 	border-color: #fcba03;
 	box-shadow: 0 0 0 1px #fcba03;
 }
@@ -1664,7 +1664,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 	display: none;
 }
 
-input[type="text"], input[type="password"], input[type="email"], select {
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], select {
 	height: 2.75em;
 }
 

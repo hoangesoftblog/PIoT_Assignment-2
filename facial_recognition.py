@@ -9,7 +9,6 @@ gcs = google_cloud_storage.GoogleCloudStorage()
 
 def get_usable_camera_id():
     """Find the first camera that is usable by the device
-
     :return: int
     """
     for i in range(4):
@@ -46,7 +45,6 @@ def show_video_capture():
 def faceset_capture(id, name):
     """When run will start capturing images of faces on the camera, save in the /user_dataset folder
     Naming scheme is based on id
-
     :param id: id of the new user to capture face
     :param name: name of the new user to capture face
     :type id: string
@@ -99,7 +97,6 @@ def faceset_capture(id, name):
 
 def train_faceset():
     """Will train all the face models and store it in trainer.yml
-
     :return: void
     """
     # Create Local Binary Patterns Histograms for face recognization

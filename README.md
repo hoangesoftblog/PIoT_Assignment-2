@@ -24,37 +24,49 @@ The system involves using 2 kinds of Raspberry Pi:
 
 
 ## Instruction:
-
-
-
-
-
-
+- Pull the reposition down to the raspberry pi
+- Install all the required libraries
+- For the Master Pi, run the main.py through Python 3 interpreter, it will start the master server. An ip address and port will be provided, go to the address.
+- For the Agent Pi, run the agent_pi.py through Python 3 interpreter, the GUI will generates and allow users to identify themselves to the car.
 
 ## User credentials, used for testing:
-- Customer:
-    username:
-    password:
-- System admin:
-    username:
-    password:
-- Company manager:
-    username:
-    password:
-- Engineer:
-    username:
-    password:
+
+#Customer:
+
+- username: s3694808@rmit.edu.vn
+
+- password: Rm!th@angeSoftB1og
+
+#System admin:
+
+- username:hoangesoftblog@gmail.com
+
+- password: Rm!t
+
+#Company manager:
+
+- username: s3694365@rmit.edu.vn
+
+- password: 123456
+
+#Engineer:
+
+- username: s3618748@rmit.edu.vn
+
+- password: 159753
+
 
 
 ## Contribution Reports:
 ### Github:
-
-
-
+Our commits on github have the following flow:
+![Github](/images/Github.png)
 
 
 
 ### Trello:
+Our Trello result at the end of week 12 have most of their tasks finished. Appears as below
+![Trello](/images/Trello.png)
 
 
 

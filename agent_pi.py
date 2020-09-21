@@ -4,7 +4,12 @@ from PIL import Image, ImageTk
 import cv2
 import numpy as np
 import google_cloud_storage
-from database import UserDatabase
+from database import BookingDatabase, LoginDatabase, UserDatabase, EmployeesDatabase, IssuesDatabase
+import socket_communication
+import json
+import datetime
+import camera
+import os
 
 gcs = google_cloud_storage.GoogleCloudStorage()
 
@@ -12,7 +17,6 @@ gcs = google_cloud_storage.GoogleCloudStorage()
 class AgentPiApp(tk.Tk):
     """Agent PI GUI built with tkinter, is a subclass of the Tk class, a window, used for customers to login with their credentials
     or face to access the car, for engineer to show their QR code to access the car
-
     """
     def __init__(self, car_id):
         tk.Tk.__init__(self)
@@ -22,7 +26,7 @@ class AgentPiApp(tk.Tk):
 
         # To rename the title of the window
         self.title("Car Sharing System - By Big City Bois")
-        self.geometry('1280x720')
+        # self.geometry('960x540')
         
         # self.window.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -66,15 +70,14 @@ class AgentPiApp(tk.Tk):
 
 class LoginPage(tk.Frame):
     """Login Page frame, to show the options available to the users
-
     """
     def __init__(self, master):
         """Initializing the login page frame
-
         """
         tk.Frame.__init__(self, master)
         self.master = master
 
+        # Set the UI    
         self.welcome = tk.Label(self, text = "Welcome!", font=("Arial Bold", 50)).grid(row = 0, ipady = 80)
 
         self.login_frame = tk.LabelFrame(self, width = 50)
@@ -89,7 +92,7 @@ class LoginPage(tk.Frame):
         self.bt_login = tk.Button(self.login_frame, text = "Login", font=("Arial Bold", 30), fg = "red", command = self.login_bt_pressed)
         self.bt_login.grid(row = 3, columnspan = 2, pady = 15)
 
-        self.bt_login_face = tk.Button(self,width = 30,  text = "Login with facial recognition", font=("Arial Bold", 30), fg = "red", command=lambda: master.switch_frame(FacePage))
+        self.bt_login_face = tk.Button(self, width = 30,  text = "Login with facial recognition", font=("Arial Bold", 30), fg = "red", command=lambda: master.switch_frame(FacePage))
         self.bt_login_face.grid(row = 3, pady = 60)
         self.bt_login_qr = tk.Button(self, width = 30 , text = "Engineer QR", command=lambda: master.switch_frame(QrPage), font=("Arial Bold", 30), fg = "red")
         self.bt_login_qr.grid(row = 4)
@@ -152,30 +155,27 @@ class FacePage(tk.Frame):
         gcs.download_trainer()
         
         # Get all users from MySQL Database
-        users = UserDatabase()
-        self.user_dict = users.get_all()
-        print(self.user_dict)
+        # login_db = LoginDatabase()
+        # self.user_dict = users.get_all()
+        # print(self.user_dict)
 
+        # Download all neccessary files
+        gcs.download_trainer()
 
-        # Create Local Binary Patterns Histograms for face recognization
+        # Create Face Detector
+        self.faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
+        # Create Local Binary Patterns Histograms (LBPH) Face Recognizer with pre-trained weights
         self.recognizer = cv2.face.LBPHFaceRecognizer_create()
+        self.recognizer.read('trainer.yml')
 
-        # Load the trained mode
-        self.recognizer.read('trainer/trainer.yml')
-
-        # Load prebuilt model for Frontal Face
-        self.cascadePath = "haarcascade_frontalface_default.xml"
-
-        # Create classifier from prebuilt model
-        self.faceCascade = cv2.CascadeClassifier(self.cascadePath)
-        # Set the font style
-        self.font = cv2.FONT_HERSHEY_SIMPLEX
-
+        # Create a VideoCamera object
         self.vid = ApVideoCapture()
 
-        self.main_img = tk.Canvas(self, width = self.vid.width, height = self.vid.height)
-        self.main_img.pack()
-        tk.Button(self, text = "Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
+        # Elements on the UI
+        self.canvas = tk.Canvas(self, width = self.vid.width, height=self.vid.height)
+        self.canvas.pack()
+        tk.Button(self, text="Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
         
         self.identification_count = 0
 
@@ -187,21 +187,21 @@ class FacePage(tk.Frame):
         
         """
         # Get frame from video source:
-        ret, frame = self.vid.get_frame()
+        ret, frame = self.vid.read()
 
         if ret:
             # Convert the captured frame into grayscale
-            gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray = cv2.equalizeHist(gray)
 
-            # Get all face from the video frame
+            # Get all faces from the video frame
             faces = self.faceCascade.detectMultiScale(gray, 1.2,5)
 
             # For each face in faces
-            for(x,y,w,h) in faces:
+            for (x, y, w, h) in faces:
                 # Create rectangle around the face
                 cv2.rectangle(frame, (x-20,y-20), (x+w+20,y+h+20), (0,255,0), 4)
 
-                print(self.recognizer.predict(gray[y:y+h,x:x+w]))
                 # Recognize the face belongs to which ID
                 Id = self.recognizer.predict(gray[y:y+h,x:x+w])
 
@@ -220,10 +220,7 @@ class FacePage(tk.Frame):
                 cv2.rectangle(frame, (x-22,y-90), (x+w+22, y-22), (0,255,0), -1)
                 cv2.putText(frame, str(name_to_put), (x,y-40), self.font, 2, (255,255,255), 3)
 
-            self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
-            self.main_img.create_image(0, 0, image = self.photo, anchor = tk.NW)
-        
-        self.after(15, self.update)
+        self.after(50, self.update)
 
 
 class QrPage(tk.Frame):
@@ -237,16 +234,17 @@ class QrPage(tk.Frame):
         tk.Frame.__init__(self, master)
         self.master = master
 
+        # Create VideoCamera object
         self.vid = ApVideoCapture()
-
+        # Create a QR Detector
         self.detector = cv2.QRCodeDetector()
 
-        self.main_img = tk.Canvas(self, width = self.vid.width, height = self.vid.height)
-        self.main_img.pack()
-    
-        
+        # Declare elements on the UI
+        self.canvas = tk.Canvas(self, width = self.vid.width, height = self.vid.height)
+        self.canvas.pack()
         tk.Button(self, text = "Back", font=("Arial Bold", 30), command=lambda: master.switch_frame(LoginPage)).pack()
         
+        # Start update the UI with camera
         self.update()
 
 
@@ -255,7 +253,7 @@ class QrPage(tk.Frame):
         
         """
         # Get frame from video source:
-        ret, frame = self.vid.get_frame()
+        ret, frame = self.vid.read()
 
         if ret:
             try:
@@ -273,11 +271,6 @@ class QrPage(tk.Frame):
 
                         print("[+] QR Code detected, data:", data)
 
-                self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
-                self.main_img.create_image(0, 0, image = self.photo, anchor = tk.NW)
-            except:
-                print()
-        
         self.after(15, self.update)
 
 

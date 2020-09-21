@@ -1,3 +1,4 @@
+
 # Imports the Google Cloud client library
 from google.cloud import storage
 import pickle
@@ -129,6 +130,16 @@ class GoogleCloudStorage:
         blobs = self.storage_client.list_blobs(
             self.bucket.name, **keyword_args)
         return blobs
+
+    def upload_file_and_return_url(self, file_name, name_on_storage, **additional_params):
+        """
+        Add the image to the car_assets bucket, and return the public URL for that assets
+        """
+        assets_bucket = self.storage_client.bucket("car_assets")
+        blob = assets_bucket.blob(name_on_storage)
+        blob.upload_from_filename(file_name, **additional_params)
+        return blob.public_url
+
 
 
 if __name__ == "__main__":

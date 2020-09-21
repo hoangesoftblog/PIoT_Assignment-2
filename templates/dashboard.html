@@ -4,6 +4,14 @@
 	templated.co @templatedco
 	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 -->
+
+<head>
+	<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js" type="text/javascript"></script>
+	<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-cartesian.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
+
+</head>
 <html>
 
 <head>
@@ -64,29 +72,34 @@
 	<section id="register" class="wrapper align-left">
 		<div class="inner">
 
-			<h3>CAR RENTAL DASHBOARD</h3>
+			<h3>DASHBOARD OF THE SYSTEM</h3>
 
 			<form action="#" method="post">
-				<div class="field half first">
-					<!-- <label for="email">Email</label> -->
-					<input name="email" id="email" type="email" placeholder="Email">
-				</div>
-				<div class="field half first">
-					<!-- <label for="userName">User name</label> -->
-					<input name="passWord" id="passWord" type="password" placeholder="Password">
-				</div>
-				<br>
-				<br>
-				<br>
 
 
-				<ul class="actions align-left">
-					<li><input value="Login" class="button alt" type="submit"></li>
-				</ul>
+				<div class="field half first" id="containerPieChart" style="width: 500px; height: 400px;"></div>
+				<div class="field half first" id="containerBarChart" style="width: 500px; height: 400px;"></div>
+				<br> <br>
+				<br>
+				<br>
+				<div class="field  align-left" id="containerLineChart" style="width: 1000px; height: 400px;"></div>
 			</form>
 
 		</div>
 	</section>
+
+	<div>this is the result of all car {{allCar}}</div>
+	<div>this is the result of booked car {{bookedCar}}</div>
+	<div>this is the result of free car {{freeCar}}</div>
+	<div>this is the result of issues {{issues}}</div>
+	<div>this is the result of monthlyRevenues {{monthlyRevenues}}</div>
+	<div>this is the result of numberOfNewUsers {{numberOfNewUsers}}</div>
+
+
+
+
+
+
 
 
 	<!-- Footer -->
@@ -123,10 +136,116 @@
 	</footer>
 
 	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/skel.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<script src="assets/js/main.js"></script>
+
+
+	<script>
+		// var monthlyRevenues = JSON.parse(document.getElementById('monthlyRevenues_id').textContent);
+		// var monthlyRevenues1 = '{{ monthlyRevenues1| safe }}'
+		var monthlyRevenues = {{ monthlyRevenues | tojson }};
+		var numberOfNewUsers = {{ numberOfNewUsers | tojson }};
+
+
+
+	</script>
+	<script>
+
+		var allCar = '{{ allCar| safe }}'
+		var bookedCar = '{{ bookedCar| safe }}'
+		var freeCar = '{{ freeCar| safe }}'
+		var issues = '{{ issues| safe }}'
+
+	</script>
+
+
+
+
+	<!-- {{ url_for('static', filename='assets/css/main.css') }} -->
+	<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/skel.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+	<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+
+	<script>anychart.onDocumentLoad(function () {
+
+			// create an instance of a pie chart
+			var chart = anychart.pie();
+			// set the data
+			chart.data([
+				["Total car", allCar],
+				["Booked car", bookedCar],
+				["Available car", freeCar],
+				["Reported car", issues],
+			]);
+			// set chart title
+			chart.title("Current cars report");
+			// set the container element 
+			chart.container("containerPieChart");
+			// initiate chart display
+			chart.draw();
+		});
+
+
+		anychart.onDocumentReady(function () {
+
+			// create a data set
+			var data = anychart.data.set(numberOfNewUsers);
+
+			// create a chart
+			var chart = anychart.bar();
+
+			// create a bar series and set the data
+			var series = chart.bar(data);
+
+			// set the chart title
+			chart.title("New user per month");
+
+			// set the titles of the axes
+			chart.xAxis().title("Month");
+			chart.yAxis().title("New registers");
+
+			// set the container id
+			chart.container("containerBarChart");
+
+			// initiate drawing the chart
+			chart.draw();
+		});
+
+
+		console.log(typeof (monthlyRevenues))
+		console.log((monthlyRevenues))
+		anychart.onDocumentReady(function () {
+
+			// create data
+			var data = monthlyRevenues;
+			console.log(typeof (monthlyRevenues[0]));
+
+			// create a chart
+			var chart = anychart.line();
+
+			// create a line series and set the data
+			var series = chart.line(data);
+
+			// set scale mode
+			chart.xScale().mode('continuous');
+
+			// set the chart title
+			chart.title("Line Chart: Scale Mode to Remove Gaps");
+
+			// set the titles of the axes
+			var xAxis = chart.xAxis();
+			xAxis.title("Month");
+			var yAxis = chart.yAxis();
+			yAxis.title("Sales, $");
+
+			// set the container id
+			chart.container("containerLineChart");
+
+			// initiate drawing the chart
+			chart.draw();
+		});
+
+
+	</script>
 
 </body>
 

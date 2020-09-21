@@ -80,7 +80,7 @@
 
             <h3>SEARCH CUSTOMER'S BOOKING</h3>
 
-            <div class="table-wrapper">
+            <!-- <div class="table-wrapper"> -->
 
                 <form method="POST" action="/booking_history">
                     <div class="row uniform">
@@ -104,9 +104,9 @@
 
                         <div class="6u 12u$(xsmall)">
                             <div class="select-wrapper">
-                                <select name="seats" id="demo-category">
-                                    <option value="">- Seats -</option>
-                                    {% for value in seats %}
+                                <select name="UID" id="demo-category">
+                                    <option value="">- User ID -</option>
+                                    {% for value in UID %}
                                     <option value="{{value}}">{{ value }}</option>
                                     {% endfor %}
                                 </select>
@@ -127,9 +127,9 @@
 
                         <div class="6u 12u$(xsmall)">
                             <div class="select-wrapper">
-                                <select name="body_type" id="demo-category">
-                                    <option value="">- Type -</option>
-                                    {% for value in type %}
+                                <select name="location" id="demo-category">
+                                    <option value="">- Location -</option>
+                                    {% for value in location %}
                                     <option value="{{value}}">{{ value }}</option>
                                     {% endfor %}
                                 </select>
@@ -167,22 +167,26 @@
                         </div>
                     </div>
                 </form>
-            </div>
+            <!-- </div> -->
         </div>
     </section>
 
     <section id="register" class="wrapper align-left">
         <div class="inner">
 
-            <h3>CUSTOMER'S BOOKING HISTORY</h3>
+            <h3 style="display: inline-block;">CUSTOMER'S BOOKING HISTORY</h3>
+            <a href="/booking/add" style="float: right;">
+                <button>+ Booking</button>
+            </a> 
+
 
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>Brand</th>
-                            <th>Type</th>
-                            <th>No. seat</th>
+                            <!-- <th>Type</th>
+                            <th>No. seat</th> -->
                             <th>Color</th>
                             <th>Location</th>
                             <th>Cost per hour</th>
@@ -196,18 +200,24 @@
                     <tbody>
                         {% for booking in history %}
                         <tr>
-                            {% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour', 'from_time', 'to_time', 'booking_details'] %}
+                            <!-- Unused: 'body_type', 'seats' -->
+                            {% for property in ['brand', 'colour', 'location', 'cost_per_hour', 'from_time', 'to_time', 'booking_details'] %}
                             <td>{{ booking.get(property) if booking.get(property) else 'N/A'}}</td>
                             {% endfor %}
-                            <!-- {% if property != 'ID' %}
-                            {% else %} 
-                            {% endif %}-->
-                            <td><button>
+                            <td>
+                                {% if booking.get('CID') != none %}
+                                <button>
                                     <a href="/booking/cancel/{{ booking.get('ID') }}">Cancel booking</a>
-                                </button></td>
-                            <td><button>
+                                </button>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if booking.get('CID') != none %}
+                                <button>
                                     <a href="/booking/modify/{{ booking.get('ID') }}">Modify booking</a>
-                                </button></td>
+                                </button>
+                                {% endif %}
+                            </td>                            
                         </tr>
                         {% endfor %}
                     </tbody>

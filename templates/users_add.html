@@ -22,15 +22,15 @@
             <a href="/home" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
             <nav id="nav">
                 <!-- <a href="dashboard.html">Dashboard</a>
-                <a href="index.html">Home</a>
-                <a href="login.html">Login</a>
-                <a href="Register.html">Register</a>
-                <a href="carlist.html">Car list</a>
-                <a href="bookinginfo.html">Booking info</a>
-                <a href="rental_history.html">Rental history</a>
-                <a href="reported_car.html">Reported car</a>
+				<a href="index.html">Home</a>
+				<a href="login.html">Login</a>
+				<a href="Register.html">Register</a>
+				<a href="carlist.html">Car list</a>
+				<a href="bookinginfo.html">Booking info</a>
+				<a href="rental_history.html">Rental history</a>
+				<a href="reported_car.html">Reported car</a>
                 <a href="/booking_history">Booking History</a> -->
-
+                
                 <a href="/cars">Cars</a>
                 <a href="/users">Users</a>
                 <a href="/booking_history">Booking History</a>
@@ -45,7 +45,7 @@
     <section id="banner" style="background-image: url( {{ url_for('static', filename='images/banner8.jpg') }} )">
         <div class="inner">
             <header>
-                <h1>ADMINISTRATION</h1>
+                <h1>BIG CITY CAR RENTAL</h1>
             </header>
 
             <div class="flex ">
@@ -79,95 +79,95 @@
     <section id="register" class="wrapper align-left">
         <div class="inner">
 
-            <h3>USER SEARCH</h3>
+            <h3>ADD NEW USER</h3>
 
             <!-- <div class="table-wrapper"> -->
 
-                <form method="POST" action="/users">
-                    <div class="row uniform">
-                        <!-- <div class="6u 12u$(xsmall)">
+
+            <h4>LOGIN INFORMATION</h4>
+            <form method="post" action="#">
+                <div class="row uniform">
+                    <!-- <div class="6u 12u$(xsmall)">
 							<input type="text" name="brand" id="car-name" value="" placeholder="Brand" />
 						</div> -->
-                        <!-- <div class="6u$ 12u$(xsmall)" important!>
+                    <!-- <div class="6u$ 12u$(xsmall)" important!>
 							<input type="number" name="seats" id="seats" value="" placeholder="Seats" />
 						</div> -->
 
-                        <div class="6u 12u$(xsmall)">
-                            <input type="text" id="USER_ID" name="USER_ID" row="1" placeholder="User ID" />
-                        </div>
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
 
-                        <div class="6u 12u$(xsmall)">
-                            <input type="text" id="name" name="name" row="1" placeholder="User Name" />
-                        </div>
-
-                        <!-- Break -->
-                        <div class="6u 12u$(xsmall)">
-                            <input type="text" id="address" name="address" row="1" placeholder="User Address" />
-                        </div>
-
-                        <div class="6u 12u$(xsmall)">
-                            <input type="text" id="phone_number" name="phone_number" row="1"
-                                placeholder="User Phone Number" />
-                        </div>
-
-                        <div class="12u$">
-                            <ul class="actions">
-                                <li><input type="submit" value="Find users" /></li>
-                            </ul>
+                            <input type="email" id="email" name="email" row="1" placeholder="User email" required />
                         </div>
                     </div>
-                </form>
+
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+
+                            <input type="text" id="password" name="password" row="1" placeholder="User password"
+                                required />
+                        </div>
+                    </div>
+                    <br>
+                    <!-- <h4>ADDITIONAL INFORMATION</h4>
+                    <br> -->
+
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+                            <input type="text" id="name" name="name" row="1" placeholder="User name (optional)"
+                                required />
+                        </div>
+                    </div>
+
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+                            <input type="text" id="address" name="address" row="1" placeholder="User address (optional)"
+                                required />
+                        </div>
+                    </div>
+
+                    <!-- Break -->
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+                            <input type="tel" id="phone_number" name="phone_number " row="1"
+                                placeholder="User phone number (optional)" style="  height: 2.75em;" required />
+                        </div>
+                    </div>
+
+
+
+                    <!-- <div class="4u 12u$(small)">
+							<input type="radio" id="demo-priority-low" name="demo-priority" checked>
+							<label for="demo-priority-low">Low Priority</label>
+						</div>
+						<div class="4u 12u$(small)">
+							<input type="radio" id="demo-priority-normal" name="demo-priority">
+							<label for="demo-priority-normal">Normal Priority</label>
+						</div>
+						<div class="4u$ 12u$(small)">
+							<input type="radio" id="demo-priority-high" name="demo-priority">
+							<label for="demo-priority-high">High Priority</label>
+						</div>
+		
+						<div class="6u 12u$(small)">
+							<input type="checkbox" id="demo-copy" name="demo-copy">
+							<label for="demo-copy">Email me a copy of this message</label>
+						</div>
+						<div class="6u$ 12u$(small)">
+							<input type="checkbox" id="demo-human" name="demo-human" checked>
+							<label for="demo-human">I am a human and not a robot</label>
+						</div> -->
+                    <!-- Break -->
+                    <div class="12u$">
+                        <ul class="actions">
+                            <li><input type="submit" value="Add new user" /></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
             <!-- </div> -->
         </div>
     </section>
-
-    <section id="register" class="wrapper align-left">
-        <div class="inner">
-
-            <h3 style="display: inline-block;">LIST OF USERS</h3>
-            <a href="/users/add" style="float: right;">
-                <button>+ Users</button>
-            </a>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Phone Number</th>
-                            <th>Remove user</th>
-                            <th>Modify user</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr>
-                            {% for property in ['name', 'address', 'phone_number'] %}
-                            <td>{{ user.get(property) if user.get(property) else 'N/A' }}</td>
-                            {% endfor %}
-                            <!-- {% if property != 'ID' %}
-                            {% else %} 
-                            {% endif %}-->
-                            <td><button>
-                                    <a href="/users/delete/{{ user.get('USER_ID') }}">Remove user</a>
-                                </button></td>
-                            <td><button>
-                                    <a href="/users/modify/{{ user.get('USER_ID') }}">Modify user</a>
-                                </button></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-    </section>
-
-
-
-
 
 
 

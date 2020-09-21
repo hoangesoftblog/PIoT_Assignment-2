@@ -168,4 +168,12 @@ dmypy.json
 ### My own database ###
 database.db
 
+<<<<<<< HEAD
+=======
+
+#### Ignore trainer file
+*.yml
+
+
+>>>>>>> origin/hoangesoftblog
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,web

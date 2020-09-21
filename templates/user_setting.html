@@ -21,9 +21,19 @@
         <div class="inner">
             <a href="/home" class="logo"><strong>CAR RENTAL SYSTEM</strong> by BIG CITY BOIS</a>
             <nav id="nav">
+                <!-- <a href="dashboard.html">Dashboard</a>
+				<a href="index.html">Home</a>
+				<a href="login.html">Login</a>
+				<a href="Register.html">Register</a>
+				<a href="carlist.html">Car list</a>
+				<a href="bookinginfo.html">Booking info</a>
+				<a href="rental_history.html">Rental history</a>
+				<a href="reported_car.html">Reported car</a>
+				<a href="/booking_history">Booking History</a> -->
                 <a href="/cars">Cars</a>
                 <a href="/booking_history">Booking History</a>
                 <a href="/user_setting">User setting</a>
+
                 <a href="/logout">Logout</a>
             </nav>
             <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
@@ -68,67 +78,64 @@
     <section id="register" class="wrapper align-left">
         <div class="inner">
 
-            <h3>MY BOOKING SEARCH</h3>
+            <h3>USER INFORMATION MODIFY</h3>
 
-            <div class="table-wrapper">
+            <!-- <div class="table-wrapper"> -->
 
-                <form method="post" action="#">
-                    <div class="row uniform">
-                        <!-- <div class="6u 12u$(xsmall)">
+            <form method="post" action="#">
+                <div class=" uniform">
+                    <!-- <div class="6u 12u$(xsmall)">
 							<input type="text" name="brand" id="car-name" value="" placeholder="Brand" />
 						</div> -->
-                        <!-- <div class="6u$ 12u$(xsmall)" important!>
+                    <!-- <div class="6u$ 12u$(xsmall)" important!>
 							<input type="number" name="seats" id="seats" value="" placeholder="Seats" />
 						</div> -->
 
-                        <div class="6u 12u$(xsmall)">
-                            <div class="select-wrapper">
-                                <select name="brand" id="demo-category">
-                                    <option value="">- Brand -</option>
-                                    {% for value in brands %}
-                                    <option value="{{value}}">{{ value }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+                            <input type="text" id="name" name="name" row="1" placeholder="User name" required />
                         </div>
+                    </div>
 
-                        <div class="6u 12u$(xsmall)">
-                            <div class="select-wrapper">
-                                <select name="location" id="demo-category">
-                                    <option value="">- Location -</option>
-                                    {% for value in location %}
-                                    <option value="{{value}}">{{ value }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                    <br>
+
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+                            <input type="text" id="address" name="address" row="1" placeholder="User address"
+                                required />
                         </div>
+                    </div>
 
-                        <!-- Break -->
-                        <!-- <div class="6u 12u$(xsmall)">
-                            <div class="select-wrapper">
-                                <select name="colour" id="demo-category">
-                                    <option value="">- Color -</option>
-                                    {% for value in colours %}
-                                    <option value="{{value}}">{{ value }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                    <br>
+
+
+                    <!-- Break -->
+                    <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+                            <input type="tel" id="phone_number" name="phone_number" row="1"
+                                placeholder="User phone number" style="  height: 2.75em;" required />
                         </div>
+                    </div>
 
-                        <div class="6u 12u$(xsmall)">
-                            <div class="select-wrapper">
-                                <select name="body_type" id="demo-category">
-                                    <option value="">- Type -</option>
-                                    {% for value in type %}
-                                    <option value="{{value}}">{{ value }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div> 
-                        </div> -->
+                    <br>
 
 
+                    <img src="{{url_for('video')}}" alt="video_src"/>
 
-                        <!-- <div class="4u 12u$(small)">
+                    <!-- <div class="6u 12u$(xsmall)">
+                        <div class="select-wrapper">
+                            <select name="body_type" id="demo-category">
+                                <option value="">- Type -</option>
+                                {% for value in type %}
+                                <option value="{{value}}">{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> -->
+
+
+
+                    <!-- <div class="4u 12u$(small)">
 							<input type="radio" id="demo-priority-low" name="demo-priority" checked>
 							<label for="demo-priority-low">Low Priority</label>
 						</div>
@@ -149,64 +156,17 @@
 							<input type="checkbox" id="demo-human" name="demo-human" checked>
 							<label for="demo-human">I am a human and not a robot</label>
 						</div> -->
-                        <!-- Break -->
-                        <div class="12u$">
-                            <ul class="actions">
-                                <li><input type="submit" value="Search" /></li>
-                            </ul>
-                        </div>
+                    <!-- Break -->
+                    <div class="12u$">
+                        <ul class="actions">
+                            <li><input type="submit" value="Save" /></li>
+                        </ul>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
+            <!-- </div> -->
         </div>
     </section>
-
-    <section id="register" class="wrapper align-left">
-        <div class="inner">
-
-            <h3>LIST OF MY BOOKINGS</h3>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Brand</th>
-                            <th>Type</th>
-                            <th>No. seat</th>
-                            <th>Color</th>
-                            <th>Location</th>
-                            <th>Cost per hour</th>
-                            <th>Departure</th>
-                            <th>Arrival</th>
-                            <th>Details</th>
-                            <th>Cancel the booking</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for booking in history %}
-                        <tr>
-                            {% for property in ['brand', 'body_type', 'seats', 'colour', 'location', 'cost_per_hour', 'from_time', 'to_time', 'booking_details', 'ID'] %}
-                            {% if property != 'ID' %}
-                            <td>{{ booking.get(property) if booking.get(property) else 'N/A' }}</td>
-                            {% else %}
-                            <td><button>
-                                    <a href="/booking/cancel/{{ booking.get('ID') }}">Cancel booking</a>
-                                </button></td>
-                            {% endif %}
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-    </section>
-
-
-
-
 
 
 

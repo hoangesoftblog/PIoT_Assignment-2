@@ -39,8 +39,12 @@ def generate_qr_code(content,file_name):
     :type file_name: string
     """
     # output file name
-    filename = str(file_name) + "_qr.png"
+    filename = str(content) + "_qr.png"
     # generate qr code
     img = qrcode.make(content)
     # save img to a file
     img.save(filename)
+
+
+if __name__ == "__main__":
+    generate_qr_code("2")

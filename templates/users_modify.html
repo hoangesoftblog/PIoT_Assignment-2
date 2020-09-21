@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>Booking details</title>
+{% endblock %}
+{% block navigation %}
+{% endblock %}
+{% block main %}
+<h1>Search Users</h1>
+    <form method="POST" action="#">
+        <div>
+            <label for="name">Name</label><br/>
+            <input type="text" id="name" name="name" row="1" value="{{ name }}"/>
+        </div>
+        <br/>
+        <div>
+            <label for="address">Address</label><br/>
+            <input type="text" id="address" name="address" row="1" value="{{ address }}"/>
+        </div>
+        <br/>
+        <div>
+            <label for="phone_number">Phone number</label><br/>
+            <input type="tel" id="phone_number" name="phone_number" row="1" value="{{ phone_number }}"/>
+        </div>
+        <br/>
+        <button>Save user!</button>
+    </form>
+{% endblock %}
