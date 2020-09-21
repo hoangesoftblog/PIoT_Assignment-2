@@ -42,16 +42,6 @@ class Bluetooth_Client:
     def __del__(self):
         self.sock.close()
 
-
-# if len(sys.argv) < 2:
-#     print("No device specified. Searching all nearby bluetooth devices for "
-#           "the SampleServer service...")
-# else:
-#     addr = sys.argv[1]
-#     print("Searching for SampleServer on {}...".format(addr))
-
-# search for the SampleServer service
-
 class Bluetooth_Server():
     port_any = bluetooth.PORT_ANY
 
@@ -67,14 +57,14 @@ class Bluetooth_Server():
 
             uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 
-            bluetooth.advertise_service(server_sock, "SampleServer", service_id=uuid,
+            bluetooth.advertise_service(self.server_sock, "SampleServer", service_id=uuid,
                                         service_classes=[uuid, bluetooth.SERIAL_PORT_CLASS],
                                         profiles=[bluetooth.SERIAL_PORT_PROFILE],
                                     )     
             
             print("Waiting for connection on nearby device", port)
 
-            client_sock, address = self.server_sock.accept()
+            self.client_sock, address = self.server_sock.accept()
             print("Accepted connection from", address)
 
             self.client_sock.close()
@@ -95,12 +85,25 @@ class Bluetooth_Server():
         print("All done.")
     
 if __name__ == "__main__":
-    # bluetooth_server = Bluetooth_Server()
-    # bluetooth_server.start_server()
+    # # Client test
+    # server = Bluetooth_Server()
+    # server.start_server()
 
-    Bluetooth_client = Bluetooth_Client()
-    Bluetooth_client.send_message(b'hi')
+
+    # # Client test
+    client = Bluetooth_Client()
+    client.finding_sampleServer()
+    client.send_message(b'hi')
     
+
+# if len(sys.argv) < 2:
+#     print("No device specified. Searching all nearby bluetooth devices for "
+#           "the SampleServer service...")
+# else:
+#     addr = sys.argv[1]
+#     print("Searching for SampleServer on {}...".format(addr))
+
+# search for the SampleServer service
 
     
 
